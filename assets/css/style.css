@@ -1,0 +1,117 @@
+body{
+	font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size:14px;
+	line-height:20px;
+	background-image: url(../img/logo_norauto.gif);
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: center center;
+}
+
+.erow{
+	background-color:#fff;
+}
+
+ul,ol{
+	padding:0;
+	margin:0 0 10px 25px;
+}
+
+#login-user{
+	position:absolute;
+	left:0;
+	top:0;
+	width:100%;
+	height:100%;
+}
+
+#main{
+	position:absolute;
+	left:0;
+	top:0;
+	width:100%;
+	height:100%;
+}
+
+.login-box ul, #menu ul{
+	list-style-type: none;
+}
+
+#menu ul li{
+	float:left;
+	margin-right:20px;
+}
+
+#menu ul li a{
+	color:#fff;
+}
+
+#login-user ul li{
+	margin-bottom:10px;
+}
+
+.login-box{
+	position:relative;
+	margin:auto;
+	width:300px;
+	height:261px;
+	background-color:#fff;
+	top:30%;
+	padding:20px;
+	border-radius:10px;
+	box-shadow: 10px 10px 5px #888;
+	border:3px solid #fff;
+	color:#ffff00;
+	background-color:#050087;
+}
+
+.login-box label{
+	display:block;
+	height:30px;
+}
+
+.msg{
+	color:#fff;
+}
+
+.input{
+	width:212px;
+}
+
+.norauto{
+	font-weight:bold;
+	color:#ffff00;
+}
+
+.crud-form{
+	margin-top:20px;
+}
+
+#message-box{
+	margin-bottom:0;
+}
+
+#menu{
+	position:fixed;
+	top:0;
+	background-color:#050087;
+	color:#fff;
+	width:100%;
+	left:0;
+	padding:3px;
+	text-align:center;
+	border-bottom:3px solid #ffff00;
+	z-index:10;
+}
+
+footer{
+	position:fixed;
+	bottom:0;
+	background-color:#050087;
+	color:#fff;
+	width:100%;
+	left:0;
+	padding:3px;
+	text-align:center;
+	border-top:3px solid #ffff00;
+}
