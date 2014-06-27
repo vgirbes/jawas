@@ -22,9 +22,6 @@ class Inicio extends CI_Controller {
     {
         parent:: __construct();
         $this->load->library('session');
-        $this->load->database();
-        $this->load->helper('url');
-        $this->load->library('grocery_CRUD');
     }
 
     public function __output($output = null){

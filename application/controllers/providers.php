@@ -10,18 +10,20 @@ class Providers extends CI_Controller{
     }
 
     public function __output($output = null){
-        $this->load->view('providers_list.php',$output);
+        $this->load->view('providers_list.php', $output);
     }
 
     public function index(){
-        $this->_example_output((object)array('output' => '' , 'js_files' => array() , 'css_files' => array()));
+        $this->__output((object)array('output' => '' , 'js_files' => array() , 'css_files' => array()));
     }
 
     public function view(){
+        $user_id = $this->session->userdata['id'];
         $crud = new grocery_CRUD();
         $crud->set_theme('twitter-bootstrap');
         $crud->set_table('users_providers');
-        $crud->display_as('providers_id','Id');
+        $crud->display_as('SupplierKey','Id');
+        $crud->where('users_id', $user_id);
         $crud->set_subject('Providers');
      
         $crud->set_relation('SupplierKey','providers','nom');

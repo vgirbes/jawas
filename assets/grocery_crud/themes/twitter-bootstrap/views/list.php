@@ -1,7 +1,7 @@
 <?php
 if(!empty($list)){ ?>
 <div class="span12" >
-	<table class="table table-bordered tablesorter table-striped">
+	<table class="table-bordered tablesorter table-striped">
 		<thead>
 			<tr>
 				<?php foreach($columns as $column){?>

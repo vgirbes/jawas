@@ -14,7 +14,7 @@
 					<input type="password" name="password" class="input" placeholder="contraseña" value=""/>
 				</li>
 				<li>
-					<input type="submit" value="Acceder"/>
+					<input type="submit" class="btn" value="Acceder"/>
 				</li>
 				<li class="msg">
 					<?= (isset($error) ? $error : '');?>

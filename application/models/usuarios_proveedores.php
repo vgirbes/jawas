@@ -5,10 +5,10 @@ class Usuarios_proveedores extends CI_Model{
     }
 
     public function Load_Providers_List(){
-    	$this->db->select('*');
+    /*	$this->db->select('*');
     	$this->db->from('providers p, users_providers up');
     	$this->db->where('up.providers_id = p.SupplierKey');
-        $query = $this->db->get();
+        $query = $this->db->get();*/
 
     	return $query->result();
     }
