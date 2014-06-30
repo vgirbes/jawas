@@ -15,6 +15,8 @@ class RequestProvider{
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
             $name_export_xml = 'assets/files/comdep/'.$archivo;
+            set_time_limit(0);
+            //$name_export_xml = 'assets/files/comdep/exportReferentiel_20140101024740.xml';
             if ($name_export_xml){
                 $items = simplexml_load_file($name_export_xml);
                 return $items;
@@ -26,8 +28,15 @@ class RequestProvider{
         }
     }
 
-    public function Cargar_Atyse(){
-    	return $items;
+    public function Cargar_Atyse($CI){
+        $archivo = $this->Request_Files('ATYSE', $CI);
+        $this->filename = $archivo;
+        if ($archivo != '' && $archivo){
+            var_dump($archivo);
+    	   return $archivo;
+        }else{
+            return false;
+        }
     }
 
     public function Cargar_Pirelli(){
@@ -93,12 +102,16 @@ class RequestProvider{
 
         if ($archivo == ''){
             $files = explode("\n", $output);
+            $cur = count($files)-2;
             $archivo = $files[0];
             $result = ($archivo !='' && count($files)>0 ? $this->Get_File($s_data, $CI, $archivo) : $this->Get_Last_File($provider_name));
         }else{
             fwrite($fp, $output);
             fclose($fp);
-            if ($s_data->ext=='zip') $archivo = $this->Unzip($archivo, $s_data, $provider, $name);
+            if ($s_data->ext=='zip'){
+                $archivo = $this->Unzip($archivo, $s_data, $provider, $name);
+            }else $archivo = $this->MoveCSV($archivo, $s_data, $provider);
+
             $result = $this->Get_Last_File($provider_name);
         }
 
@@ -120,6 +133,17 @@ class RequestProvider{
             } else { 
                 return false;
             } 
+        }else{
+            return false;
+        }
+    }
+
+    public function MoveCSV($archivo, $s_data, $provider){
+        $folder = strtolower($s_data->name);
+
+        if (file_exists('assets/files/'.$provider)){
+            rename('assets/files/'.$provider , 'assets/files/'.$folder.'/'.$provider);
+            return true;
         }else{
             return false;
         }

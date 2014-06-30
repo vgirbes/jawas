@@ -6,6 +6,7 @@ class Ficheros extends CI_Model{
         $this->load->library('encrypt');
         $this->load->library('Adapter');
         $this->load->library('Comdep');
+        $this->load->library('Atyse');
         $this->load->database();
     }
        

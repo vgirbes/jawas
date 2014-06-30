@@ -11,7 +11,7 @@ class Adapter{
     	$CI =& get_instance();
     	switch($provider){
     		case 'Atyse':
-    			$items = $CI->requestprovider->Cargar_Atyse();
+    			$items = $CI->requestprovider->Cargar_Atyse($CI);
     			return $items;
     		break;
 
