@@ -14,6 +14,31 @@ class Comdep{
     }
 
     public function Procesar_Items($xml){
+    /*    $reader = new XMLReader();
+        $reader->open("assets/files/comdep/exportReferentiel_20140627123732.xml");
+        while ($reader->read()) {
+            echo $reader->localName;
+            switch ($reader->nodeType) {
+                case (XMLREADER::ELEMENT):
+                if ($reader->localName == "ExportMobiWheel") {
+                    //echo $reader->getAttribute();
+                    //if ($reader->getAttribute("ID") == 5225) {
+                        $node = $reader->expand();
+                        var_dump($node);
+                        $dom = new DomDocument();
+                        $n = $dom->importNode($node,true);
+                        $dom->appendChild($n);
+                        $xp = new DomXpath($dom);
+                        //var_dump($dom);
+                        echo $dom->textContent;
+                        $res = $xp->query();
+                        echo $res->item(0)->nodeValue.'<br/>';
+                    //}
+                }
+            }
+        }
+        exit();*/
+
         if ($xml != false){
             $CI =& get_instance();
             $i = 0;
@@ -50,7 +75,7 @@ class Comdep{
                         $ligne_four = $ligne_four[0];
                     
                         //si le fournisseur a été trouvé dans la BDD
-                        if ($ligne_four->active == "1"){
+                    //    if ($ligne_four->active == "1"){
                             if ((strcmp($b[1], "TOURISME") == 0 && (int)$b[11] <= 18) || (strcmp($b[1], "UTILITAIRE") == 0 && (int)$b[11] <= 16))
                                 $transport = (double)$ligne_four->transport / 2;
                             else
@@ -96,10 +121,10 @@ class Comdep{
 
                             //On rentre l'ean correspondant dans la BDD.
                             $this->Process_Ean($xml, $CI, $i, $k, $b, $count);
-                        }else{
+                    /*    }else{
                             $stockValue = (int)$d[25];
                             $result_price = (double)$d[21];
-                        }
+                        }*/
                     }
                     $count_prod++;
                     $j++;

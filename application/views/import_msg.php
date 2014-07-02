@@ -8,5 +8,5 @@
 			echo 'Archivo importado:<br/> '.$row['filename'];
 		} ?>
 		<br/><br/>
-		<a class="boton" href="import/view">Ver datos</a>
+		<a class="boton" href="<?= base_url();?>import/view">Ver datos</a>
 	</div>

@@ -3,6 +3,9 @@ class DB_op{
 	var $datos_products = array();
     var $datos_regroupement = array();
     var $datos_ean = array();
+    var $datos_corresfour = array();
+    var $datos_provider = array();
+    var $datos_userprovider = array();
 
 	function __construct(){
 		$CI =& get_instance();
@@ -10,9 +13,11 @@ class DB_op{
         $CI->load->helper('array');
     } 
 
-	public function Insert_Data($CI, $tabla = 'all'){ 
-        $user_id = $CI->session->userdata['id'];
-        $CI->db->delete($tabla, array('user_id' => $user_id)); 
+	public function Insert_Data($CI, $tabla = 'all', $truncate = 'si'){ 
+        if ($truncate == 'si'){
+            $user_id = $CI->session->userdata['id'];
+            $CI->db->delete($tabla, array('user_id' => $user_id)); 
+        }
 
         switch($tabla){
             case 'products':
@@ -26,6 +31,18 @@ class DB_op{
             case 'ean':
                 $data = $this->datos_ean;
             break;
+
+            case 'corres_four':
+                $data = $this->datos_corresfour;
+            break;
+
+            case 'providers':
+                $data = $this->datos_provider;
+            break;
+
+            case 'users_providers':
+                $data = $this->datos_userprovider;
+            break;
         }
 
         if (!is_null($data) && count($data)>0){
@@ -37,5 +54,14 @@ class DB_op{
         }else{
             return true;
         }
+    }
+
+    public function Info_Provider($CI, $campo, $valor){
+        $CI->db->select('*');
+        $CI->db->from('providers p, users_providers up');
+        $CI->db->where("$campo", utf8_encode($valor));
+        $CI->db->where('p.SupplierKey = up.SupplierKey');
+        $query = $CI->db->get();
+        return $query;
     }
 }

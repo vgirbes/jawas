@@ -98,7 +98,7 @@ ul,ol{
 
 .info-title{
 	width:100%;
-	cursor:move;
+	cursor:pointer;
 	background-color:#888;
 	border-radius:2px;
 	color:#fff;

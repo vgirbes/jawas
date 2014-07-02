@@ -29,10 +29,10 @@ class RequestProvider{
     }
 
     public function Cargar_Atyse($CI){
-        $archivo = $this->Request_Files('ATYSE', $CI);
+        //$archivo = $this->Request_Files('ATYSE', $CI);
+        $archivo = 'NOR-SP_AVECPRIX_AVECSTOCK_20140630072253.csv';
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
-            var_dump($archivo);
     	   return $archivo;
         }else{
             return false;
@@ -142,7 +142,7 @@ class RequestProvider{
         $folder = strtolower($s_data->name);
 
         if (file_exists('assets/files/'.$provider)){
-            rename('assets/files/'.$provider , 'assets/files/'.$folder.'/'.$provider);
+            copy('assets/files/'.$provider , 'assets/files/'.$folder.'/'.$provider);
             return true;
         }else{
             return false;

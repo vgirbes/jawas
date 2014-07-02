@@ -12,6 +12,7 @@ class Adapter{
     	switch($provider){
     		case 'Atyse':
     			$items = $CI->requestprovider->Cargar_Atyse($CI);
+                $this->filename = $CI->requestprovider->filename;
     			return $items;
     		break;
 

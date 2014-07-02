@@ -29,6 +29,16 @@ class ImportTest extends CIUnit_TestCase
 		$this->assertSame(0, preg_match('/(error|notice)/i', $out));
 	}
 
+	public function testatyse()
+	{
+		// Call the controllers method
+		$this->CI->atyse();         
+        $out = output();
+		
+		// Check if the content is OK
+		$this->assertSame(0, preg_match('/(error|notice)/i', $out));
+	}
+
 	public function testindex(){
 		// Call the controllers method
 		$this->CI->index();
