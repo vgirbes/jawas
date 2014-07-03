@@ -15,7 +15,6 @@ class RequestProvider{
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
             $name_export_xml = 'assets/files/comdep/'.$archivo;
-            set_time_limit(0);
             //$name_export_xml = 'assets/files/comdep/exportReferentiel_20140101024740.xml';
             if ($name_export_xml){
                 $items = simplexml_load_file($name_export_xml);
@@ -29,8 +28,8 @@ class RequestProvider{
     }
 
     public function Cargar_Atyse($CI){
-        //$archivo = $this->Request_Files('ATYSE', $CI);
-        $archivo = 'NOR-SP_AVECPRIX_AVECSTOCK_20140630072253.csv';
+        $archivo = $this->Request_Files('ATYSE', $CI);
+        //$archivo = 'NOR-SP_AVECPRIX_AVECSTOCK_20140630072253.csv';
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
     	   return $archivo;
@@ -85,16 +84,17 @@ class RequestProvider{
         $url = $s_data->server.'/'.$s_data->source.$download;
         $ftp_server = $s_data->protocol.'://' . $username . ':' . $password . '@' . $url;
         $ch = curl_init();
-
         curl_setopt($ch, CURLOPT_URL, $ftp_server);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_FTP_SSL, CURLFTPSSL_TRY);
+        curl_setopt( $ch, CURLOPT_HEADER, true );
         if ($archivo != ''){
             $fp = fopen('assets/files/'.$provider, 'w');
             curl_setopt($ch, CURLOPT_FILE, $fp);
         }else{
             curl_setopt($ch, CURLOPT_FTPLISTONLY, TRUE);
+            
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($ch);
@@ -108,14 +108,33 @@ class RequestProvider{
         }else{
             fwrite($fp, $output);
             fclose($fp);
-            if ($s_data->ext=='zip'){
-                $archivo = $this->Unzip($archivo, $s_data, $provider, $name);
-            }else $archivo = $this->MoveCSV($archivo, $s_data, $provider);
+            $size = $this->Get_File_Size($ftp_server, $CI);
+            if (filesize('assets/files/'.$provider) == $size){
+                if ($s_data->ext=='zip'){
+                    $archivo = $this->Unzip($archivo, $s_data, $provider, $name);
+                }else $archivo = $this->MoveCSV($archivo, $s_data, $provider);
+            }
 
             $result = $this->Get_Last_File($provider_name);
         }
-
         return $result;
+    }
+
+    public function Get_File_Size($ftp_server, $CI){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $ftp_server);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_FTP_SSL, CURLFTPSSL_TRY);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_exec($ch);
+        $size = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+        curl_close($ch);
+
+        return $size;
     }
 
     public function Unzip($archivo, $s_data, $provider, $name = ''){
