@@ -10,35 +10,13 @@ class Comdep{
         $CI->load->library('Products_Struct');
         $CI->load->library('Regroupement_Struct');
         $CI->load->library('Ean_Struct');
+        $CI->load->library('CorresFour_Struct');
+        $CI->load->library('Provider_Struct');
+        $CI->load->library('UsersProviders_Struct');
         $CI->load->library('session');
     }
 
     public function Procesar_Items($xml){
-    /*    $reader = new XMLReader();
-        $reader->open("assets/files/comdep/exportReferentiel_20140627123732.xml");
-        while ($reader->read()) {
-            echo $reader->localName;
-            switch ($reader->nodeType) {
-                case (XMLREADER::ELEMENT):
-                if ($reader->localName == "ExportMobiWheel") {
-                    //echo $reader->getAttribute();
-                    //if ($reader->getAttribute("ID") == 5225) {
-                        $node = $reader->expand();
-                        var_dump($node);
-                        $dom = new DomDocument();
-                        $n = $dom->importNode($node,true);
-                        $dom->appendChild($n);
-                        $xp = new DomXpath($dom);
-                        //var_dump($dom);
-                        echo $dom->textContent;
-                        $res = $xp->query();
-                        echo $res->item(0)->nodeValue.'<br/>';
-                    //}
-                }
-            }
-        }
-        exit();*/
-
         if ($xml != false){
             $CI =& get_instance();
             $i = 0;
@@ -47,11 +25,13 @@ class Comdep{
             $count_four = 0;
             $count_prod = 0;
             $count = 0;
-
+            $ins = false;
+            $CI->provider_struct->Get_Codes($CI);
             while ($xml->RegroupementsMobiWheel->RegroupementMobiWheel[$i] != NULL){
                 $count++;
                 $res_price = 300000000000000;
                 $res_stock = 0;
+                
                 // On parcourt les références et on stock les données.
                 $curse = 0;
 
@@ -62,6 +42,7 @@ class Comdep{
                 // On rentre les attribut de chaque "RelatedProduct" contenus dans chaque "RegroupementMobiWheel" dans la BDD.
                 while ($xml->RegroupementsMobiWheel->RegroupementMobiWheel[$i]->RelatedProducts->RelatedProduct[$j] != NULL){
                     $curse = 0;
+                    $ligne_four = '';
                     foreach ($xml->RegroupementsMobiWheel->RegroupementMobiWheel[$i]->RelatedProducts->RelatedProduct[$j]->attributes() as $c => $d[$curse]){
                         $data_d[$c] = $d[$curse];
                         $curse++;
@@ -70,11 +51,21 @@ class Comdep{
                     if (strlen($d[0]) > 6)
                         $d[0] = substr($d[0], 5);
 
-                    $ligne_four = $this->Load_Users_UP($CI, $d);
-                    if (isset($ligne_four[0])){
-                        $ligne_four = $ligne_four[0];
+                    $query = $CI->db_op->Info_Provider($CI, 'p.SupplierKey', $d[0]);
                     
-                        //si le fournisseur a été trouvé dans la BDD
+                    if ($query->num_rows()<=0){
+                        $ins = true;
+                        $ins_provider = $CI->provider_struct->Process_Provider($CI, $count, $d, $d[0], 'comdep');
+                        $ins_userprovider = $CI->usersproviders_struct->Process_UserProvider($CI, $count, $d[0], $ins_provider);
+                    }else{
+                        $ligne_four = $query->result();
+                        $ligne_four = $ligne_four[0];
+                    }
+
+                    //if ($query->num_rows()>0 && !is_null($d)){
+                    if ($ligne_four != ''){
+                            echo '<input type="hidden" name="comdep">';
+                       //si le fournisseur a été trouvé dans la BDD
                     //    if ($ligne_four->active == "1"){
                             if ((strcmp($b[1], "TOURISME") == 0 && (int)$b[11] <= 18) || (strcmp($b[1], "UTILITAIRE") == 0 && (int)$b[11] <= 16))
                                 $transport = (double)$ligne_four->transport / 2;
@@ -89,10 +80,10 @@ class Comdep{
                                 if ($ligne_prodForced != NULL){
                                     $stockValue = (int)$ligne_prodForced->stock - $ligne_four->correctionstock;
                                 }else
-                                    $stockValue = (int)$d[25] - $ligne_four->correctionstock;
+                                    $stockValue = (int)(isset($d[25]) ? $d[25] : 0) - $ligne_four->correctionstock;
                             }
                             else
-                                $stockValue = (int)$d[25] - $ligne_four->correctionstock;
+                                $stockValue = (int)(isset($d[25]) ? $d[25] : 0) - $ligne_four->correctionstock;
 
                             if ($stockValue < 0)
                                 $stockValue = 0;
@@ -137,6 +128,11 @@ class Comdep{
             $ins_prod = $CI->products_struct->Insert_Data($CI, 'products');
             $ins_regro = $CI->regroupement_struct->Insert_Data($CI, 'regroupement');
             $ins_ean = $CI->ean_struct->Insert_Data($CI, 'ean');
+            if ($ins){
+                $CI->corresfour_struct->Insert_Data($CI, 'corres_four', 'no');
+                $CI->provider_struct->Insert_Data($CI, 'providers', 'no');
+                $CI->usersproviders_struct->Insert_Data($CI, 'users_providers', 'no');
+            }
 
             if ($ins_prod && $ins_regro && $ins_ean){
                 return true;

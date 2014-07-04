@@ -11,6 +11,7 @@ class DB_op{
 		$CI =& get_instance();
         $CI->load->database();
         $CI->load->helper('array');
+        $CI->load->library('session');
     } 
 
 	public function Insert_Data($CI, $tabla = 'all', $truncate = 'si'){ 

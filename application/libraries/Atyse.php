@@ -31,6 +31,8 @@ class Atyse{
         {
             
             $handle = fopen('assets/files/atyse/'.$archivo, "r");
+            $CI->corresfour_struct->Get_Codes($CI);
+            $CI->provider_struct->Get_Codes($CI);
             while ((($data = fgetcsv($handle, 3000, ';')) !== FALSE) && !$process) 
             {
                 if ($row > 1)
@@ -54,7 +56,7 @@ class Atyse{
                             }else{
                                 $ins = true;
                                 $code_four = $CI->corresfour_struct->Code_Four($CI, $item, $data);
-                                $ins_provider = $CI->provider_struct->Process_Provider($CI, $item, $data, $code_four);
+                                $ins_provider = $CI->provider_struct->Process_Provider($CI, $item, $data, $code_four, 'atyse');
                                 $ins_userprovider = $CI->usersproviders_struct->Process_UserProvider($CI, $item, $code_four, $ins_provider);
                                 $codProv = $code_four;
                             } 
@@ -69,7 +71,7 @@ class Atyse{
                     $query = $CI->db->get();
                     $count = $query->num_rows();
                     $ligne = $query->result();
-                    echo '<input type="hidden" name="prueba">';
+                    echo '<input type="hidden" name="atyse">';
                     if ($count > 0) $ligne = $ligne[0];              
             
                     if ($count<=0)

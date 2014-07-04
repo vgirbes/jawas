@@ -1,10 +1,14 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class CorresFour_Struct extends DB_op{
+
     var $corresfour = array(
         'codeFour' => '',
         'nomFour' => '',
         'user_id' => ''
     );
+
+    var $codes = array();
+    var $corres = array();
 
     public function Load_Data($data, $i){
         $CI =& get_instance();
@@ -17,22 +21,28 @@ class CorresFour_Struct extends DB_op{
         return true;
     }
 
-    public function Code_Four($CI, $item, $data){
-        $codeFour = 20000 + rand(1, 999);
+    public function Get_Codes($CI){
         $CI->db->select('codeFour');
         $CI->db->from('corres_four');
         $query = $CI->db->get();
-        $ok = false;
-
         foreach($query->result_array() as $row){
-            $corres[] = $row['codeFour']; 
+            $this->corres[] = $row['codeFour']; 
         }
+
+        return true;
+    }
+
+    public function Code_Four($CI, $item, $data){
+        $codeFour = 20000 + rand(1, 999);
         
+        $ok = false;
         while (!$ok){
-            if (in_array($codeFour, $corres)){
+            if (in_array($codeFour, $this->corres) || in_array($codeFour, $this->codes)){
                 $codeFour = 20000 + rand(1, 999);
             }else{
+                $this->codes[] = $codeFour;
                 $ok = true;
+                
             }
         }
 

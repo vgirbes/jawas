@@ -14,9 +14,11 @@ class Import extends CI_Controller{
 
     public function comdep(){
         if(isset($this->session->userdata['username'])){
+            $user_id = $this->session->userdata['id'];
         	$result = $this->ficheros->process_comdep_aty('comdep');
             if ($result){
-                redirect('import/view');
+                $datos['import_state'] = $this->ficheros->import_state($user_id);
+                $this->load->view('principal', $datos);
             }else{
                 $datos['errores'] = 'Error: No se ha podido cargar el fichero de Comdep.';
                 $this->load->view('principal', $datos);
@@ -31,7 +33,6 @@ class Import extends CI_Controller{
             $user_id = $this->session->userdata['id'];
             $result = $this->ficheros->process_comdep_aty('atyse');
             if ($result){
-                //redirect('import/view');
                 $datos['import_state'] = $this->ficheros->import_state($user_id);
                 $this->load->view('principal', $datos);
             }else{
