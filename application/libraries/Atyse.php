@@ -18,7 +18,7 @@ class Atyse{
 
     public function Procesar_Items($archivo){
         $CI =& get_instance();
-
+        $user_id = $CI->session->userdata['id'];
         $row = 1;
         $good = 0;
         $item = 0;
@@ -76,29 +76,9 @@ class Atyse{
             
                     if ($count<=0)
                     {
-                        $regroupement = array(
-                                'codeRegroupement' => "$codeReg",
-                                'typeVehicule' => "$data[64]",
-                                'codeTypeVehicule' => '',
-                                'typeProduct' => "$data[64]",
-                                'season' => "$data[65]",
-                                'brand' => "$brand",
-                                'height' => "$data[15]",
-                                'width' => "$data[14]",
-                                'diameter' => "$data[17]",
-                                'radial' => "$data[16]",
-                                'poids' => "$data[50]",
-                                'poidsUnite' => "$data[51]",
-                                'volume' => "$data[52]",
-                                'volumeUnite' => "$data[53]",
-                                'manufacturerRef' => '',
-                                'priceMin' => '3000000',
-                                'user_id' => $CI->session->userdata['id']
-                        );
-
+                        $regroupement = $this->Get_Regroupement_array($codeReg, $data, $brand, $user_id);
                         $CI->regroupement_struct->Load_Data($regroupement, $item);
-
-                        $datos_ean = array('codeRegroupement' => "$codeReg", 'ean' => "$data[4]", 'user_id'  => $CI->session->userdata['id']);
+                        $datos_ean = array('codeRegroupement' => "$codeReg", 'ean' => "$data[4]", 'user_id'  => $user_id);
                         $CI->ean_struct->Load_Data($datos_ean, $item);
                     }
 
@@ -129,23 +109,7 @@ class Atyse{
                     $result_price = (((double)$data[60] + (double)$ligne_f->ecotaxe) - (double)$ligne_f->RFAfixe) * (1 - ((double)$ligne_f->RFA_p / 100)) + (double)$ligne_f->CDS + (double)$transport;
                     $prod_n = $CI->products_struct->Product_Exist($CI, $codeReg, $codProv);
                     if ($prod_n <= 0){
-                        $products = array(
-                            'codeRegroupement' => "$codeReg",
-                            'supplierKey' => "$codProv",
-                            'supplierRef' => "$codProv",
-                            'attached' => 'true',
-                            'name' => "$data[13]",
-                            'poidnet' => "$data[50]",
-                            'poidnetunit' => "$data[51]",
-                            'volume' => "$data[52]",
-                            'volumeunit' => "$data[53]",
-                            'temperatureResistanceGrade' => '',
-                            'supplierPrice' => "$result_price",
-                            'supplierPriceB' => "$data[60]",
-                            'stockValue' => "$stockValue",
-                            'stockValueB' => "$data[67]",
-                            'user_id' => $CI->session->userdata['id']
-                        );
+                        $products = $this->Get_Products_array($codeReg, $codProv, $data, $result_price, $stockValue, $user_id);
                         $CI->products_struct->Load_Data($products, $item);
                     }
 
@@ -181,6 +145,52 @@ class Atyse{
             $CI->usersproviders_struct->Insert_Data($CI, 'users_providers', 'no');
         }
         return true;
+    }
+
+    public function Get_Regroupement_array($codeReg, $data, $brand, $user_id){
+        $regroupement = array(
+            'codeRegroupement' => "$codeReg",
+            'typeVehicule' => "$data[64]",
+            'codeTypeVehicule' => '',
+            'typeProduct' => "$data[64]",
+            'season' => "$data[65]",
+            'brand' => "$brand",
+            'height' => "$data[15]",
+            'width' => "$data[14]",
+            'diameter' => "$data[17]",
+            'radial' => "$data[16]",
+            'poids' => "$data[50]",
+            'poidsUnite' => "$data[51]",
+            'volume' => "$data[52]",
+            'volumeUnite' => "$data[53]",
+            'manufacturerRef' => '',
+            'priceMin' => '3000000',
+            'user_id' => $user_id
+        );
+
+        return $regroupement;
+    }
+
+    public function Get_Products_array($codeReg, $codProv, $data, $result_price, $stockValue, $user_id){
+        $products = array(
+            'codeRegroupement' => "$codeReg",
+            'supplierKey' => "$codProv",
+            'supplierRef' => "$codProv",
+            'attached' => 'true',
+            'name' => "$data[13]",
+            'poidnet' => "$data[50]",
+            'poidnetunit' => "$data[51]",
+            'volume' => "$data[52]",
+            'volumeunit' => "$data[53]",
+            'temperatureResistanceGrade' => '',
+            'supplierPrice' => "$result_price",
+            'supplierPriceB' => "$data[60]",
+            'stockValue' => "$stockValue",
+            'stockValueB' => "$data[67]",
+            'user_id' => $user_id
+        );
+
+        return $products;
     }
 
     public function Calc_transport($typeVehicule, $diameter, $l_transport){
