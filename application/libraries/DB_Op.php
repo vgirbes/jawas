@@ -6,6 +6,7 @@ class DB_op{
     var $datos_corresfour = array();
     var $datos_provider = array();
     var $datos_userprovider = array();
+    var $datos_mch = array();
 
 	function __construct(){
 		$CI =& get_instance();
@@ -43,6 +44,10 @@ class DB_op{
 
             case 'users_providers':
                 $data = $this->datos_userprovider;
+            break;
+
+            case 'data_mch':
+                $data = $this->datos_mch;
             break;
         }
 

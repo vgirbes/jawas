@@ -7,6 +7,7 @@ class Ficheros extends CI_Model{
         $this->load->library('Adapter');
         $this->load->library('Comdep');
         $this->load->library('Atyse');
+        $this->load->library('MCH');
         $this->load->database();
     }
        

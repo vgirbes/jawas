@@ -11,11 +11,10 @@ class RequestProvider{
 
     public function Cargar_Comdep($CI){
         $archivo = $this->Request_Files('COMDEP', $CI);
-        //$archivo = false;
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
-            $name_export_xml = 'assets/files/comdep/'.$archivo;
-            //$name_export_xml = 'assets/files/comdep/exportReferentiel_20140101024740.xml';
+            //$name_export_xml = 'assets/files/comdep/'.$archivo;
+            $name_export_xml = 'assets/files/comdep/exportReferentiel_20140101024740.xml';
             if ($name_export_xml){
                 $items = simplexml_load_file($name_export_xml);
                 return $items;
