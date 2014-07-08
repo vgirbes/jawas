@@ -17,7 +17,7 @@ class MCH{
         $user_id = $CI->session->userdata['id'];
         $query = $this->Groupe_Marchandise($CI);
         $count_line = $query->num_rows();
-        $Conn = $this->Connect_MCH();
+        $Conn = $CI->db_op->Connect_MCH();
 
 		$i = 0;
 		if ($Conn){
@@ -47,6 +47,7 @@ class MCH{
 				$CI->db->select('*');
 				$CI->db->from('ean');
 				$CI->db->where('ean', $row['VALPRO']);
+				$CI->db->where('user_id', $user_id);
 				$query = $CI->db->get();
 				$ligne = $query->result();
 				echo '<input type="hidden" name="MCH">';
@@ -54,11 +55,11 @@ class MCH{
 				if ($query->num_rows()>0)
 				{
 					$ligne = $ligne[0];
-					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], $row['CODPRO'], $row['VALPRO'], $user_id);
+					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], $row['CODPRO'], $row['country'], $row['VALPRO'], $user_id);
 					$CI->mch_struct->Load_Data($data_mch, $item);
 					$item++;
 
-					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], 'codeRegroupement', $ligne->codeRegroupement, $user_id);
+					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], 'codeRegroupement', $row['country'], $ligne->codeRegroupement, $user_id);
 					$CI->mch_struct->Load_Data($data_mch, $item);
 					$item++;
 				}
@@ -69,21 +70,6 @@ class MCH{
 			return $res;
 		}else{
 			return false;
-		}
-    }
-
-    public function Connect_MCH(){
-    	$ServerName = HOST_MCH;
-		$ConnectionOptions  = array("Database" => DB_MCH, "UID"=> USER_MCH, "PWD"=> PASS_MCH);
-
-		$Conn = sqlsrv_connect($ServerName , $ConnectionOptions);
-
-		if($Conn) 
-		{
-	    	return $Conn;
-		}else{
-	     	return false;
-	     	die( print_r( sqlsrv_errors(), true));
 		}
     }
 
@@ -121,10 +107,10 @@ class MCH{
         return $query;
     }
 
-    public function Get_Data_Mch($IDEPRD, $CODPRO, $valor, $user_id){
+    public function Get_Data_Mch($IDEPRD, $CODPRO, $country, $valor, $user_id){
     	$data_mch = array(
 			'idProd' => $IDEPRD,
-			'country' => '*',
+			'country' => $country,
 			'numPro' => $CODPRO,
 			'valPro' => strip_tags($valor),
 			'user_id' => $user_id
@@ -134,10 +120,12 @@ class MCH{
     }
 
     public function Calc_Stock_MCH($CI){
+    	$user_id = $CI->session->userdata['id'];
     	$pourcent = $CI->db_op->Get_Default_Value($CI, 'p_stock');
 		$CI->db->select('valPro');
 		$CI->db->from('data_mch');
 		$CI->db->where('numPro = "codeRegroupement"');
+		$CI->db->where('user_id', $user_id);
 		$query = $CI->db->get();
 
 		if ($query->num_rows() > 0){
@@ -160,9 +148,12 @@ class MCH{
 		$query = $CI->db_op->Get_Regroupement($CI, $valPro);
 
 		if ($query->num_rows() > 0){
+			$ligne = $query->result();
+			$ligne = $ligne[0];
 			$CI->db->select('supplierPrice, stockValue');
 			$CI->db->from('products');
 			$CI->db->where('codeRegroupement', $ligne->codeRegroupement);
+			$CI->db->where('user_id', $user_id);
 			$query = $CI->db->get();
 
 			foreach ($query->result() as $prod)
