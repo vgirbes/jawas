@@ -8,6 +8,8 @@ class MCH{
         $CI->load->helper('array');
         $CI->load->library('session');
         $CI->load->library('Mch_Struct');
+        $CI->load->library('Regroupement_Struct');
+        $CI->load->library('DB_op');
     }
 
     function Procesar_Items(){
@@ -63,7 +65,8 @@ class MCH{
 			}
 
 			$CI->mch_struct->Insert_Data($CI, 'data_mch', 'si');
-			return true;
+			$res = $this->Calc_Stock_MCH($CI);
+			return $res;
 		}else{
 			return false;
 		}
@@ -128,5 +131,61 @@ class MCH{
 		);
 
 		return $data_mch;
+    }
+
+    public function Calc_Stock_MCH($CI){
+    	$pourcent = $CI->db_op->Get_Default_Value($CI, 'p_stock');
+		$CI->db->select('valPro');
+		$CI->db->from('data_mch');
+		$CI->db->where('numPro = "codeRegroupement"');
+		$query = $CI->db->get();
+
+		if ($query->num_rows() > 0){
+			foreach ($query->result() as $ligne)
+			{
+				 $this->Calc($pourcent, $ligne->valPro, $CI);
+			}
+			$CI->db->update_batch('regroupement', $CI->regroupement_struct->datos_regroupement, 'codeRegroupement');
+			return true;
+		}else
+    		return false;
+    }
+
+    public function Calc($pourcent, $valPro, $CI){
+		$result_stock = 0;
+		$result = 0;
+		$item = 0;
+		$user_id = $CI->session->userdata['id'];
+
+		$query = $CI->db_op->Get_Regroupement($CI, $valPro);
+
+		if ($query->num_rows() > 0){
+			$CI->db->select('supplierPrice, stockValue');
+			$CI->db->from('products');
+			$CI->db->where('codeRegroupement', $ligne->codeRegroupement);
+			$query = $CI->db->get();
+
+			foreach ($query->result() as $prod)
+			{
+				$result = $ligne->priceMin + ($ligne->priceMin * $pourcent / 100);
+				if ($prod->supplierPrice <= $result)
+				{
+					$result_stock = $result_stock + $prod->stockValue;
+				}
+
+			}
+
+			$regroupement = array(
+				'stockValue' => $result_stock,
+				'priceMinPlusP' => $result,
+				'codeRegroupement' => $ligne->codeRegroupement
+			);
+			$CI->regroupement_struct->Load_Data($regroupement, $item);
+			$item++;
+			return true;
+		}else{
+			return false;
+		}
+		
     }
 }

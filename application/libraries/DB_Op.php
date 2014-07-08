@@ -70,4 +70,28 @@ class DB_op{
         $query = $CI->db->get();
         return $query;
     }
+
+    public function Get_Default_Value($CI, $field){
+        $CI->db->select('*');
+        $CI->db->from('info_defaut');
+        $CI->db->where('nom_champ = "'.$field.'"');
+        $query = $CI->db->get();
+
+        if ($query->num_rows > 0){
+            $def = $query->result();
+            $def = $def[0];
+            $val = $def->val;
+        }else
+            $val = 0;
+
+        return $val;
+    }
+
+    public function Get_Regroupement($CI, $codeRegroupement){
+        $CI->db->select('*');
+        $CI->db->from('regroupement');
+        $CI->db->where('codeRegroupement', "$codeRegroupement");
+
+        return $CI->db->get();
+    }
 }

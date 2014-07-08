@@ -22,10 +22,6 @@ class Ficheros extends CI_Model{
         }
     }
 
-    public function process_mch(){
-
-    }
-
     public function process_competitors(){
 
     }
