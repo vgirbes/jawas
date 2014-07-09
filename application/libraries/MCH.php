@@ -55,11 +55,11 @@ class MCH{
 				if ($query->num_rows()>0)
 				{
 					$ligne = $ligne[0];
-					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], $row['CODPRO'], $row['country'], $row['VALPRO'], $user_id);
+					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], $row['CODPRO'], '*', $row['VALPRO'], $user_id);
 					$CI->mch_struct->Load_Data($data_mch, $item);
 					$item++;
 
-					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], 'codeRegroupement', $row['country'], $ligne->codeRegroupement, $user_id);
+					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], 'codeRegroupement', '*', $ligne->codeRegroupement, $user_id);
 					$CI->mch_struct->Load_Data($data_mch, $item);
 					$item++;
 				}

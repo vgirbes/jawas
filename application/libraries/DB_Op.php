@@ -7,6 +7,7 @@ class DB_op{
     var $datos_provider = array();
     var $datos_userprovider = array();
     var $datos_mch = array();
+    var $datos_lastdayacti = array();
 
 	function __construct(){
 		$CI =& get_instance();
@@ -48,6 +49,10 @@ class DB_op{
 
             case 'data_mch':
                 $data = $this->datos_mch;
+            break;
+
+            case 'lastdayacti':
+                $data = $this->datos_lastdayacti;
             break;
         }
 
@@ -93,5 +98,20 @@ class DB_op{
         $CI->db->where('codeRegroupement', "$codeRegroupement");
 
         return $CI->db->get();
+    }
+
+    public function Connect_MCH(){
+        $ServerName = HOST_MCH;
+        $ConnectionOptions  = array("Database" => DB_MCH, "UID"=> USER_MCH, "PWD"=> PASS_MCH);
+
+        $Conn = sqlsrv_connect($ServerName , $ConnectionOptions);
+
+        if($Conn) 
+        {
+            return $Conn;
+        }else{
+            return false;
+            die( print_r( sqlsrv_errors(), true));
+        }
     }
 }

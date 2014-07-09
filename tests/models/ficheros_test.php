@@ -49,4 +49,9 @@ class FicherosTest extends CIUnit_TestCase
 		$this->assertArrayHasKey('filename', $result[0]);
 	}
 
+	public function testgenerate_files(){
+		$result = $this->CI->ficheros->generate_files();
+		$this->assertTrue($result);
+	}
+
 }

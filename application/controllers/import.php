@@ -60,6 +60,22 @@ class Import extends CI_Controller{
         }
     }
 
+    public function generate(){
+        if(isset($this->session->userdata['username'])){
+            $user_id = $this->session->userdata['id'];
+            $result = $this->ficheros->generate_files();
+            if ($result){
+                $datos['import_state'] = $this->ficheros->import_state($user_id);
+                $this->load->view('principal', $datos);
+            }else{
+                $datos['errores'] = 'Error: No se han podido generar los ficheros.';
+                $this->load->view('principal', $datos);
+            }   
+        }else{
+            $this->load->view('principal');
+        }
+    }
+
     public function view(){
         if(isset($this->session->userdata['username'])){
             $user_id = $this->session->userdata['id']; 

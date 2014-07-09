@@ -8,6 +8,7 @@ class Ficheros extends CI_Model{
         $this->load->library('Comdep');
         $this->load->library('Atyse');
         $this->load->library('MCH');
+        $this->load->library('Generate_Files');
         $this->load->database();
     }
        
@@ -20,6 +21,11 @@ class Ficheros extends CI_Model{
             if ($res) $this->update_state($user_id, strtoupper($provider), $this->adapter->filename);
             return $res;
         }
+    }
+
+    public function generate_files(){
+        $result = $this->generate_files->do_it();
+        return $res;
     }
 
     public function process_competitors(){
