@@ -6,6 +6,9 @@
 	<?php if (isset($import_state)){ 
 	$this->load->view('import_msg.php', $import_state);	
 	} ?>
+	<?php if (isset($lista_ficheros)){ 
+	$this->load->view('list_msg.php', $lista_ficheros);	
+	} ?>
 	<?php if (isset($errores)){ ?>
 	<div id="error">
 		<?= $errores;?>

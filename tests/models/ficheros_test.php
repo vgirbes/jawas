@@ -49,8 +49,18 @@ class FicherosTest extends CIUnit_TestCase
 		$this->assertArrayHasKey('filename', $result[0]);
 	}
 
-	public function testgenerate_files(){
+/*	public function testgenerate_files(){
 		$result = $this->CI->ficheros->generate_files();
+		$this->assertTrue($result);
+	}*/
+
+	public function testshow_files(){
+		$result = $this->CI->ficheros->show_files();
+		$this->assertInternalType('array', $result);
+	}
+
+	public function testfile_exist(){
+		$result = $this->CI->ficheros->file_exist('vgirbes_test_alert.csv', 'vgirbes', 'assets/files/');
 		$this->assertTrue($result);
 	}
 

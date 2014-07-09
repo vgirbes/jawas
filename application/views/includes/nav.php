@@ -2,6 +2,7 @@
 			<ul id="menu-ul">
 				<li><a href="<?= base_url();?>import">Importar datos</a></li>
 				<li><a href="<?= base_url();?>providers/view">Proveedores</a></li>
+				<li><a href="<?= base_url();?>files">Ficheros</a></li>
 				<li><a href="<?= base_url();?>users/logout" title="Cerrar sesión">Cerrar sesión</a></li>
 			</ul>
 		</nav>

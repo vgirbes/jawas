@@ -18,7 +18,7 @@ class Generate_Files{
         $Conn = $CI->db_op->Connect_MCH();
 
         $nom_csv = $user_name."_validationProduit_csv_" . date('YmdHis');
-        $nom_xls = "validationProduit_xls_" . date('YmdHis');
+        $nom_xls = $user_name."_validationProduit_xls_" . date('YmdHis');
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0); 
         $objPHPExcel->getActiveSheet()->setTitle('Feuille de test'); 
@@ -280,7 +280,7 @@ class Generate_Files{
                 $query_reg = $this->Get_Products_Provider($CI, $user_id, $ligne);
 
                 if (!$query_reg){
-                    while ($query_reg->result() as $ligne2)
+                    foreach ($query_reg->result() as $ligne2)
                     {
                         if ($ligne2->supplierPrice == $ligne->priceMin)
                             $line = $ligne2->supplierKey . ";" . str_replace(' ', '_', $ligne2->nom) . ";" . $ligne2->stockValueB . ";" . $ligne2->stockValue . ";;" . $ligne2->supplierPriceB . ";" . str_replace('.', ',', $ligne2->supplierPrice) . ";" . ($ligne2->supplierPrice * 1.196) . ";" . (($ligne2->supplierPrice + 0) * (1 + (8 / 100))) * (1 + (19.6 / 100));

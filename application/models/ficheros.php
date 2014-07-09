@@ -28,6 +28,43 @@ class Ficheros extends CI_Model{
         return $res;
     }
 
+    public function show_files(){
+        $dir = 'assets/files/';
+        $user_name = $this->session->userdata['username'];
+        $files = array();
+        $item = 0;
+        if (is_dir($dir))
+        {
+            $d=opendir($dir); 
+            while( $archivo = readdir($d) )
+            {
+                if ( $archivo!="." AND $archivo!=".."  )
+                {
+                    $found = $this->file_exist($archivo, $user_name, $dir);
+                    if ($found){
+                        $f_archivo = filemtime($dir.$archivo);
+                        $files[$item]['file'] = base_url().$dir.$archivo;
+                        $files[$item]['file_name'] = $archivo;
+                        $files[$item]['date'] = date('Y-m-d H:i:s', $f_archivo);
+                        $item++;
+                    }     
+                }
+            }
+
+            return $files;
+
+        }else
+            return false; 
+    }
+
+    public function file_exist($archivo, $user_name, $dir){
+        if (preg_match('/'.$user_name.'_validationProduit/i', $archivo) || preg_match('/'.$user_name.'_test_alert/i', $archivo)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public function process_competitors(){
 
     }

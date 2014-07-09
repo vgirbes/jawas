@@ -5,7 +5,7 @@
 		<?php foreach ($import_state as $row){
 			echo 'Fecha de importación:<br/> '.$row['fecha'].'<br/><br/>';
 			echo 'Estado:<br/> Importación de '.$row['flag'].'<br/><br/>';
-			echo 'Archivo importado:<br/> '.$row['filename'];
+			echo 'Archivo importado:<br/> '.($row['filename'] == '' ? 'No hay información' : $row['filename']);
 		} ?>
 		<br/><br/>
 		<a class="boton" href="<?= base_url();?>import/view">Ver datos</a>
