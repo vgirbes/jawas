@@ -65,7 +65,8 @@ class Import extends CI_Controller{
             $user_id = $this->session->userdata['id'];
             $result = $this->ficheros->generate_files();
             if ($result){
-                $datos['import_state'] = $this->ficheros->import_state($user_id);
+                $datos['lista_ficheros'] = $this->ficheros->show_files();
+                if (!$datos['lista_ficheros']) $datos['error'] = 'No hay ficheros para mostrar.';
                 $this->load->view('principal', $datos);
             }else{
                 $datos['errores'] = 'Error: No se han podido generar los ficheros.';

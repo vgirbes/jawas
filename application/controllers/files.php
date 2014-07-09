@@ -13,7 +13,7 @@ class Files extends CI_Controller {
 	{
 		if(isset($this->session->userdata['username'])){
 			$datos['lista_ficheros'] = $this->ficheros->show_files();
-			if (!$datos) $datos['error'] = 'No hay ficheros para mostrar.';
+			if (!$datos['lista_ficheros']) $datos['error'] = 'No hay ficheros para mostrar.';
 			$this->load->view('principal', $datos);
 		}else{
 			$this->load->view('principal');
