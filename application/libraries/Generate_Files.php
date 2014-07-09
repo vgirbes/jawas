@@ -88,7 +88,13 @@ class Generate_Files{
         @fclose($f);
         $CI->lastdayacti_struct->Insert_Data($CI, 'lastdayacti', 'si');
         $xls = $this->Generate_Validation_XLSX($name_file_csv, $objPHPExcel, $user_name, $nom_xls);
-        return $xls;
+        $csv = $this->Generate_Alert($CI);
+
+        if ($xls && $csv){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function Generate_Validation_XLSX($name_file_csv, $objPHPExcel, $user_name, $nom_xls){
@@ -251,5 +257,75 @@ class Generate_Files{
         return $reg;
     }
 
+    public function Generate_Alert($CI, $user_id){
+        $user_name = $CI->session->userdata['username'];
+        $f = @fopen("assets/files/".$user_name."_test_alert.csv", 'w+');
 
+        $line = "modele;";
+        @fputcsv($f, explode(',', $line));
+        $line = "codeRegroupement;référenceArticle;;stockValue;;priceMinPlusP;PrixMin;PrixRecalcul;prixVente;statut;reason";
+        @fputcsv($f, explode(',', $line));
+        $line = "CodeFournisseur;nom;StockValue;StockValueRec;;Price;PriceRec";
+        @fputcsv($f, explode(',', $line));
+        $line = ";";
+        @fputcsv($f, explode(',', $line));
+
+        $query = $this->Get_Data_To_Alert($CI, $user_id);
+
+        if (!$query){
+            foreach ($query->result() as $ligne)
+            {
+                $line = $ligne->codeRegroupement . ";" . $ligne->idProd . ";;" . $ligne->stockValue . ";;" . $ligne->priceMinPlusP . ";" . $ligne->priceMin . ";" . $ligne->priceRec . ";" . $ligne->price_wrk . ";" . $ligne->statut . ";" . $ligne->reason;
+                @fputcsv($f, explode(',', $line));
+                $query_reg = $this->Get_Products_Provider($CI, $user_id, $ligne);
+
+                if (!$query_reg){
+                    while ($query_reg->result() as $ligne2)
+                    {
+                        if ($ligne2->supplierPrice == $ligne->priceMin)
+                            $line = $ligne2->supplierKey . ";" . str_replace(' ', '_', $ligne2->nom) . ";" . $ligne2->stockValueB . ";" . $ligne2->stockValue . ";;" . $ligne2->supplierPriceB . ";" . str_replace('.', ',', $ligne2->supplierPrice) . ";" . ($ligne2->supplierPrice * 1.196) . ";" . (($ligne2->supplierPrice + 0) * (1 + (8 / 100))) * (1 + (19.6 / 100));
+                        else
+                            $line = $ligne2->supplierKey . ";" . str_replace(' ', '_', $ligne2->nom) . ";" . $ligne2->stockValueB . ";" . $ligne2->stockValue . ";;" . $ligne2->supplierPriceB . ";" . str_replace('.', ',', $ligne2->supplierPrice);
+                            @fputcsv($f, explode(',', $line));
+                    }
+                }
+                $line = ";;;;";
+                @fputcsv($f, explode(',', $line));
+            }
+        }
+        @fclose($f);
+
+        return true;
+    }
+
+    public function Get_Data_To_Alert($CI, $user_id){
+        $CI->db->distinct('r.codeRegroupement, r.stockValue, r.priceMin, l.priceRec, l.idProd, l.price_wrk, l.statut, l.reason, r.priceMinPlusP');
+        $CI->db->from('regroupement r, lastdayacti l');
+        $CI->db->where('r.codeRegroupement = l.codeRegroupement');
+        $CI->db->where('l.user_id', $user_id);
+        $CI->db->where('r.user_id', $user_id);
+        $CI->db->order_by('r.codeRegroupement', 'asc');
+        $query = $CI->db->get();
+
+        if ($query->num_rows > 0){
+            return $query;
+        }else{
+            return false;
+        }
+    }
+
+    public function Get_Products_Provider($CI, $user_id, $ligne){
+        $CI->db->select('p.supplierKey, pv.nom, p.supplierPrice, p.supplierPriceB, p.stockValue, p.stockValueB');
+        $CI->db->from('products p, providers pv');
+        $CI->db->where('p.supplierKey = pv.SupplierKey');
+        $CI->db->where('p.codeRegroupement', $ligne->codeRegroupement);
+        $CI->db->where('p.user_id', $user_id);
+        $query = $CI->db->get();
+
+        if ($query->num_rows > 0){
+            return $query;
+        }else{
+            return false;
+        }
+    }
 }
