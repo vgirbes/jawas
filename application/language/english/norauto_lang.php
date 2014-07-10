@@ -19,6 +19,11 @@ $lang['import.files_error'] = "There aren't files to display.";
 $lang['import.generate_error'] = "Error: No files have been generated.";
 $lang['users.login_error'] = "Unable to log in.";
 $lang['files.error'] = "There aren't files to display.";
+$lang['admin.paises'] = "Countries";
+$lang['admin.lista_proveedores'] = "Providers list";
+$lang['admin.usuarios'] = "Users";
+$lang['admin.proveedores'] = "Providers";
+$lang['admin.defaut'] = "Global variables";
 
 
 $lang['import_msg.text'] = "There is a previous database import. <br/> A summary is shown";
@@ -34,3 +39,4 @@ $lang['list_msg.descargar'] = "Download";
 $lang['login.text'] = "Enter your username and password";
 $lang['login.usuario'] = "User";
 $lang['login.password'] = "Password";
+$lang['list_admin.text'] = "Here you can manage the application data.";

@@ -14,15 +14,15 @@ class Administration extends CI_Controller{
     	if ($this->session->userdata['rol']==1){
     		$datos['admin'] = true;
     		$url = base_url().$this->session->userdata['lang'].'/';
-    		$datos['list_admin'][0]['name'] = 'Países';
+    		$datos['list_admin'][0]['name'] = lang('admin.paises');
     		$datos['list_admin'][0]['url'] = $url.'administration/countries';
-    		$datos['list_admin'][1]['name'] = 'Lista proveedores';
+    		$datos['list_admin'][1]['name'] = lang('admin.lista_proveedores');
     		$datos['list_admin'][1]['url'] = $url.'administration/list_providers';
-    		$datos['list_admin'][2]['name'] = 'Usuarios';
+    		$datos['list_admin'][2]['name'] = lang('admin.usuarios');
     		$datos['list_admin'][2]['url'] = $url.'administration/users';
-    		$datos['list_admin'][3]['name'] = 'Proveedores';
+    		$datos['list_admin'][3]['name'] = lang('admin.proveedores');
     		$datos['list_admin'][3]['url'] = $url.'administration/providers';
-    		$datos['list_admin'][4]['name'] = 'Variables globales';
+    		$datos['list_admin'][4]['name'] = lang('admin.defaut');
     		$datos['list_admin'][4]['url'] = $url.'administration/defaut';
     		$this->load->view('principal', $datos);
     	}else{

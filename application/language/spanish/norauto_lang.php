@@ -20,10 +20,10 @@ $lang['import.generate_error'] = "Error: No se han podido generar los ficheros."
 $lang['users.login_error'] = "No ha sido posible iniciar sesión";
 $lang['files.error'] = "No hay ficheros para mostrar.";
 $lang['admin.paises'] = "Países";
-$lang['admin.lista_proveedores'] =
-$lang['admin.usuarios'] =
-$lang['admin.proveedores'] =
-$lang['admin.defaut'] = 
+$lang['admin.lista_proveedores'] = "Lista proveedores";
+$lang['admin.usuarios'] = "Usuarios";
+$lang['admin.proveedores'] = "Proveedores";
+$lang['admin.defaut'] = "Variables globales";
 
 
 $lang['import_msg.text'] = "Existe una importación previa en la base de datos.<br/>A continuación se muestra un resumen";
@@ -39,4 +39,4 @@ $lang['list_msg.descargar'] = "Descargar";
 $lang['login.text'] = "Introduzca su usuario y contraseña";
 $lang['login.usuario'] = "Usuario";
 $lang['login.password'] = "Contraseña";
-$lang['edit_admin.text'] =
+$lang['list_admin.text'] = "Desde aquí podrá administrar los datos de la aplicación.";
