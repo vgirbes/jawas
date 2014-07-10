@@ -1,5 +1,5 @@
 	<footer>
-		Desarrollado por <span class="norauto">Norauto</span> España
+		<?= lang('footer');?> <span class="norauto">Norauto</span>
 	</footer>
 </body>
 </html>

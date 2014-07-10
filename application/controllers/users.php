@@ -8,6 +8,8 @@ class Users extends CI_Controller{
             $this->load->library('form_validation');
             $this->load->library('session');
             $this->load->library('encrypt');
+            $this->load->helper('language');
+            $this->lang->load('norauto');
         }
        
         public function login(){
@@ -17,10 +19,12 @@ class Users extends CI_Controller{
             $this->form_validation->run();
             $isValidLogin = $this->usuarios->getLogin($this->input->post('username'), md5($this->input->post('password'))); 
             if($isValidLogin){
+                $lng = $this->usuarios->getCountry($isValidLogin[0]['countries_id']);
                 $sesion_data = array(
                     'username' => $this->input->post('username'),
                     'password' => $this->input->post('password'),
-                     'id' => $isValidLogin[0]['id']
+                    'lang' => strtolower($lng),
+                    'id' => $isValidLogin[0]['id']
                 );
                 $this->session->set_userdata($sesion_data);
                 $data['username'] = $this->session->userdata['username'];
@@ -28,7 +32,7 @@ class Users extends CI_Controller{
                             
                 $data['error'] = '';
             }else{
-                $data['error'] = 'No ha sido posible iniciar sesión';;
+                $data['error'] = lang('users.login_error');
             }
 
             $this->load->view('principal', $data);

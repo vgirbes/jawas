@@ -1,12 +1,11 @@
 	<div id="msg-import">
-		<div class="info-title">Información</div>
-		<br/>Existe una importación previa en la base de datos.<br/>
-		A continuación se muestra un resumen:<br/><br/>
+		<div class="info-title"><?= lang('global.informacion');?></div>
+		<br/><?= lang('import_msg.text');?>:<br/><br/>
 		<?php foreach ($import_state as $row){
-			echo 'Fecha de importación:<br/> '.$row['fecha'].'<br/><br/>';
-			echo 'Estado:<br/> Importación de '.$row['flag'].'<br/><br/>';
-			echo 'Archivo importado:<br/> '.($row['filename'] == '' ? 'No hay información' : $row['filename']);
+			echo lang('import_msg.f_importacion').':<br/> '.$row['fecha'].'<br/><br/>';
+			echo lang('import_msg.estado').':<br/> '.lang('import_msg.importacion').' '.$row['flag'].'<br/><br/>';
+			echo lang('import_msg.archivo_importado').':<br/> '.($row['filename'] == '' ? lang('import_msg.no_informacion') : $row['filename']);
 		} ?>
 		<br/><br/>
-		<a class="boton" href="<?= base_url();?>import/view">Ver datos</a>
+		<a class="boton" href="<?= base_url();?>import/view"><?= lang('import_msg.ver_datos');?></a>
 	</div>

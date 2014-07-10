@@ -7,6 +7,8 @@ class Providers extends CI_Controller{
         $this->load->database();
         $this->load->helper('url');
         $this->load->library('grocery_CRUD');
+        $this->load->helper('language');
+        $this->lang->load('norauto');
     }
 
     public function __output($output = null){

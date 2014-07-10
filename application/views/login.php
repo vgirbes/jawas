@@ -1,16 +1,16 @@
 	<section id="login-user">
 		<div class="login-box">
-			<?php echo form_open('users/login');?>
+			<?php echo form_open('es/users/login');?>
 			<ul>
 				<li>
-					Introduzca su usuario y contraseña
+					<?= lang('login.text');?>
 				</li>
 				<li>
-					<label for="username">Usuario</label>
+					<label for="username"><?= lang('login.usuario');?></label>
 					<input type="text" name="username" class="input" placeholder="usuario" value=""/>
 				</li>
 				<li>
-					<label for="password">Contraseña</label>
+					<label for="password"><?= lang('login.password');?></label>
 					<input type="password" name="password" class="input" placeholder="contraseña" value=""/>
 				</li>
 				<li>

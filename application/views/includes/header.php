@@ -6,6 +6,7 @@
 		<link rel="stylesheet" type="text/css" href="<?php echo asset_url();?>css/style.css">
 		<link type="text/css" rel="stylesheet" href="<?php echo asset_url();?>grocery_crud/themes/twitter-bootstrap/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="<?php echo asset_url();?>css/elem.css">
+		<link href="<?php echo asset_url();?>img/favicon.ico" rel="shortcut icon" type="image/x-icon">
 		<script src="//code.jquery.com/jquery-1.10.2.js"></script>
   		<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   		<script>

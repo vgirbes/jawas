@@ -25,4 +25,9 @@ class UsuariosTest extends CIUnit_TestCase
 		$this->assertArrayHasKey('username', $result[0]);
 	}
 
+	public function testgetCountry(){
+		$result = $this->CI->usuarios->getCountry(1);
+		$this->assertInternalType('string', $result);
+	}	
+
 }

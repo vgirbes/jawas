@@ -6,6 +6,8 @@ class Import extends CI_Controller{
 		$this->load->library('session');
         $this->load->helper('url');
         $this->load->library('grocery_CRUD');
+        $this->load->helper('language');
+        $this->lang->load('norauto');
     }
 
     public function __output($output = null){
@@ -20,7 +22,7 @@ class Import extends CI_Controller{
                 $datos['import_state'] = $this->ficheros->import_state($user_id);
                 $this->load->view('principal', $datos);
             }else{
-                $datos['errores'] = 'Error: No se ha podido cargar el fichero de Comdep.';
+                $datos['errores'] = lang('import.comdep_error');
                 $this->load->view('principal', $datos);
             }   
         }else{
@@ -36,7 +38,7 @@ class Import extends CI_Controller{
                 $datos['import_state'] = $this->ficheros->import_state($user_id);
                 $this->load->view('principal', $datos);
             }else{
-                $datos['errores'] = 'Error: No se ha podido cargar el fichero de Atyse.';
+                $datos['errores'] = lang('import.atyse_error');
                 $this->load->view('principal', $datos);
             }   
         }else{
@@ -52,7 +54,7 @@ class Import extends CI_Controller{
                 $datos['import_state'] = $this->ficheros->import_state($user_id);
                 $this->load->view('principal', $datos);
             }else{
-                $datos['errores'] = 'Error: No se ha podido cargar MCH.';
+                $datos['errores'] = lang('import.mch_error');
                 $this->load->view('principal', $datos);
             }   
         }else{
@@ -66,10 +68,10 @@ class Import extends CI_Controller{
             $result = $this->ficheros->generate_files();
             if ($result){
                 $datos['lista_ficheros'] = $this->ficheros->show_files();
-                if (!$datos['lista_ficheros']) $datos['error'] = 'No hay ficheros para mostrar.';
+                if (!$datos['lista_ficheros']) $datos['error'] = lang('import.files_error');
                 $this->load->view('principal', $datos);
             }else{
-                $datos['errores'] = 'Error: No se han podido generar los ficheros.';
+                $datos['errores'] = lang('import.generate_error');
                 $this->load->view('principal', $datos);
             }   
         }else{
