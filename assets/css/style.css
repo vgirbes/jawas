@@ -159,6 +159,18 @@ ul,ol{
 	box-shadow: 10px 10px 5px #888;
 }
 
+.admin-link{
+	background-color:#ffff00;
+	color:#050087;
+	border-radius:2px;
+	box-shadow:3px 3px 5px #888;
+	padding:1px;
+}
+
+#menu ul .admin-link .admin-anchor{
+	color:#050087;
+}
+
 footer{
 	position:fixed;
 	bottom:0;

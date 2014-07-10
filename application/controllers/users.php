@@ -24,6 +24,7 @@ class Users extends CI_Controller{
                     'username' => $this->input->post('username'),
                     'password' => $this->input->post('password'),
                     'lang' => strtolower($lng),
+                    'rol' => $isValidLogin[0]['rol'],
                     'id' => $isValidLogin[0]['id']
                 );
                 $this->session->set_userdata($sesion_data);
