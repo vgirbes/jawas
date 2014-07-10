@@ -4,7 +4,7 @@
 				<li><a href="<?= base_url();?><?= $this->session->userdata['lang'];?>/providers/view"><?= lang('menu.proveedores');?></a></li>
 				<li><a href="<?= base_url();?><?= $this->session->userdata['lang'];?>/files"><?= lang('menu.ficheros');?></a></li>
 				<?php if ($this->session->userdata['rol'] == 1){ ?>
-				<li class="admin-link"><a class="admin-anchor" href="<?= base_url();?><?= $this->session->userdata['lang'];?>/administration">Administración</a></li>
+				<li class="admin-link"><a class="admin-anchor" href="<?= base_url();?><?= $this->session->userdata['lang'];?>/administration"><?= lang('menu.admin');?></a></li>
 				<?php } ?>
 				<li><a href="<?= base_url();?><?= $this->session->userdata['lang'];?>/users/logout" title="<?= lang('menu.logout');?>"><?= lang('menu.logout');?></a></li>
 			</ul>

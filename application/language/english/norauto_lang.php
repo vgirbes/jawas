@@ -5,6 +5,7 @@ $lang['menu.importar_datos'] = "Data import";
 $lang['menu.proveedores'] = "Providers";
 $lang['menu.ficheros'] = "Files";
 $lang['menu.logout'] = "Logout";
+$lang['menu.admin'] = "Administration";
 $lang['submenu.comdep'] = "Import data from Comdep";
 $lang['submenu.atyse'] = "Import data from Atyse";
 $lang['submenu.mch'] = "Import data from MCH";
