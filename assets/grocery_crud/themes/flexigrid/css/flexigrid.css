@@ -110,6 +110,7 @@ table th
 	overflow:hidden;
 	white-space:nowrap;
 	position:relative;
+	margin-top:30px;
 }
 .flexigrid div.mDiv div {
 	padding:6px;

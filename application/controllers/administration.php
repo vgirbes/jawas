@@ -38,7 +38,7 @@ class Administration extends CI_Controller{
     public function countries(){
     	if ($this->session->userdata['rol']==1){
     		$crud = new grocery_CRUD();
-	        $crud->set_theme('twitter-bootstrap');
+	        $crud->set_theme('flexigrid');
 	        $crud->set_table('countries');
 	        $crud->set_subject('Countries');
 	     
@@ -52,7 +52,7 @@ class Administration extends CI_Controller{
     public function list_providers(){
     	if ($this->session->userdata['rol']==1){
     		$crud = new grocery_CRUD();
-	        $crud->set_theme('twitter-bootstrap');
+	        $crud->set_theme('flexigrid');
 	        $crud->set_table('files_providers');
 	        $crud->set_subject('Files providers');
 	     
@@ -66,7 +66,7 @@ class Administration extends CI_Controller{
     public function users(){
     	if ($this->session->userdata['rol']==1){
     		$crud = new grocery_CRUD();
-	        $crud->set_theme('twitter-bootstrap');
+	        $crud->set_theme('flexigrid');
 	        $crud->set_table('users');
 	        $crud->set_subject('Users');
 	     
@@ -80,7 +80,7 @@ class Administration extends CI_Controller{
     public function providers(){
     	if ($this->session->userdata['rol']==1){
     		$crud = new grocery_CRUD();
-	        $crud->set_theme('twitter-bootstrap');
+	        $crud->set_theme('flexigrid');
 	        $crud->set_table('providers');
 	        $crud->set_subject('Providers');
 	     
@@ -94,7 +94,7 @@ class Administration extends CI_Controller{
     public function defaut(){
     	if ($this->session->userdata['rol']==1){
     		$crud = new grocery_CRUD();
-	        $crud->set_theme('twitter-bootstrap');
+	        $crud->set_theme('flexigrid');
 	        $crud->set_table('info_defaut');
 	        $crud->set_subject('Global variables');
 	     

@@ -7,5 +7,5 @@
 			echo lang('import_msg.archivo_importado').':<br/> '.($row['filename'] == '' ? lang('import_msg.no_informacion') : $row['filename']);
 		} ?>
 		<br/><br/>
-		<a class="boton" href="<?= base_url();?>import/view"><?= lang('import_msg.ver_datos');?></a>
+		<a class="boton" href="<?= base_url();?><?= $this->session->userdata['lang'];?>/import/view"><?= lang('import_msg.ver_datos');?></a>
 	</div>

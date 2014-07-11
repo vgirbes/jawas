@@ -40,4 +40,5 @@ $lang['list_msg.descargar'] = "Download";
 $lang['login.text'] = "Enter your username and password";
 $lang['login.usuario'] = "User";
 $lang['login.password'] = "Password";
+$lang['login.enter'] = "Enter";
 $lang['list_admin.text'] = "Here you can manage the application data.";
