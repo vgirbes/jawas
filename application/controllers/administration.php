@@ -11,19 +11,20 @@ class Administration extends CI_Controller{
     }
 
     public function index(){
-    	if ($this->session->userdata['rol']==1){
+        $rol = $this->rol_ok();
+    	if ($rol){
     		$datos['admin'] = true;
     		$url = base_url().$this->session->userdata['lang'].'/';
     		$datos['list_admin'][0]['name'] = lang('admin.paises');
-    		$datos['list_admin'][0]['url'] = $url.'administration/countries';
+    		$datos['list_admin'][0]['url'] = $url.'administration/load/countries';
     		$datos['list_admin'][1]['name'] = lang('admin.lista_proveedores');
-    		$datos['list_admin'][1]['url'] = $url.'administration/list_providers';
+    		$datos['list_admin'][1]['url'] = $url.'administration/load/list_providers';
     		$datos['list_admin'][2]['name'] = lang('admin.usuarios');
-    		$datos['list_admin'][2]['url'] = $url.'administration/users';
+    		$datos['list_admin'][2]['url'] = $url.'administration/load/users';
     		$datos['list_admin'][3]['name'] = lang('admin.proveedores');
-    		$datos['list_admin'][3]['url'] = $url.'administration/providers';
+    		$datos['list_admin'][3]['url'] = $url.'administration/load/providers';
     		$datos['list_admin'][4]['name'] = lang('admin.defaut');
-    		$datos['list_admin'][4]['url'] = $url.'administration/defaut';
+    		$datos['list_admin'][4]['url'] = $url.'administration/load/defaut';
     		$this->load->view('principal', $datos);
     	}else{
     		$this->load->view('principal');
@@ -35,73 +36,46 @@ class Administration extends CI_Controller{
         $this->load->view('edit_admin.php', $output);
     }
 
-    public function countries(){
-    	if ($this->session->userdata['rol']==1){
-    		$crud = new grocery_CRUD();
-	        $crud->set_theme('flexigrid');
-	        $crud->set_table('countries');
-	        $crud->set_subject('Countries');
-	     
-	        $output = $crud->render();
-	        $this->__output($output);
-    	}else{
-    		$this->load->view('principal');
-    	}
+    public function rol_ok(){
+        if (isset($this->session->userdata['rol'])&&($this->session->userdata['rol']==1)){
+            return true;
+        }else{
+            return false;
+        }
     }
 
-    public function list_providers(){
-    	if ($this->session->userdata['rol']==1){
-    		$crud = new grocery_CRUD();
-	        $crud->set_theme('flexigrid');
-	        $crud->set_table('files_providers');
-	        $crud->set_subject('Files providers');
-	     
-	        $output = $crud->render();
-	        $this->__output($output);
-    	}else{
-    		$this->load->view('principal');
-    	}
+    public function load(){
+        $select = $this->uri->segment(4);
+        $rol = $this->rol_ok();
+        if ($select!=''){
+            if ($rol){
+                $table = $this->select_table($select);
+                $crud = new grocery_CRUD();
+                $crud->set_theme('flexigrid');
+                $crud->set_table($table);
+             
+                $output = $crud->render();
+                $this->__output($output);
+            }else{
+                $this->load->view('principal');
+            }
+        }else{
+            $this->load->view('principal');
+        }
     }
 
-    public function users(){
-    	if ($this->session->userdata['rol']==1){
-    		$crud = new grocery_CRUD();
-	        $crud->set_theme('flexigrid');
-	        $crud->set_table('users');
-	        $crud->set_subject('Users');
-	     
-	        $output = $crud->render();
-	        $this->__output($output);
-    	}else{
-    		$this->load->view('principal');
-    	}
+    public function select_table($select){
+        $table = $select;
+        switch ($select){
+            case 'list_providers':
+                $table = 'files_providers';
+            break;
+            case 'defaut':
+                $table = 'info_defaut';
+            break;
+        }
+
+        return $table;
     }
 
-    public function providers(){
-    	if ($this->session->userdata['rol']==1){
-    		$crud = new grocery_CRUD();
-	        $crud->set_theme('flexigrid');
-	        $crud->set_table('providers');
-	        $crud->set_subject('Providers');
-	     
-	        $output = $crud->render();
-	        $this->__output($output);
-    	}else{
-    		$this->load->view('principal');
-    	}
-    }
-
-    public function defaut(){
-    	if ($this->session->userdata['rol']==1){
-    		$crud = new grocery_CRUD();
-	        $crud->set_theme('flexigrid');
-	        $crud->set_table('info_defaut');
-	        $crud->set_subject('Global variables');
-	     
-	        $output = $crud->render();
-	        $this->__output($output);
-    	}else{
-    		$this->load->view('principal');
-    	}
-    }
 }
