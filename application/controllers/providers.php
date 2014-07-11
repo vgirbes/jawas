@@ -22,7 +22,7 @@ class Providers extends CI_Controller{
     public function view(){
         $user_id = $this->session->userdata['id'];
         $crud = new grocery_CRUD();
-        $crud->set_theme('twitter-bootstrap');
+        $crud->set_theme('flexigrid');
         $crud->set_table('users_providers');
         $crud->display_as('SupplierKey','Id');
         $crud->where('users_id', $user_id);

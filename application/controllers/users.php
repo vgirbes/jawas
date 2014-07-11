@@ -20,18 +20,19 @@ class Users extends CI_Controller{
             $isValidLogin = $this->usuarios->getLogin($this->input->post('username'), md5($this->input->post('password'))); 
             if($isValidLogin){
                 $lng = $this->usuarios->getCountry($isValidLogin[0]['countries_id']);
+                $lang = strtolower($lng);
                 $sesion_data = array(
                     'username' => $this->input->post('username'),
                     'password' => $this->input->post('password'),
-                    'lang' => strtolower($lng),
+                    'lang' => $lang,
                     'rol' => $isValidLogin[0]['rol'],
                     'id' => $isValidLogin[0]['id']
                 );
                 $this->session->set_userdata($sesion_data);
                 $data['username'] = $this->session->userdata['username'];
                 $data['password'] = $this->session->userdata['password'];
-                            
                 $data['error'] = '';
+                redirect($lang.'/inicio');
             }else{
                 $data['error'] = lang('users.login_error');
             }

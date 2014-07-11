@@ -83,7 +83,7 @@ class Import extends CI_Controller{
         if(isset($this->session->userdata['username'])){
             $user_id = $this->session->userdata['id']; 
             $crud = new grocery_CRUD();
-            $crud->set_theme('twitter-bootstrap');
+            $crud->set_theme('flexigrid');
             $crud->set_table('products');
             $crud->set_subject('Products');
             $crud->columns('codeRegroupement', 'name', 'description', 'supplierPrice', 'supplierPriceB', 'priceVar', 'stockValue', 'stockValueB', 'stockVar');
