@@ -43,10 +43,13 @@ class Ficheros extends CI_Model{
                     $found = $this->file_exist($archivo, $user_name, $dir);
                     if ($found){
                         $f_archivo = filemtime($dir.$archivo);
-                        $files[$item]['file'] = base_url().$dir.$archivo;
-                        $files[$item]['file_name'] = $archivo;
-                        $files[$item]['date'] = date('Y-m-d H:i:s', $f_archivo);
-                        $item++;
+                        $f_hoy = date('Ymd');
+                        if (date("Ymd", $f_archivo) == $f_hoy){
+                            $files[$item]['file'] = base_url().$dir.$archivo;
+                            $files[$item]['file_name'] = $archivo;
+                            $files[$item]['date'] = date('Y-m-d H:i:s', $f_archivo);
+                            $item++;
+                        }
                     }     
                 }
             }
