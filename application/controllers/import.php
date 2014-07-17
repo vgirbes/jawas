@@ -4,6 +4,8 @@ class Import extends CI_Controller{
 		parent:: __construct();
 		$this->load->model('ficheros');
 		$this->load->library('session');
+        $this->load->library('RequestProvider');
+        $this->load->library('DB_op');
         $this->load->helper('url');
         $this->load->library('grocery_CRUD');
         $this->load->helper('language');
@@ -44,6 +46,21 @@ class Import extends CI_Controller{
         }else{
             $this->load->view('principal');
         }
+    }
+
+    public function all(){
+        $sesion_data = array(
+                'username' => 'all',
+                'password' => '',
+                'lang' => 'es',
+                'rol' => 1,
+                'id' => 1
+        );
+        $this->session->set_userdata($sesion_data);
+        $CI =& get_instance();
+        $user_id = 1;
+        $archivo = $this->requestprovider->Request_Files('COMDEP', $CI);
+
     }
 
     public function mch(){

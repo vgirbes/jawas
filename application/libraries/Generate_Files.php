@@ -1,6 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Generate_Files{
     var $item = 0;
+    var $TMP_PRDNOEBU = array();
+    var $TMP_PRDGMABU_PRIX_OK = array();
+    var $TMP_PRDGMABU_MASQ_OK = array();
+    var $AIH_PRIARTWEB = array();
 
     function __construct(){
         $CI =& get_instance();
@@ -16,12 +20,8 @@ class Generate_Files{
         $user_id = $CI->session->userdata['id'];
         $user_name = $CI->session->userdata['username'];
         $Conn = $CI->db_op->Connect_MCH();
-
+        $Conn_wrk = $CI->db_op->Connect_WRK();
         $nom_csv = $user_name."_validationProduit_csv_" . date('YmdHis');
-        $nom_xls = $user_name."_validationProduit_xls_" . date('YmdHis');
-        $objPHPExcel = new PHPExcel();
-        $objPHPExcel->setActiveSheetIndex(0); 
-        $objPHPExcel->getActiveSheet()->setTitle('Feuille de test'); 
 
         $stock_mini = $CI->db_op->Get_Default_Value($CI, 'stock_mini');
         $marge_e = $CI->db_op->Get_Default_Value($CI, 'marge_e');
@@ -36,112 +36,78 @@ class Generate_Files{
         $i = 2;
         $false = 0;
         $count = 0;
-
+        $this->TMP_PRDNOEBU = $this->check_art_tables($Conn, 'TMP_PRDNOEBU');
+        $this->TMP_PRDGMABU_PRIX_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_PRIX_OK');
+        $this->TMP_PRDGMABU_MASQ_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_MASQ_OK');
+        $this->Get_AIH_PRIARTWEB($Conn_wrk);
         $name_file_csv = 'assets/files/'.$nom_csv .".csv";
         $f = @fopen($name_file_csv, 'w+');
         $line = "OA;material;TYPE;val;date_debut;heure_debut;date_fin;heure_fin;sup";
         @fputcsv($f, explode(',', $line));
 
-        foreach ($query->result() as $ligne)
-        {
-            $count++;
-            $row = $this->Get_PRIVENLOC($Conn, $ligne->idProd);
-            if (!is_null($row['PRIVENLOC']))
+        if ($query->num_rows()>0){
+            foreach ($query->result() as $ligne)
             {
-                if ($this->checkArt($Conn_refmch, $ligne->idProd) == 1)
+                echo '<input type="hidden" name="generate">';
+                $count++;
+                $row['PRIVENLOC'] = $this->Get_PRIVENLOC($ligne->idProd);
+                if ($row['PRIVENLOC'] != false)
                 {
-                    if ($ligne->stockValue >= $stock_mini)
+                    if ($this->checkArt($ligne->idProd) == 1)
                     {
-                        if ($ligne->priceMin == -1)
+                        if ($ligne->stockValue >= $stock_mini)
                         {
-                            $this->calcActi($CI, $ligne, $f, 'no_price');
-                            $no_price++;
-                        }
-                        else
-                        {
-                            $result = (((double)$ligne->priceMin + (double)$marge_e) * (1 + ((double)$marge_p / 100))) * (1 + ((double)$tva / 100));
-
-                            if ((double)$result <= (double)$row['PRIVENLOC'])
+                            if ($ligne->priceMin == -1)
                             {
-                                $this->calcActi($CI, $ligne, $f, 'good', $row, $result);
-                                $save++;
+                                $this->calcActi($CI, $ligne, $f, 'no_price');
+                                $no_price++;
                             }
                             else
                             {
-                                $this->calcActi($CI, $ligne, $f, 'too_exp', $row, $result);
-                                $ret++;
+                                $result = (((double)$ligne->priceMin + (double)$marge_e) * (1 + ((double)$marge_p / 100))) * (1 + ((double)$tva / 100));
+
+                                if ((double)$result <= (double)$row['PRIVENLOC'])
+                                {
+                                    $this->calcActi($CI, $ligne, $f, 'good', $row, $result);
+                                    $save++;
+                                }
+                                else
+                                {
+                                    $this->calcActi($CI, $ligne, $f, 'too_exp', $row, $result);
+                                    $ret++;
+                                }
+                                $row++;
                             }
-                            $row++;
                         }
-                    }
-                    else
-                    {
-                        $this->calcActi($CI, $ligne, $f, 'no_stock');
-                        $stock_ret++;
-                    }
-                    $i++;
-                    $this->item = $this->item + 1;
-                }else
-                    $false++;
+                        else
+                        {
+                            $this->calcActi($CI, $ligne, $f, 'no_stock');
+                            $stock_ret++;
+                        }
+                        $i++;
+                        $this->item = $this->item + 1;
+                    }else
+                        $false++;
+                }
             }
         }
         @fclose($f);
         $CI->lastdayacti_struct->Insert_Data($CI, 'lastdayacti', 'si');
-        $xls = $this->Generate_Validation_XLSX($name_file_csv, $objPHPExcel, $user_name, $nom_xls);
-        $csv = $this->Generate_Alert($CI);
+        $csv = $this->Generate_Alert($CI, $user_id);
 
-        if ($xls && $csv){
+        if ($csv){
             return true;
         }else{
             return false;
         }
     }
 
-    public function Generate_Validation_XLSX($name_file_csv, $objPHPExcel, $user_name, $nom_xls){
-        $row = 1;
-        if (($handle = @fopen($name_file_csv, "r")) !== FALSE) 
-        {
-            while (($data = fgetcsv($handle, 3000, ';')) !== FALSE) 
-            {
-                $num = count($data);
-                $col_A = 'A' . (string)$row;
-                $col_B = 'B' . (string)$row;
-                $col_C = 'C' . (string)$row;
-                $col_D = 'D' . (string)$row;
-                $col_E = 'E' . (string)$row;
-                $col_F = 'F' . (string)$row;
-                $col_G = 'G' . (string)$row;
-                $col_H = 'H' . (string)$row;
-                $col_I = 'I' . (string)$row;
-                $objPHPExcel->getActiveSheet()->setCellValue($col_A, $data[0]) or die("error ecriture"); 
-                $objPHPExcel->getActiveSheet()->setCellValue($col_B, $data[1]) or die("error ecriture"); 
-                $objPHPExcel->getActiveSheet()->setCellValue($col_C, $data[2]) or die("error ecriture"); 
-                $objPHPExcel->getActiveSheet()->setCellValue($col_D, $data[3]) or die("error ecriture");
-                $objPHPExcel->getActiveSheet()->setCellValue($col_E, $data[4]) or die("error ecriture"); 
-                $objPHPExcel->getActiveSheet()->setCellValue($col_F, $data[5]) or die("error ecriture"); 
-                $objPHPExcel->getActiveSheet()->setCellValue($col_G, $data[6]) or die("error ecriture"); 
-                $objPHPExcel->getActiveSheet()->setCellValue($col_H, $data[7]) or die("error ecriture");
-                $objPHPExcel->getActiveSheet()->setCellValue($col_I, $data[8]) or die("error ecriture");
-                $row++;
-            }
-            @fclose($handle);
-        }else{
-            return false;
-        }
-
-        $name_xls = 'assets/files/'.$nom_xls . ".xlsx";
-        $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel); 
-        $objWriter->save($name_xls);
-
-        return $name_xls;
-    }
-
     public function Get_Data_To_File($CI, $user_id){
-        $CI->db->distinct('idProd, valPro, stockValue, country, priceMin');
+        $CI->db->distinct('dm.idProd, dm.valPro, dm.country, r.stockValue, r.priceMin');
         $CI->db->from('data_mch dm, regroupement r');
-        $CI->db->where('valPro = r.codeRegroupement');
-        $CI->db->where('numPro = "codeRegroupement"');
-        $CI->db->where('country != "NOES"');
+        $CI->db->where('r.codeRegroupement = dm.valPro');
+        $CI->db->where('dm.numPro = "codeRegroupement"');
+        $CI->db->where('dm.country != "NOES"');
         $CI->db->where('dm.user_id', $user_id);
         $CI->db->where('r.user_id', $user_id);
         $CI->db->order_by('valPro', 'asc');
@@ -149,33 +115,46 @@ class Generate_Files{
         return $CI->db->get();
     }
 
-    public function Get_PRIVENLOC($Conn, $idProd){
-        $sql = "SELECT PRIVENLOC from src.aih.AIH_PRIARTWEB where CODART = '".$idProd."' and CODCEN = '9901';";
+    public function Get_AIH_PRIARTWEB($Conn){
+        $sql = "SELECT PRIVENLOC, CODART from src.aih.AIH_PRIARTWEB where CODCEN = '9901';";
         $stmt = sqlsrv_query($Conn, $sql);
-        $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
-
-        return $row;
-    }
-
-    public function checkArt($connexion, $idProd)
-    {
-        $req = ("SELECT * 
-            from mch.TMP_PRDNOEBU 
-            where IDEPRD = '".$idProd."' 
-            and CODBU = 'NOES' 
-            and IDEPRD in (select IDEPRD from mch.TMP_PRDGMABU_PRIX_OK where IDEPRD = '".$idProd."') 
-            and IDEPRD in (select IDEPRD from mch.TMP_PRDGMABU_MASQ_OK where IDEPRD = '".$idProd."');");
-        $stmt = sqlsrv_query($connexion, $req);
-        $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
-        if (!is_null($row['IDEPRD']))
-        {
-            return true;
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
+            $this->AIH_PRIARTWEB[$row['CODART']] = $row['PRIVENLOC'];
         }
-        else
-            return false;
     }
 
-    public function calcActi($CI, $ligne, $f, $type, $row, $result){
+    public function Get_PRIVENLOC($idProd){
+        if (array_key_exists($idProd, $this->AIH_PRIARTWEB)){
+            return $this->AIH_PRIARTWEB[$idProd];
+        }else{
+            return false;
+        }
+    }
+
+    public function check_art_tables($connexion, $table = ''){
+        $req = ("SELECT IDEPRD from mch.".$table." ".($table == 'TMP_PRDNOEBU' ? " WHERE CODBU = 'NOES'" : ''));
+        $stmt = sqlsrv_query($connexion, $req);
+
+        $tabla = array();
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
+            $key = $row['IDEPRD'];
+            $tabla[$key] = '';
+            
+        }
+
+        return $tabla;
+    }
+
+    public function checkArt($idProd)
+    {
+        if (array_key_exists($idProd, $this->TMP_PRDNOEBU) && array_key_exists($idProd, $this->TMP_PRDGMABU_PRIX_OK) && array_key_exists($idProd, $this->TMP_PRDGMABU_MASQ_OK)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function calcActi($CI, $ligne, $f, $type, $row = '', $result = ''){
         $user_id = $CI->session->userdata['id'];
         $statut = 'Y';
 
@@ -197,7 +176,6 @@ class Generate_Files{
                 $reg = $this->Get_Reg_nostock($ligne, $user_id);
             break;
         }
-
         $CI->lastdayacti_struct->Load_Data($reg, $this->item);
         $line = $ligne->country . ";" . $ligne->idProd . ";MASQUE;".$statut.";1/10/12;00:00:00;31/12/2099;23:59:00;";
         @fputcsv($f, explode(',', $line));
@@ -210,7 +188,9 @@ class Generate_Files{
             'idProd' => $ligne->idProd,
             'codeRegroupement' => $ligne->valPro,
             'statut' => 'Y',
+            'priceRec' => '',
             'reason' => 'no_price',
+            'price_wrk' => '',
             'user_id' => $user_id
         );
 
@@ -250,7 +230,9 @@ class Generate_Files{
             'idProd' => $ligne->idProd,
             'codeRegroupement' => $ligne->valPro,
             'statut' => 'Y',
+            'priceRec' => '',
             'reason' => 'no_stock',
+            'price_wrk' => '',
             'user_id' => $user_id
         );
 
@@ -272,14 +254,15 @@ class Generate_Files{
 
         $query = $this->Get_Data_To_Alert($CI, $user_id);
 
-        if (!$query){
+        if ($query){
             foreach ($query->result() as $ligne)
             {
+                echo '<input type="hidden" name="generate">';
                 $line = $ligne->codeRegroupement . ";" . $ligne->idProd . ";;" . $ligne->stockValue . ";;" . $ligne->priceMinPlusP . ";" . $ligne->priceMin . ";" . $ligne->priceRec . ";" . $ligne->price_wrk . ";" . $ligne->statut . ";" . $ligne->reason;
                 @fputcsv($f, explode(',', $line));
                 $query_reg = $this->Get_Products_Provider($CI, $user_id, $ligne);
 
-                if (!$query_reg){
+                if ($query_reg!=false){
                     foreach ($query_reg->result() as $ligne2)
                     {
                         if ($ligne2->supplierPrice == $ligne->priceMin)

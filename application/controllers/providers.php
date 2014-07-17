@@ -20,17 +20,21 @@ class Providers extends CI_Controller{
     }
 
     public function view(){
-        $user_id = $this->session->userdata['id'];
-        $crud = new grocery_CRUD();
-        $crud->set_theme('flexigrid');
-        $crud->set_table('users_providers');
-        $crud->display_as('SupplierKey','Id');
-        $crud->where('users_id', $user_id);
-        $crud->set_subject('Providers');
-     
-        $crud->set_relation('SupplierKey','providers','nom');
-     
-        $output = $crud->render();
-        $this->__output($output);
+        if(isset($this->session->userdata['username'])){
+            $user_id = $this->session->userdata['id'];
+            $crud = new grocery_CRUD();
+            $crud->set_theme('flexigrid');
+            $crud->set_table('users_providers');
+            $crud->display_as('SupplierKey','Id');
+            $crud->where('users_id', $user_id);
+            $crud->set_subject('Providers');
+         
+            $crud->set_relation('SupplierKey','providers','nom');
+         
+            $output = $crud->render();
+            $this->__output($output);
+        }else{
+            $this->load->view('principal');
+        }
     }
 }

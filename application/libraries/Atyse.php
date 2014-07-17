@@ -86,16 +86,10 @@ class Atyse{
                     
                     if ($ligne_f->forceStock == 1)
                     {
-                        $CI->db->select('*');
-                        $CI->db->from('prod_forced');
-                        $CI->db->where('supplierKey', "$codProv");
-                        $CI->db->where('supplierRef', "$data[2]");
-                        $query = $CI->db->get();
-                        $ligne_prodForced = $query->result();
+                        $ligne_prodForced = $ligne_f;
 
-                        if ($query->num_rows() > 0)
+                        if (!is_null($ligne_prodForced))
                         {
-                           $ligne_prodForced = $ligne_prodForced[0];
                            $stockValue = (int)$ligne_prodForced->stock - $ligne_f->correctionstock;
                         }
                         else

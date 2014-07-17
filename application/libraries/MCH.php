@@ -55,7 +55,7 @@ class MCH{
 				if ($query->num_rows()>0)
 				{
 					$ligne = $ligne[0];
-					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], $row['CODPRO'], '*', $row['VALPRO'], $user_id);
+					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], $row['CODPRO'], $row['country'], $row['VALPRO'], $user_id);
 					$CI->mch_struct->Load_Data($data_mch, $item);
 					$item++;
 
@@ -90,11 +90,11 @@ class MCH{
     }
 
     public function Get_Consulta($row_e){
-    	$sql = " Set transaction isolation level READ UNCOMMITTED SELECT distinct(prd1.IDEPRD),  
+    	$sql = " Set transaction isolation level READ UNCOMMITTED SELECT distinct(prd1.IDEPRD), prd1.CODBU as country,  
 			 mch.NCOM_PROPRIETE.CODPRO as CODPRO, prd1.VALPRO as VALPRO 
-			 from mch.NCOM_PRD_PRO prd1 inner join mch.NCOM_PROPRIETE on prd1.NUMPRO = mch.NCOM_PROPRIETE.NUMPRO 
+			 from mch.NCOM_PRD_PRO_BU prd1 inner join mch.NCOM_PROPRIETE on prd1.NUMPRO = mch.NCOM_PROPRIETE.NUMPRO 
 			 and mch.NCOM_PROPRIETE.NUMPRO = ".$row_e['NUMPRO']."
-			 inner join mch.NCOM_PRD_PRO prd2 on prd1.IDEPRD=prd2.IDEPRD and prd2.NUMPRO=1 and prd2.VALPRO in (";
+			 inner join mch.NCOM_PRD_PRO_BU prd2 on prd1.IDEPRD=prd2.IDEPRD and prd2.NUMPRO=1 and prd2.VALPRO in (";
 
 		return $sql;
     }

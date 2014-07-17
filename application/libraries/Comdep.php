@@ -75,9 +75,9 @@ class Comdep{
                             $result_price = (((double)$d[21] + (double)$ligne_four->ecotaxe)- (double)$ligne_four->RFAfixe) * (1 - ((double)$ligne_four->RFA_p / 100)) + (double)$ligne_four->CDS + (double)$transport;
                             
                             if ($ligne_four->forceStock == 1){
-                                $ligne_prodForced = $this->Load_ProdForced($CI, $d);
+                                $ligne_prodForced = $ligne_four;
 
-                                if ($ligne_prodForced != NULL){
+                                if (!is_null($ligne_prodForced)){
                                     $stockValue = (int)$ligne_prodForced->stock - $ligne_four->correctionstock;
                                 }else
                                     $stockValue = (int)(isset($d[25]) ? $d[25] : 0) - $ligne_four->correctionstock;
@@ -149,16 +149,6 @@ class Comdep{
         $CI->db->from('providers p, users_providers up');
         $CI->db->where('up.SupplierKey = p.SupplierKey');
         $CI->db->where('p.SupplierKey', "$d[0]");
-        $query = $CI->db->get();
-        return $query->result();
-    }
-
-    public function Load_ProdForced($CI, $d){
-        $CI->db->select('*');
-        $CI->db->from('prod_forced');
-        $CI->db->where('up.providers_id = p.SupplierKey');
-        $CI->db->where('supplierKey', "$d[0]");
-        $CI->db->where('supplierRef', "$d[1]");
         $query = $CI->db->get();
         return $query->result();
     }

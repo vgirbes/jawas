@@ -24,7 +24,7 @@ class Ficheros extends CI_Model{
     }
 
     public function generate_files(){
-        $result = $this->generate_files->do_it();
+        $res = $this->generate_files->do_it();
         return $res;
     }
 
