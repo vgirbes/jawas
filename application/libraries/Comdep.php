@@ -27,8 +27,9 @@ class Comdep{
             $count = 0;
             $ins = false;
             $CI->provider_struct->Get_Codes($CI);
+            $users = $CI->db_op->Get_Usuarios($CI);
             while ($xml->RegroupementsMobiWheel->RegroupementMobiWheel[$i] != NULL){
-                $count++;
+                
                 $res_price = 300000000000000;
                 $res_stock = 0;
                 
@@ -50,75 +51,75 @@ class Comdep{
 
                     if (strlen($d[0]) > 6)
                         $d[0] = substr($d[0], 5);
-
+                    
                     $query = $CI->db_op->Info_Provider($CI, 'p.SupplierKey', $d[0]);
                     
                     if ($query->num_rows()<=0){
                         $ins = true;
                         $ins_provider = $CI->provider_struct->Process_Provider($CI, $count, $d, $d[0], 'comdep');
-                        $ins_userprovider = $CI->usersproviders_struct->Process_UserProvider($CI, $count, $d[0], $ins_provider);
-                    }else{
-                        $ligne_four = $query->result();
+                        $ins_userprovider = $CI->usersproviders_struct->Process_UserProvider($CI, $d[0], $ins_provider);
+                    }
+                        
+
+                    foreach ($users as $user_id){
+                        $count++;
+                        $CI->db_op->user_id = $user_id;
+                        $q_users_prov = $CI->db_op->Info_Provider($CI, 'p.SupplierKey', $d[0], $user_id);
+                        $ligne_four = $q_users_prov->result();
                         $ligne_four = $ligne_four[0];
-                    }
-
-                    //if ($query->num_rows()>0 && !is_null($d)){
-                    if ($ligne_four != ''){
+                        if (isset($ligne_four->active)){
                             echo '<input type="hidden" name="comdep">';
-                       //si le fournisseur a été trouvé dans la BDD
-                    //    if ($ligne_four->active == "1"){
-                            if ((strcmp($b[1], "TOURISME") == 0 && (int)$b[11] <= 18) || (strcmp($b[1], "UTILITAIRE") == 0 && (int)$b[11] <= 16))
-                                $transport = (double)$ligne_four->transport / 2;
-                            else
-                                $transport = (double)$ligne_four->transport;
+                            //si le fournisseur a été trouvé dans la BDD
+                            if ($ligne_four->active == "1" || $ligne_four->active == 1){
+                                if ((strcmp($b[1], "TOURISME") == 0 && (int)$b[11] <= 18) || (strcmp($b[1], "UTILITAIRE") == 0 && (int)$b[11] <= 16))
+                                    $transport = (double)$ligne_four->transport / 2;
+                                else
+                                    $transport = (double)$ligne_four->transport;
 
-                            $result_price = (((double)$d[21] + (double)$ligne_four->ecotaxe)- (double)$ligne_four->RFAfixe) * (1 - ((double)$ligne_four->RFA_p / 100)) + (double)$ligne_four->CDS + (double)$transport;
-                            
-                            if ($ligne_four->forceStock == 1){
-                                $ligne_prodForced = $ligne_four;
+                                $result_price = (((double)$d[21] + (double)$ligne_four->ecotaxe)- (double)$ligne_four->RFAfixe) * (1 - ((double)$ligne_four->RFA_p / 100)) + (double)$ligne_four->CDS + (double)$transport;
+                                
+                                if ($ligne_four->forceStock == 1){
+                                    $ligne_prodForced = $ligne_four;
 
-                                if (!is_null($ligne_prodForced)){
-                                    $stockValue = (int)$ligne_prodForced->stock - $ligne_four->correctionstock;
-                                }else
+                                    if (!is_null($ligne_prodForced)){
+                                        $stockValue = (int)$ligne_prodForced->stock - $ligne_four->correctionstock;
+                                    }else
+                                        $stockValue = (int)(isset($d[25]) ? $d[25] : 0) - $ligne_four->correctionstock;
+                                }
+                                else
                                     $stockValue = (int)(isset($d[25]) ? $d[25] : 0) - $ligne_four->correctionstock;
+
+                                if ($stockValue < 0)
+                                    $stockValue = 0;
+
+                                $res_stock = $res_stock + $stockValue;
+                                $count_four++;
+
+                                $ligne_val_prix_min = $this->Load_PrixMin($CI);
+                                $ligne_val_prix_min = $ligne_val_prix_min[0];
+
+                                if ($result_price < $res_price && $res_price >= (int)$ligne_val_prix_min->val && (int)$stockValue > 4)
+                                    $res_price = (double)$result_price;
+                                $data_prod = array_merge($data_b, $data_d);
+                                $CI->products_struct->Load_Data($data_prod, $count);
+                                $CI->products_struct->datos_products[$count]['user_id'] = $user_id;
+                                $CI->products_struct->datos_products[$count]['supplierPrice'] = "$result_price";
+                                $CI->products_struct->datos_products[$count]['supplierPrice'] = (int)$stockValue;
+
+                                if ($res_price > 30000000000)
+                                    $res_price = -1;
+                                //on entre le regroupement dans la BDD avec les informations mises à jour.
+                                $CI->regroupement_struct->Load_Data($data_b, $count);
+                                $CI->regroupement_struct->datos_regroupement[$count]['user_id'] = $user_id;
+                                $CI->regroupement_struct->datos_regroupement[$count]['priceMin'] = "$res_price";
+                                $CI->regroupement_struct->datos_regroupement[$count]['stockValue'] = "$res_stock";
+
+                                $this->Process_Ean($xml, $CI, $i, $k, $b, $count);
                             }
-                            else
-                                $stockValue = (int)(isset($d[25]) ? $d[25] : 0) - $ligne_four->correctionstock;
-
-                            if ($stockValue < 0)
-                                $stockValue = 0;
-
-                            $res_stock = $res_stock + $stockValue;
-                            $count_four++;
-
-                            $ligne_val_prix_min = $this->Load_PrixMin($CI);
-                            $ligne_val_prix_min = $ligne_val_prix_min[0];
-
-                            if ($result_price < $res_price && $res_price >= (int)$ligne_val_prix_min->val && (int)$stockValue > 4)
-                                $res_price = (double)$result_price;
-                            $data_prod = array_merge($data_b, $data_d);
-                            $CI->products_struct->Load_Data($data_prod, $count);
-                            $CI->products_struct->datos_products[$count]['user_id'] = $CI->session->userdata['id'];
-                            $CI->products_struct->datos_products[$count]['supplierPrice'] = "$result_price";
-                            $CI->products_struct->datos_products[$count]['supplierPrice'] = (int)$stockValue;
-
-                            if ($res_price > 30000000000)
-                                $res_price = -1;
-                            //on entre le regroupement dans la BDD avec les informations mises à jour.
-                            $CI->regroupement_struct->Load_Data($data_b, $count);
-                            $CI->regroupement_struct->datos_regroupement[$count]['user_id'] = $CI->session->userdata['id'];
-                            $CI->regroupement_struct->datos_regroupement[$count]['priceMin'] = "$res_price";
-                            $CI->regroupement_struct->datos_regroupement[$count]['stockValue'] = "$res_stock";
-
-                            //On rentre l'ean correspondant dans la BDD.
-                            $this->Process_Ean($xml, $CI, $i, $k, $b, $count);
-                    /*    }else{
-                            $stockValue = (int)$d[25];
-                            $result_price = (double)$d[21];
-                        }*/
+                        }
+                        $count_prod++;
+                        $j++;
                     }
-                    $count_prod++;
-                    $j++;
                 }
                 $j = 0;
                 $k = 0;

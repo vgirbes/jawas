@@ -1,5 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class DB_op{
+    var $user_id = '';
+    var $item_up = 0;
 	var $datos_products = array();
     var $datos_regroupement = array();
     var $datos_ean = array();
@@ -67,10 +69,13 @@ class DB_op{
         }
     }
 
-    public function Info_Provider($CI, $campo, $valor){
+    public function Info_Provider($CI, $campo, $valor, $user_id = ''){
         $CI->db->select('*');
         $CI->db->from('providers p, users_providers up');
         $CI->db->where("$campo", utf8_encode($valor));
+        if ($user_id != ''){
+            $CI->db->where('up.users_id', $user_id);
+        }
         $CI->db->where('p.SupplierKey = up.SupplierKey');
         $query = $CI->db->get();
         return $query;
@@ -98,6 +103,23 @@ class DB_op{
         $CI->db->where('codeRegroupement', "$codeRegroupement");
 
         return $CI->db->get();
+    }
+
+    public function Get_Usuarios($CI){
+        $users = array();
+        $CI->db->select('id');
+        $CI->db->from('users');
+        $query = $CI->db->get();
+
+        if ($query->num_rows()>0){
+            foreach ($query->result() as $ligne){
+                $users[] = $ligne->id;
+            }
+
+            return $users;
+        }else{
+            return false;
+        }
     }
 
     public function Connect_WRK(){

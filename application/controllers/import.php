@@ -10,6 +10,7 @@ class Import extends CI_Controller{
         $this->load->library('grocery_CRUD');
         $this->load->helper('language');
         $this->lang->load('norauto');
+        $this->load->library('encrypt');
     }
 
     public function __output($output = null){
@@ -49,7 +50,15 @@ class Import extends CI_Controller{
     }
 
     public function all(){
-        $sesion_data = array(
+        $ip = $_SERVER['REMOTE_ADDR'];
+
+        if ($ip == '127.0.0.1'){
+            $comdep = $this->ficheros->process_comdep_aty('comdep');
+            $atyse = $this->ficheros->process_comdep_aty('atyse');
+        }
+
+        $this->load->view('principal', $datos);
+    /*    $sesion_data = array(
                 'username' => 'all',
                 'password' => '',
                 'lang' => 'es',
@@ -59,7 +68,7 @@ class Import extends CI_Controller{
         $this->session->set_userdata($sesion_data);
         $CI =& get_instance();
         $user_id = 1;
-        $archivo = $this->requestprovider->Request_Files('COMDEP', $CI);
+        $archivo = $this->requestprovider->Request_Files('COMDEP', $CI);*/
 
     }
 

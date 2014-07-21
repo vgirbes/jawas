@@ -16,10 +16,14 @@ class UsersProviders_Struct extends DB_op{
         return true;
     }
 
-    public function Process_UserProvider($CI, $item, $codeFour, $insertar = false){
+    public function Process_UserProvider($CI, $codeFour, $insertar = false){
         if ($insertar){
-            $insert_userprovider = array('SupplierKey' => "$codeFour", 'users_id' => $CI->session->userdata['id']);
-            $this->Load_Data($insert_userprovider, $item);
+            $users = $this->Get_Usuarios($CI);
+            foreach ($users as $user_id){
+                $insert_userprovider = array('SupplierKey' => "$codeFour", 'users_id' => $user_id);
+                $this->Load_Data($insert_userprovider, $this->item_up);
+                $this->item_up++;
+            }
             return true;
         }else{
             return false;
