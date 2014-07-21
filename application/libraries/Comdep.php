@@ -61,10 +61,10 @@ class Comdep{
                     }
                         
 
-                    foreach ($users as $user_id){
+                    foreach ($users as $user){
                         $count++;
-                        $CI->db_op->user_id = $user_id;
-                        $q_users_prov = $CI->db_op->Info_Provider($CI, 'p.SupplierKey', $d[0], $user_id);
+                        $CI->db_op->user_id = $user['id'];
+                        $q_users_prov = $CI->db_op->Info_Provider($CI, 'p.SupplierKey', $d[0], $user['id']);
                         $ligne_four = $q_users_prov->result();
                         $ligne_four = $ligne_four[0];
                         if (isset($ligne_four->active)){
@@ -102,7 +102,7 @@ class Comdep{
                                     $res_price = (double)$result_price;
                                 $data_prod = array_merge($data_b, $data_d);
                                 $CI->products_struct->Load_Data($data_prod, $count);
-                                $CI->products_struct->datos_products[$count]['user_id'] = $user_id;
+                                $CI->products_struct->datos_products[$count]['user_id'] = $user['id'];
                                 $CI->products_struct->datos_products[$count]['supplierPrice'] = "$result_price";
                                 $CI->products_struct->datos_products[$count]['supplierPrice'] = (int)$stockValue;
 
@@ -110,11 +110,11 @@ class Comdep{
                                     $res_price = -1;
                                 //on entre le regroupement dans la BDD avec les informations mises à jour.
                                 $CI->regroupement_struct->Load_Data($data_b, $count);
-                                $CI->regroupement_struct->datos_regroupement[$count]['user_id'] = $user_id;
+                                $CI->regroupement_struct->datos_regroupement[$count]['user_id'] = $user['id'];
                                 $CI->regroupement_struct->datos_regroupement[$count]['priceMin'] = "$res_price";
                                 $CI->regroupement_struct->datos_regroupement[$count]['stockValue'] = "$res_stock";
 
-                                $this->Process_Ean($xml, $CI, $i, $k, $b, $count);
+                                $this->Process_Ean($xml, $CI, $i, $k, $b, $count, $user['id']);
                             }
                         }
                         $count_prod++;
@@ -162,11 +162,11 @@ class Comdep{
         return $query->result();
     }
 
-    public function Process_Ean($xml, $CI, $i, $k, $b, $count){
+    public function Process_Ean($xml, $CI, $i, $k, $b, $count, $user_id){
         while ($xml->RegroupementsMobiWheel->RegroupementMobiWheel[$i]->EANs->EAN[$k] != NULL){
             $ean = (string)$xml->RegroupementsMobiWheel->RegroupementMobiWheel[$i]->EANs->EAN[$k];
             $k++;
-            $datos_ean = array('codeRegroupement' => "$b[0]", 'ean' => "$ean", 'user_id'  => $CI->session->userdata['id']);
+            $datos_ean = array('codeRegroupement' => "$b[0]", 'ean' => "$ean", 'user_id'  => $user_id);
             $CI->ean_struct->Load_Data($datos_ean, $count);
         }
     }

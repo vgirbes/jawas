@@ -19,8 +19,8 @@ class UsersProviders_Struct extends DB_op{
     public function Process_UserProvider($CI, $codeFour, $insertar = false){
         if ($insertar){
             $users = $this->Get_Usuarios($CI);
-            foreach ($users as $user_id){
-                $insert_userprovider = array('SupplierKey' => "$codeFour", 'users_id' => $user_id);
+            foreach ($users as $user){
+                $insert_userprovider = array('SupplierKey' => "$codeFour", 'users_id' => $user['id']);
                 $this->Load_Data($insert_userprovider, $this->item_up);
                 $this->item_up++;
             }

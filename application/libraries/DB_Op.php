@@ -113,8 +113,9 @@ class DB_op{
 
         if ($query->num_rows()>0){
             foreach ($query->result() as $ligne){
-                $users[] = $ligne->id;
-            }
+                $users[]['id'] = $ligne->id;
+                $users[]['countries_id'] = $ligne->countries_id;
+             }
 
             return $users;
         }else{
