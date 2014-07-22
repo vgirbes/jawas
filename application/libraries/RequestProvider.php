@@ -3,6 +3,8 @@
 class RequestProvider{
 	var $items = '';
     var $filename = '';
+    var $country_id = '';
+    var $user_name = '';
 
     function __construct(){
         $CI =& get_instance();
@@ -26,8 +28,12 @@ class RequestProvider{
         }
     }
 
-    public function Cargar_Atyse($CI){
-        $archivo = $this->Request_Files('ATYSE', $CI);
+    public function Cargar_Atyse($CI, $country_id = '', $user_name = ''){
+        $this->country_id = $country_id;
+        $this->user_name = $user_name;
+        if ($user_name != ''){
+            $archivo = $this->Request_Files('ATYSE', $CI);
+        }
         //$archivo = 'NOR-SP_AVECPRIX_AVECSTOCK_20140630072253.csv';
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
@@ -51,6 +57,9 @@ class RequestProvider{
         $CI->db->select('*');
         $CI->db->from('files_providers');
         $CI->db->where('name', "$provider");
+        if ($provider == 'ATYSE'){
+            $CI->db->where('countries_id', $this->country_id);
+        }
         $query = $CI->db->get();
         return $query->result();
     }
@@ -76,7 +85,7 @@ class RequestProvider{
     public function Get_File($s_data, $CI, $archivo = ''){
         $username = $s_data->user;
         $password = $s_data->password;
-        $name = $CI->session->userdata['username'];
+        $name = ($this->user_name =! '' ? $this->user_name : 'all');
         $provider_name = strtolower($s_data->name);
         $provider = $provider_name.'_'.$name.'.'.$s_data->ext;
         $download = ($archivo != '' ? substr($archivo, 0, strlen($archivo) - 1) : '');

@@ -16,7 +16,7 @@ class Comdep{
         $CI->load->library('session');
     }
 
-    public function Procesar_Items($xml){
+    public function Procesar_Items($xml, $user_id = ''){
         if ($xml != false){
             $CI =& get_instance();
             $i = 0;
@@ -28,6 +28,8 @@ class Comdep{
             $ins = false;
             $CI->provider_struct->Get_Codes($CI);
             $users = $CI->db_op->Get_Usuarios($CI);
+            $this->Reset_Tables($CI, $users);
+            
             while ($xml->RegroupementsMobiWheel->RegroupementMobiWheel[$i] != NULL){
                 
                 $res_price = 300000000000000;
@@ -59,10 +61,11 @@ class Comdep{
                         $ins_provider = $CI->provider_struct->Process_Provider($CI, $count, $d, $d[0], 'comdep');
                         $ins_userprovider = $CI->usersproviders_struct->Process_UserProvider($CI, $d[0], $ins_provider);
                     }
-                        
-
+                    $x = 0;
+                    
                     foreach ($users as $user){
                         $count++;
+                        $x++;
                         $CI->db_op->user_id = $user['id'];
                         $q_users_prov = $CI->db_op->Info_Provider($CI, 'p.SupplierKey', $d[0], $user['id']);
                         $ligne_four = $q_users_prov->result();
@@ -169,5 +172,11 @@ class Comdep{
             $datos_ean = array('codeRegroupement' => "$b[0]", 'ean' => "$ean", 'user_id'  => $user_id);
             $CI->ean_struct->Load_Data($datos_ean, $count);
         }
+    }
+
+    public function Reset_Tables($CI, $users){
+        $CI->db_op->Truncate_Tables($CI, $users, 'products');
+        $CI->db_op->Truncate_Tables($CI, $users, 'regroupement');
+        $CI->db_op->Truncate_Tables($CI, $users, 'ean');
     }
 }

@@ -45,12 +45,15 @@ class Products_Struct extends DB_op{
         return true;
     }
 
-    public function Product_Exist($CI, $codeReg, $codProv){
+    public function Product_Exist($CI, $codeReg, $codProv, $user_id = ''){
         $CI->db->select('*');
         $CI->db->from('products');
         $CI->db->where('supplierKey', "$codProv");
         $CI->db->where('supplierRef', "$codProv");
         $CI->db->where('codeRegroupement', "$codeReg");
+        if ($user_id != ''){
+            $CI->db->where('user_id', $user_id);
+        }
         $query = $CI->db->get();
         return $query->num_rows();
     }

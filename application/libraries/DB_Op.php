@@ -1,7 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class DB_op{
     var $user_id = '';
+    var $country_id = '';
+    var $user_name = '';
     var $item_up = 0;
+    var $item_cf = 0;
 	var $datos_products = array();
     var $datos_regroupement = array();
     var $datos_ean = array();
@@ -107,14 +110,17 @@ class DB_op{
 
     public function Get_Usuarios($CI){
         $users = array();
-        $CI->db->select('id');
+        $CI->db->select('id, countries_id, username');
         $CI->db->from('users');
         $query = $CI->db->get();
+        $i = 0;
 
         if ($query->num_rows()>0){
             foreach ($query->result() as $ligne){
-                $users[]['id'] = $ligne->id;
-                $users[]['countries_id'] = $ligne->countries_id;
+                $users[$i]['id'] = $ligne->id;
+                $users[$i]['countries_id'] = $ligne->countries_id;
+                $users[$i]['username'] = $ligne->username;
+                $i++;
              }
 
             return $users;
@@ -149,7 +155,15 @@ class DB_op{
             return $Conn;
         }else{
             return false;
-            die( print_r( sqlsrv_errors(), true));
+            die(print_r(sqlsrv_errors(), true));
         }
+    }
+
+    public function Truncate_Tables($CI, $users, $tabla = ''){
+        foreach ($users as $user){
+            $CI->db->delete($tabla, array('user_id' => $user['id']));
+        }
+
+        return true;
     }
 }

@@ -7,6 +7,7 @@ class Ficheros extends CI_Model{
         $this->load->library('Adapter');
         $this->load->library('Comdep');
         $this->load->library('Atyse');
+        $this->load->library('DB_Op');
         $this->load->library('MCH');
         $this->load->library('Generate_Files');
         $this->load->database();
@@ -17,8 +18,26 @@ class Ficheros extends CI_Model{
             $res = true;
             $user_id = $this->session->userdata['id'];
             $importacion = $this->check_import_state($user_id, $provider);
-            if ($importacion) $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider));
-            if ($res) $this->update_state($user_id, strtoupper($provider), $this->adapter->filename);
+            if ($provider == 'atyse'){
+                if ($importacion){
+                    $CI =& get_instance();
+                    $users = $this->db_op->Get_Usuarios($CI);
+                    if ($users != false){
+                        foreach ($users as $user){
+                            $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider, $user['countries_id'], $user['username']), $user['id']);
+                            if ($res) $this->update_state($user['id'], strtoupper($provider), $this->adapter->filename);
+                        }
+                    }else{
+                        return false;
+                    }
+                }else{
+                    return false;
+                }     
+            }else{
+                if ($importacion) $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider));
+                if ($res) $this->update_state($user_id, strtoupper($provider), $this->adapter->filename);
+            }
+            
             return $res;
         }
     }

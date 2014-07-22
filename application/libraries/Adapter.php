@@ -7,16 +7,17 @@ class Adapter{
         $CI->load->library('RequestProvider');
     } 
 
-    public function Load_Provider($provider){
+    public function Load_Provider($provider, $country_id = '', $user_name = ''){
     	$CI =& get_instance();
     	switch($provider){
     		case 'Atyse':
-    			$items = $CI->requestprovider->Cargar_Atyse($CI);
+    			$items = $CI->requestprovider->Cargar_Atyse($CI, $country_id, $user_name);
                 $this->filename = $CI->requestprovider->filename;
     			return $items;
     		break;
 
             case 'Comdep':
+            echo 'hola';
                 $items = $CI->requestprovider->Cargar_Comdep($CI);
                 $this->filename = $CI->requestprovider->filename;
                 return $items;
