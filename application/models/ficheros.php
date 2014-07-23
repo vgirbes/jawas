@@ -42,8 +42,14 @@ class Ficheros extends CI_Model{
         }
     }
 
-    public function generate_files(){
-        $res = $this->generate_files->do_it();
+    public function generate_files($user_id = ''){
+        $CI =& get_instance();
+        $users = $this->db_op->Get_Usuarios($CI);
+        $this->db_op->Truncate_Tables($CI, $users, 'lastdayacti');
+        foreach ($users as $user){
+            $res = $this->generate_files->do_it($user['id'], $user['username']);
+            if (!$res) return false;
+        }
         return $res;
     }
 

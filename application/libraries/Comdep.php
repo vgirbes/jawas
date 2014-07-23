@@ -107,7 +107,7 @@ class Comdep{
                                 $CI->products_struct->Load_Data($data_prod, $count);
                                 $CI->products_struct->datos_products[$count]['user_id'] = $user['id'];
                                 $CI->products_struct->datos_products[$count]['supplierPrice'] = "$result_price";
-                                $CI->products_struct->datos_products[$count]['supplierPrice'] = (int)$stockValue;
+                                $CI->products_struct->datos_products[$count]['stockValue'] = (int)$stockValue;
 
                                 if ($res_price > 30000000000)
                                     $res_price = -1;

@@ -100,10 +100,13 @@ class DB_op{
         return $val;
     }
 
-    public function Get_Regroupement($CI, $codeRegroupement){
+    public function Get_Regroupement($CI, $codeRegroupement, $user_id = ''){
         $CI->db->select('*');
         $CI->db->from('regroupement');
         $CI->db->where('codeRegroupement', "$codeRegroupement");
+        if ($user_id != ''){
+            $CI->db->where('user_id', $user_id);
+        }
 
         return $CI->db->get();
     }

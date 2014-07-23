@@ -1,6 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class MCH{
     var $Provider = 'MCH';
+    var $count = 0;
 
     function __construct(){
         $CI =& get_instance();
@@ -18,6 +19,8 @@ class MCH{
         $query = $this->Groupe_Marchandise($CI);
         $count_line = $query->num_rows();
         $Conn = $CI->db_op->Connect_MCH();
+        $users = $CI->db_op->Get_Usuarios($CI);
+        $CI->db_op->Truncate_Tables($CI, $users, 'data_mch');
 
 		$i = 0;
 		if ($Conn){
@@ -43,30 +46,32 @@ class MCH{
 			//---------------------------------------------------------------------------------------------transfert des données de la MCH vers la bdd referentiel_atyse
 			while($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC))
 			{
-				$j++;
-				$CI->db->select('*');
-				$CI->db->from('ean');
-				$CI->db->where('ean', $row['VALPRO']);
-				$CI->db->where('user_id', $user_id);
-				$query = $CI->db->get();
-				$ligne = $query->result();
-				echo '<input type="hidden" name="MCH">';
+				foreach ($users as $user){
+					$j++;
+					$CI->db->select('*');
+					$CI->db->from('ean');
+					$CI->db->where('ean', $row['VALPRO']);
+					$CI->db->where('user_id', $user['id']);
+					$query = $CI->db->get();
+					$ligne = $query->result();
+					echo '<input type="hidden" name="MCH">';
 
-				if ($query->num_rows()>0)
-				{
-					$ligne = $ligne[0];
-					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], $row['CODPRO'], $row['country'], $row['VALPRO'], $user_id);
-					$CI->mch_struct->Load_Data($data_mch, $item);
-					$item++;
+					if ($query->num_rows()>0)
+					{
+						$ligne = $ligne[0];
+						$data_mch = $this->Get_Data_Mch($row['IDEPRD'], $row['CODPRO'], $row['country'], $row['VALPRO'], $user['id']);
+						$CI->mch_struct->Load_Data($data_mch, $item);
+						$item++;
 
-					$data_mch = $this->Get_Data_Mch($row['IDEPRD'], 'codeRegroupement', $row['country'], $ligne->codeRegroupement, $user_id);
-					$CI->mch_struct->Load_Data($data_mch, $item);
-					$item++;
+						$data_mch = $this->Get_Data_Mch($row['IDEPRD'], 'codeRegroupement', $row['country'], $ligne->codeRegroupement, $user['id']);
+						$CI->mch_struct->Load_Data($data_mch, $item);
+						$item++;
+					}
 				}
 			}
 
 			$CI->mch_struct->Insert_Data($CI, 'data_mch', 'si');
-			$res = $this->Calc_Stock_MCH($CI);
+			$res = $this->Calc_Stock_MCH($CI, $users);
 			return $res;
 		}else{
 			return false;
@@ -119,33 +124,33 @@ class MCH{
 		return $data_mch;
     }
 
-    public function Calc_Stock_MCH($CI){
-    	$user_id = $CI->session->userdata['id'];
+    public function Calc_Stock_MCH($CI, $users){
     	$pourcent = $CI->db_op->Get_Default_Value($CI, 'p_stock');
-		$CI->db->select('valPro');
-		$CI->db->from('data_mch');
-		$CI->db->where('numPro = "codeRegroupement"');
-		$CI->db->where('user_id', $user_id);
-		$query = $CI->db->get();
+    	foreach ($users as $user){
+			$CI->db->select('valPro');
+			$CI->db->from('data_mch');
+			$CI->db->where('numPro = "codeRegroupement"');
+			$CI->db->where('user_id', $user['id']);
+			$query = $CI->db->get();
 
-		if ($query->num_rows() > 0){
-			foreach ($query->result() as $ligne)
-			{
-				 $this->Calc($pourcent, $ligne->valPro, $CI);
+			if ($query->num_rows() > 0){
+				foreach ($query->result() as $ligne)
+				{
+					 $this->Calc($pourcent, $ligne->valPro, $CI, $user['id']);
+				}
+				$CI->db->update_batch('regroupement', $CI->regroupement_struct->datos_regroupement, 'codeRegroupement', ' AND user_id = '.$user['id']);
+				
 			}
-			$CI->db->update_batch('regroupement', $CI->regroupement_struct->datos_regroupement, 'codeRegroupement');
-			return true;
-		}else
-    		return false;
+    	}
+
+    	return true;
     }
 
-    public function Calc($pourcent, $valPro, $CI){
+    public function Calc($pourcent, $valPro, $CI, $user_id){
 		$result_stock = 0;
 		$result = 0;
-		$item = 0;
-		$user_id = $CI->session->userdata['id'];
 
-		$query = $CI->db_op->Get_Regroupement($CI, $valPro);
+		$query = $CI->db_op->Get_Regroupement($CI, $valPro, $user_id);
 
 		if ($query->num_rows() > 0){
 			$ligne = $query->result();
@@ -171,8 +176,11 @@ class MCH{
 				'priceMinPlusP' => $result,
 				'codeRegroupement' => $ligne->codeRegroupement
 			);
-			$CI->regroupement_struct->Load_Data($regroupement, $item);
-			$item++;
+			var_dump($regroupement);
+			echo '<br/><hr></hr>';
+
+			$CI->regroupement_struct->Load_Data($regroupement, $this->count);
+			$this->count++;
 			return true;
 		}else{
 			return false;

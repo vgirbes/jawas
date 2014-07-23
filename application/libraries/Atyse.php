@@ -86,7 +86,6 @@ class Atyse{
                         }
 
                         $transport = $this->Calc_transport($data[64], $data[17], $ligne_f->transport);
-                        
                         if ($ligne_f->forceStock == 1)
                         {
                             $ligne_prodForced = $ligne_f;
@@ -96,11 +95,10 @@ class Atyse{
                                $stockValue = (int)$ligne_prodForced->stock - $ligne_f->correctionstock;
                             }
                             else
-                               $stockValue = (int)$data[67] - $ligne_f->correctionstock;
+                               $stockValue = (int)$data[68] - $ligne_f->correctionstock;
                         }
                         else
-                            $stockValue = (int)$data[67] - $ligne_f->correctionstock;
-
+                            $stockValue = (int)$data[68] - $ligne_f->correctionstock;
                         if ($stockValue < 0)
                             $stockValue = 0;
                         $result_price = (((double)$data[60] + (double)$ligne_f->ecotaxe) - (double)$ligne_f->RFAfixe) * (1 - ((double)$ligne_f->RFA_p / 100)) + (double)$ligne_f->CDS + (double)$transport;
@@ -112,7 +110,6 @@ class Atyse{
 
                         $priceMin = ($count > 0 ? $ligne->priceMin : '3000000');
                         $l_stockValue = ($count > 0 ? $ligne->stockValue : $stockValue);
-
                         $res_stockValue = $l_stockValue + $stockValue;
                         $stockupdate = array('stockValue' => "$res_stockValue", 'codeRegroupement' => "$codeReg");
                         if (($priceMin < 0 || $priceMin > $result_price) && $stockValue > 4){
@@ -136,7 +133,7 @@ class Atyse{
         $CI->products_struct->Insert_Data($CI, 'products', 'no');
         $CI->regroupement_struct->Insert_Data($CI, 'regroupement', 'no');
         $CI->ean_struct->Insert_Data($CI, 'ean', 'no');
-        $CI->db->update_batch('regroupement', $update_regroup, 'codeRegroupement', ' AND user_id = '.$CI->db_op->user_id); 
+        $CI->db->update_batch('regroupement', $update_regroup, 'codeRegroupement', ' AND user_id = '.$CI->db_op->user_id);
         if ($ins){
             $CI->corresfour_struct->Insert_Data($CI, 'corres_four', 'no');
             $CI->provider_struct->Insert_Data($CI, 'providers', 'no');
@@ -184,7 +181,7 @@ class Atyse{
             'supplierPrice' => "$result_price",
             'supplierPriceB' => "$data[60]",
             'stockValue' => "$stockValue",
-            'stockValueB' => "$data[67]",
+            'stockValueB' => "$data[68]",
             'user_id' => $user_id
         );
 

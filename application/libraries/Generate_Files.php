@@ -5,6 +5,8 @@ class Generate_Files{
     var $TMP_PRDGMABU_PRIX_OK = array();
     var $TMP_PRDGMABU_MASQ_OK = array();
     var $AIH_PRIARTWEB = array();
+    var $user_id = '';
+    var $user_name = '';
 
     function __construct(){
         $CI =& get_instance();
@@ -15,10 +17,10 @@ class Generate_Files{
         $CI->load->library('Lastdayacti_Struct');
     }
 
-    public function do_it(){
+    public function do_it($user_id, $user_name){
         $CI =& get_instance();
-        $user_id = $CI->session->userdata['id'];
-        $user_name = $CI->session->userdata['username'];
+        $this->user_id = $user_id;
+        $this->user_name = $user_name;
         $Conn = $CI->db_op->Connect_MCH();
         $Conn_wrk = $CI->db_op->Connect_WRK();
         $nom_csv = $user_name."_validationProduit_csv_" . date('YmdHis');
@@ -92,8 +94,8 @@ class Generate_Files{
             }
         }
         @fclose($f);
-        $CI->lastdayacti_struct->Insert_Data($CI, 'lastdayacti', 'si');
-        $csv = $this->Generate_Alert($CI, $user_id);
+        $CI->lastdayacti_struct->Insert_Data($CI, 'lastdayacti', 'no');
+        $csv = $this->Generate_Alert($CI, $user_id, $user_name);
 
         if ($csv){
             return true;
@@ -110,6 +112,7 @@ class Generate_Files{
         $CI->db->where('dm.country != "NOES"');
         $CI->db->where('dm.user_id', $user_id);
         $CI->db->where('r.user_id', $user_id);
+        $CI->db->group_by('dm.valPro');
         $CI->db->order_by('valPro', 'asc');
 
         return $CI->db->get();
@@ -155,25 +158,24 @@ class Generate_Files{
     }
 
     public function calcActi($CI, $ligne, $f, $type, $row = '', $result = ''){
-        $user_id = $CI->session->userdata['id'];
         $statut = 'Y';
 
         switch($type){
             case 'no_price':
-                $reg = $this->Get_Reg_noprice($ligne, $user_id);
+                $reg = $this->Get_Reg_noprice($ligne, $this->user_id);
             break;
 
             case 'good':
                 $statut = 'N';
-                $reg = $this->Get_Reg_good($ligne, $user_id, $result, $row);
+                $reg = $this->Get_Reg_good($ligne, $this->user_id, $result, $row);
             break;
 
             case 'too_exp':
-                $reg = $this->Get_Reg_tooexp($ligne, $user_id, $result, $row);
+                $reg = $this->Get_Reg_tooexp($ligne, $this->user_id, $result, $row);
             break;
 
             case 'no_stock':
-                $reg = $this->Get_Reg_nostock($ligne, $user_id);
+                $reg = $this->Get_Reg_nostock($ligne, $this->user_id);
             break;
         }
         $CI->lastdayacti_struct->Load_Data($reg, $this->item);
@@ -239,8 +241,7 @@ class Generate_Files{
         return $reg;
     }
 
-    public function Generate_Alert($CI, $user_id){
-        $user_name = $CI->session->userdata['username'];
+    public function Generate_Alert($CI, $user_id, $user_name){
         $f = @fopen("assets/files/".$user_name."_test_alert.csv", 'w+');
 
         $line = "modele;";

@@ -17,7 +17,6 @@ class Adapter{
     		break;
 
             case 'Comdep':
-            echo 'hola';
                 $items = $CI->requestprovider->Cargar_Comdep($CI);
                 $this->filename = $CI->requestprovider->filename;
                 return $items;
