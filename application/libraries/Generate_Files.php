@@ -14,17 +14,20 @@ class Generate_Files{
         $CI->load->helper('array');
         $CI->load->library('DB_op');
         $CI->load->library('session');
+        $CI->load->library('Time_Process');
         $CI->load->library('Lastdayacti_Struct');
     }
 
-    public function do_it($user_id, $user_name){
+    public function do_it($user_id, $user_name, $all){
         $CI =& get_instance();
         $this->user_id = $user_id;
         $this->user_name = $user_name;
+        $CI->time_process->flag = 'generate';
+        $CI->time_process->user_id = $user_id;
         $Conn = $CI->db_op->Connect_MCH();
         $Conn_wrk = $CI->db_op->Connect_WRK();
         $nom_csv = $user_name."_validationProduit_csv_" . date('YmdHis');
-
+        log_message('error', 'Entra files '.$user_id);
         $stock_mini = $CI->db_op->Get_Default_Value($CI, 'stock_mini');
         $marge_e = $CI->db_op->Get_Default_Value($CI, 'marge_e');
         $marge_p = $CI->db_op->Get_Default_Value($CI, 'marge_p');
@@ -50,6 +53,7 @@ class Generate_Files{
         if ($query->num_rows()>0){
             foreach ($query->result() as $ligne)
             {
+                log_message('error', 'idProd '.$ligne->idProd);
                 echo '<input type="hidden" name="generate">';
                 $count++;
                 $row['PRIVENLOC'] = $this->Get_PRIVENLOC($ligne->idProd);
@@ -92,14 +96,19 @@ class Generate_Files{
                         $false++;
                 }
             }
+        }else{
+            $CI->time_process->end_process($CI, $users, $all, 'error', 'db');
+            return false;
         }
         @fclose($f);
         $CI->lastdayacti_struct->Insert_Data($CI, 'lastdayacti', 'no');
         $csv = $this->Generate_Alert($CI, $user_id, $user_name);
-
+        log_message('error', 'Fin');
         if ($csv){
+            $CI->time_process->end_process($CI, $users, $all, 'ok');
             return true;
         }else{
+            $CI->time_process->end_process($CI, $users, $all, 'error', 'file');
             return false;
         }
     }

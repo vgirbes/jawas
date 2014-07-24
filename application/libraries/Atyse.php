@@ -17,7 +17,7 @@ class Atyse{
         $CI->load->library('session');
     }
 
-    public function Procesar_Items($archivo, $user_id = ''){
+    public function Procesar_Items($archivo, $user_id = '', $all){
         $CI =& get_instance();
         $row = 1;
         $good = 0;
@@ -26,10 +26,12 @@ class Atyse{
         $ins = false;
         $code_four = '';
         $process = false;
+        $CI->time_process->flag = 'atyse';
+        $users = $CI->db_op->Get_Usuarios($CI, $user_id);
+        $CI->time_process->user_id = $user_id;
         
-        if (file_exists('assets/files/atyse/'.$archivo)) 
+        if (file_exists('assets/files/atyse/'.$archivo) && $archivo != false) 
         {
-            
             $handle = fopen('assets/files/atyse/'.$archivo, "r");
             $CI->corresfour_struct->Get_Codes($CI);
             $CI->provider_struct->Get_Codes($CI);
@@ -75,6 +77,7 @@ class Atyse{
                         $query = $CI->db->get();
                         $count = $query->num_rows();
                         $ligne = $query->result();
+                        log_message('error', 'Procesando '.$codeReg);
                         echo '<input type="hidden" name="atyse">';
                         if ($count > 0) $ligne = $ligne[0];              
                 
@@ -108,7 +111,7 @@ class Atyse{
                             $products = $this->Get_Products_array($codeReg, $codProv, $data, $result_price, $stockValue, $CI->db_op->user_id);
                             $CI->products_struct->Load_Data($products, $item);
                         }
-
+                        log_message('error', 'stock '.$data[68]);
                         $priceMin = ($count > 0 ? $ligne->priceMin : '3000000');
                         $l_stockValue = ($count > 0 ? $ligne->stockValue : $stockValue);
                         $res_stockValue = $l_stockValue + $stockValue;
@@ -128,18 +131,24 @@ class Atyse{
             fclose($handle);
             
         }else{
+            $CI->time_process->end_process($CI, $users, $all, 'error', 'file');
             return false;
         }
-
+        log_message('error', 'Preinsert products');
         $CI->products_struct->Insert_Data($CI, 'products', 'no');
+        log_message('error', 'Preinsert regroupement');
         $CI->regroupement_struct->Insert_Data($CI, 'regroupement', 'no');
+        log_message('error', 'Preinsert ean');
         $CI->ean_struct->Insert_Data($CI, 'ean', 'no');
+        log_message('error', 'Preinsert updateregroup');
         $CI->db->update_batch('regroupement', $update_regroup, 'codeRegroupement', ' AND user_id = '.$CI->db_op->user_id);
         if ($ins){
             $CI->corresfour_struct->Insert_Data($CI, 'corres_four', 'no');
             $CI->provider_struct->Insert_Data($CI, 'providers', 'no');
             $CI->usersproviders_struct->Insert_Data($CI, 'users_providers', 'no');
         }
+        log_message('error', 'Fin');
+        $CI->time_process->end_process($CI, $users, $all, 'ok');
         return true;
     }
 

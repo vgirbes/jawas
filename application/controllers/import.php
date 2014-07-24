@@ -11,7 +11,6 @@ class Import extends CI_Controller{
         $this->load->helper('language');
         $this->lang->load('norauto');
         $this->load->library('encrypt');
-        $this->load->library('email');
         $this->load->library('Time_Process');
     }
 
@@ -37,22 +36,18 @@ class Import extends CI_Controller{
     }
 
     public function atyse(){
-        if(isset($this->session->userdata['username'])){
-            $result = false;
-            $user_id = $this->time_process->check();
-            if ($user_id != false){
-                $result = $this->ficheros->process_comdep_aty('atyse', $user_id);
-            }
-            if ($result){
-                $datos['import_state'] = $this->ficheros->import_state($user_id);
-                $this->load->view('principal', $datos);
-            }else{
-                $datos['errores'] = lang('import.atyse_error');
-                $this->load->view('principal', $datos);
-            }   
-        }else{
-            $this->load->view('principal');
+        $result = false;
+        $user_id = $this->time_process->check();
+        if ($user_id != false){
+            $result = $this->ficheros->process_comdep_aty('atyse', $user_id);
         }
+        if ($result){
+            $datos['import_state'] = $this->ficheros->import_state($user_id);
+            $this->load->view('principal', $datos);
+        }else{
+            $datos['errores'] = lang('import.atyse_error');
+            $this->load->view('principal', $datos);
+        }   
     }
 
     public function all(){
@@ -79,40 +74,34 @@ class Import extends CI_Controller{
     }
 
     public function mch(){
-        if(isset($this->session->userdata['username'])){
-            $result = false;
-            $user_id = $this->time_process->check();
-            if ($user_id != false){
-                $result = $this->ficheros->process_comdep_aty('mch', $user_id);
-            }
-            
-            if ($result){
-                $datos['import_state'] = $this->ficheros->import_state($user_id);
-                $this->load->view('principal', $datos);
-            }else{
-                $datos['errores'] = lang('import.mch_error');
-                $this->load->view('principal', $datos);
-            }   
-        }else{
-            $this->load->view('principal');
+        $result = false;
+        $user_id = $this->time_process->check();
+        if ($user_id != false){
+            $result = $this->ficheros->process_comdep_aty('mch', $user_id);
         }
+        
+        if ($result){
+            $datos['import_state'] = $this->ficheros->import_state($user_id);
+            $this->load->view('principal', $datos);
+        }else{
+            $datos['errores'] = lang('import.mch_error');
+            $this->load->view('principal', $datos);
+        }   
     }
 
     public function generate(){
-        if(isset($this->session->userdata['username'])){
-            $user_id = $this->session->userdata['id'];
-            $result = $this->ficheros->generate_files();
-            if ($result){
-                $datos['lista_ficheros'] = $this->ficheros->show_files();
-                if (!$datos['lista_ficheros']) $datos['error'] = lang('import.files_error');
-                $this->load->view('principal', $datos);
-            }else{
-                $datos['errores'] = lang('import.generate_error');
-                $this->load->view('principal', $datos);
-            }   
+        $result = false;
+        $user_id = $this->time_process->check();
+        log_message('error', 'Usuario '.$user_id);
+        $result = $this->ficheros->generate_files($user_id);
+        if ($result){
+            $datos['lista_ficheros'] = $this->ficheros->show_files();
+            if (!$datos['lista_ficheros']) $datos['error'] = lang('import.files_error');
+            $this->load->view('principal', $datos);
         }else{
-            $this->load->view('principal');
-        }
+            $datos['errores'] = lang('import.generate_error');
+            $this->load->view('principal', $datos);
+        }   
     }
 
     public function view(){
@@ -153,11 +142,20 @@ class Import extends CI_Controller{
 
     public function index(){
         $CI =& get_instance();
-        mail('vgirbes@gmail.com', 'hola', 'hola');
+        mail('vgirbes@norauto.es', 'hola', 'hola');
+        
+        $this->load->library('email');
+        
+        //$this->email->initialize($config);
         $this->email->from('vgirbes@norauto.es', 'Stock Application');
         $this->email->to('vgirbes@norauto.es'); 
         $this->email->subject('Acción realizada con éxito');
         $this->email->message('hopla');
+        if ($this->email->send()){
+            echo 'OK';
+        }else{
+            echo $this->email->print_debugger();
+        }
 
         if(isset($this->session->userdata['username'])){
             $user_id = $this->session->userdata['id'];
@@ -236,7 +234,7 @@ class Import extends CI_Controller{
 
     public function stockfiles(){
         if(isset($this->session->userdata['username'])){
-            $this->processtyres('files', $this->session->userdata['id']);        
+            $this->processtyres('generate', $this->session->userdata['id']);        
         }    
     }
 }

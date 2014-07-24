@@ -20,8 +20,9 @@ class Ficheros extends CI_Model{
             $CI =& get_instance();
             $users = $this->db_op->Get_Usuarios($CI, $user_id);
             if ($users != false){
+                $all = ($user_id != '' ? true : false);
                 foreach ($users as $user){
-                    $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider, $user['countries_id'], $user['username']), $user['id']);
+                    $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider, $user['countries_id'], $user['username']), $user['id'], $all);
                     if ($res) $this->update_state($user['id'], strtoupper($provider), $this->adapter->filename);
                 }
             }else{
@@ -37,10 +38,11 @@ class Ficheros extends CI_Model{
 
     public function generate_files($user_id = ''){
         $CI =& get_instance();
-        $users = $this->db_op->Get_Usuarios($CI);
+        $users = $this->db_op->Get_Usuarios($CI, $user_id);
         $this->db_op->Truncate_Tables($CI, $users, 'lastdayacti');
+        $all = ($user_id != '' ? true : false);
         foreach ($users as $user){
-            $res = $this->generate_files->do_it($user['id'], $user['username']);
+            $res = $this->generate_files->do_it($user['id'], $user['username'], $all);
             if (!$res) return false;
         }
         return $res;

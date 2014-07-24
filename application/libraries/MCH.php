@@ -8,6 +8,7 @@ class MCH{
         $CI->load->database();
         $CI->load->helper('array');
         $CI->load->library('session');
+        $CI->load->library('Time_Process');
         $CI->load->library('Mch_Struct');
         $CI->load->library('Regroupement_Struct');
         $CI->load->library('DB_op');
@@ -19,10 +20,13 @@ class MCH{
         $query = $this->Groupe_Marchandise($CI);
         $count_line = $query->num_rows();
         $Conn = $CI->db_op->Connect_MCH();
+        $CI->time_process->flag = 'mch';
+        $CI->time_process->user_id = $user_id;
         $users = $CI->db_op->Get_Usuarios($CI, $user_id);
         $CI->db_op->Truncate_Tables($CI, $users, 'data_mch');
-
+        $all = ($user_id != '' ? true : false);
 		$i = 0;
+		log_message('error', 'Entra');
 		if ($Conn){
 			$row_n = $this->Get_CODGMA($Conn);
 			$row_e = $this->Get_EAN($Conn);
@@ -46,6 +50,7 @@ class MCH{
 			//---------------------------------------------------------------------------------------------transfert des données de la MCH vers la bdd referentiel_atyse
 			while($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC))
 			{
+				log_message('error', 'Entra '.$row['IDEPRD']);
 				foreach ($users as $user){
 					$j++;
 					$CI->db->select('*');
@@ -69,11 +74,14 @@ class MCH{
 					}
 				}
 			}
-
+			log_message('error', 'Preinsert');
 			$CI->mch_struct->Insert_Data($CI, 'data_mch', 'si');
 			$res = $this->Calc_Stock_MCH($CI, $users);
+			$CI->time_process->end_process($CI, $users, $all, 'ok');
+			log_message('error', 'Fin');
 			return $res;
 		}else{
+			$CI->time_process->end_process($CI, $users, $all, 'error', 'db');
 			return false;
 		}
     }
