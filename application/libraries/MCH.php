@@ -13,13 +13,13 @@ class MCH{
         $CI->load->library('DB_op');
     }
 
-    function Procesar_Items(){
+    function Procesar_Items($check, $user_id = ''){
     	$CI =& get_instance();
-        $user_id = $CI->session->userdata['id'];
+        //$user_id = $CI->session->userdata['id'];
         $query = $this->Groupe_Marchandise($CI);
         $count_line = $query->num_rows();
         $Conn = $CI->db_op->Connect_MCH();
-        $users = $CI->db_op->Get_Usuarios($CI);
+        $users = $CI->db_op->Get_Usuarios($CI, $user_id);
         $CI->db_op->Truncate_Tables($CI, $users, 'data_mch');
 
 		$i = 0;

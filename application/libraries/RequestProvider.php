@@ -9,6 +9,7 @@ class RequestProvider{
     function __construct(){
         $CI =& get_instance();
         $CI->load->database();
+        $CI->load->library('Time_Process');
     }
 
     public function Cargar_Comdep($CI){
@@ -16,16 +17,12 @@ class RequestProvider{
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
             $name_export_xml = 'assets/files/comdep/'.$archivo;
-            //$name_export_xml = 'assets/files/comdep/exportReferentiel_20140101024740.xml';
-            if ($name_export_xml){
-                $items = simplexml_load_file($name_export_xml);
-                return $items;
-            }else{
-                return false;
-            }
         }else{
-            return false;
+            $name_export_xml = false;
         }
+        //$name_export_xml = 'assets/files/comdep/exportReferentiel_20140101024740.xml';
+        $items = simplexml_load_file($name_export_xml);
+        return $items;
     }
 
     public function Cargar_Atyse($CI, $country_id = '', $user_name = ''){

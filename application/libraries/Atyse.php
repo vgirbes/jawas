@@ -12,6 +12,7 @@ class Atyse{
         $CI->load->library('Ean_Struct');
         $CI->load->library('CorresFour_Struct');
         $CI->load->library('Provider_Struct');
+        $CI->load->library('Time_Process');
         $CI->load->library('UsersProviders_Struct');
         $CI->load->library('session');
     }

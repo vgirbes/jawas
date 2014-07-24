@@ -14,6 +14,23 @@
     			$( "#msg-import" ).draggable();
     			$( ".login-box" ).draggable();
   			});
+  			function send_request(type)
+			{
+				 $.ajax({
+					 type: 'POST',
+					 url: '<?php echo base_url(); ?><?= $this->session->userdata["lang"];?>/import/'+type, 
+					 success: function(resp) { 
+					 	
+					 }
+				 });
+
+				 window.setTimeout(reloadpage, 1000)
+
+			 }
+
+			 function reloadpage(){
+			 	window.location = '<?= base_url();?><?= $this->session->userdata["lang"];?>/import';
+			 }
   		</script>
 		<?php 
 		if (isset($css_files)){

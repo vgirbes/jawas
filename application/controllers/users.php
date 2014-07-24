@@ -26,6 +26,7 @@ class Users extends CI_Controller{
                     'password' => $this->input->post('password'),
                     'lang' => $lang,
                     'rol' => $isValidLogin[0]['rol'],
+                    'token' => $isValidLogin[0]['token'],
                     'id' => $isValidLogin[0]['id']
                 );
                 $this->session->set_userdata($sesion_data);

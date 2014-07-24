@@ -111,10 +111,13 @@ class DB_op{
         return $CI->db->get();
     }
 
-    public function Get_Usuarios($CI){
+    public function Get_Usuarios($CI, $user_id = ''){
         $users = array();
-        $CI->db->select('id, countries_id, username');
+        $CI->db->select('*');
         $CI->db->from('users');
+        if ($user_id != ''){
+            $CI->db->where('id', $user_id);
+        }
         $query = $CI->db->get();
         $i = 0;
 
@@ -123,6 +126,9 @@ class DB_op{
                 $users[$i]['id'] = $ligne->id;
                 $users[$i]['countries_id'] = $ligne->countries_id;
                 $users[$i]['username'] = $ligne->username;
+                $users[$i]['email'] = $ligne->email;
+                $users[$i]['rol'] = $ligne->rol;
+                $users[$i]['name'] = $ligne->name;
                 $i++;
              }
 

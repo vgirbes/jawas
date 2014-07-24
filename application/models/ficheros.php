@@ -13,33 +13,26 @@ class Ficheros extends CI_Model{
         $this->load->database();
     }
        
-    public function process_comdep_aty($provider){
-        if(isset($this->session->userdata['username'])){
-            $res = true;
-            $user_id = $this->session->userdata['id'];
-            $importacion = $this->check_import_state($user_id, $provider);
-            if ($provider == 'atyse'){
-                if ($importacion){
-                    $CI =& get_instance();
-                    $users = $this->db_op->Get_Usuarios($CI);
-                    if ($users != false){
-                        foreach ($users as $user){
-                            $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider, $user['countries_id'], $user['username']), $user['id']);
-                            if ($res) $this->update_state($user['id'], strtoupper($provider), $this->adapter->filename);
-                        }
-                    }else{
-                        return false;
-                    }
-                }else{
-                    return false;
-                }     
+    public function process_comdep_aty($provider, $user_id = ''){
+        $res = true;
+        //$importacion = $this->check_import_state($user_id, $provider);
+        if ($provider == 'atyse'){
+            $CI =& get_instance();
+            $users = $this->db_op->Get_Usuarios($CI, $user_id);
+            if ($users != false){
+                foreach ($users as $user){
+                    $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider, $user['countries_id'], $user['username']), $user['id']);
+                    if ($res) $this->update_state($user['id'], strtoupper($provider), $this->adapter->filename);
+                }
             }else{
-                if ($importacion) $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider));
-                if ($res) $this->update_state($user_id, strtoupper($provider), $this->adapter->filename);
+                return false;
             }
-            
-            return $res;
+        }else{
+            $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider), $user_id);
+            if ($res) $this->update_state($user_id, strtoupper($provider), $this->adapter->filename);
         }
+        
+        return $res;
     }
 
     public function generate_files($user_id = ''){
@@ -107,16 +100,20 @@ class Ficheros extends CI_Model{
 
     public function check_import_state($user_id, $provider){
         $import = $this->import_state($user_id);
-        $import = $import[0];
-        $time_fecha = strtotime($import['fecha']);
-        $time_fecha_b = strtotime($import['fecha'])+300;
-        $time_actual = time();
-        $f_actual = date('Y-m-d');
-        $f_import = date('Y-m-d', $time_fecha);
-        $h_import = date('H:i', $time_fecha);
-        if (($f_actual == $f_import) && (strtoupper($provider) == $import['flag'])){
-            if ($time_actual <= $time_fecha_b){
-                return false;
+        if (isset($import[0])){
+            $import = $import[0];
+            $time_fecha = strtotime($import['fecha']);
+            $time_fecha_b = strtotime($import['fecha'])+30;
+            $time_actual = time();
+            $f_actual = date('Y-m-d');
+            $f_import = date('Y-m-d', $time_fecha);
+            $h_import = date('H:i', $time_fecha);
+            if (($f_actual == $f_import) && (strtoupper($provider) == $import['flag'])){
+                if ($time_actual <= $time_fecha_b){
+                    return false;
+                }else{
+                    return true;
+                }
             }else{
                 return true;
             }

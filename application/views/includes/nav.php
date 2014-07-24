@@ -10,13 +10,15 @@
 			</ul>
 		</nav>
 		<?php if ($this->uri->segment(2)=='import'){ ?>
+		<?php if (isset($editable) && $editable) { ?>
 		<div id="submenu">
 			<ul id="menu-ul">
-				<li><a href="<?= base_url();?><?= $this->session->userdata['lang'];?>/import/comdep"><?= lang('submenu.comdep');?></a></li>
-				<li><a href="<?= base_url();?><?= $this->session->userdata['lang'];?>/import/atyse"><?= lang('submenu.atyse');?></a></li>
-				<li><a href="<?= base_url();?><?= $this->session->userdata['lang'];?>/import/mch"><?= lang('submenu.mch');?></a></li>
-				<li><a href="<?= base_url();?><?= $this->session->userdata['lang'];?>/import/generate"><?= lang('submenu.ficheros');?></a></li>
+				<li><a href="javascript:send_request('stockcomdep');"><?= lang('submenu.comdep');?></a></li>
+				<li><a href="javascript:send_request('stockatyse');"><?= lang('submenu.atyse');?></a></li>
+				<li><a href="javascript:send_request('stockmch');"><?= lang('submenu.mch');?></a></li>
+				<li><a href="javascript:send_request('stockfiles');"><?= lang('submenu.ficheros');?></a></li>
 			</ul>
 		</div>
+		<?php } ?>
 		<?php } ?>
 	

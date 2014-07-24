@@ -21,6 +21,10 @@ class Adapter{
                 $this->filename = $CI->requestprovider->filename;
                 return $items;
             break;
+
+            case 'MCH':
+                return true;
+            break;
     	}
 
     }

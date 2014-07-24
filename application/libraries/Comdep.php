@@ -12,13 +12,19 @@ class Comdep{
         $CI->load->library('Ean_Struct');
         $CI->load->library('CorresFour_Struct');
         $CI->load->library('Provider_Struct');
+        $CI->load->library('Time_Process');
         $CI->load->library('UsersProviders_Struct');
         $CI->load->library('session');
     }
 
     public function Procesar_Items($xml, $user_id = ''){
+        $CI =& get_instance();
+        $CI->time_process->flag = 'comdep';
+        $CI->time_process->user_id = $user_id;
+        $CI->provider_struct->Get_Codes($CI);
+        $users = $CI->db_op->Get_Usuarios($CI, $user_id);
+        $all = ($user_id != '' ? true : false);
         if ($xml != false){
-            $CI =& get_instance();
             $i = 0;
             $j = 0;
             $k = 0;
@@ -26,12 +32,9 @@ class Comdep{
             $count_prod = 0;
             $count = 0;
             $ins = false;
-            $CI->provider_struct->Get_Codes($CI);
-            $users = $CI->db_op->Get_Usuarios($CI);
             $this->Reset_Tables($CI, $users);
             
             while ($xml->RegroupementsMobiWheel->RegroupementMobiWheel[$i] != NULL){
-                
                 $res_price = 300000000000000;
                 $res_stock = 0;
                 
@@ -55,7 +58,6 @@ class Comdep{
                         $d[0] = substr($d[0], 5);
                     
                     $query = $CI->db_op->Info_Provider($CI, 'p.SupplierKey', $d[0]);
-                    
                     if ($query->num_rows()<=0){
                         $ins = true;
                         $ins_provider = $CI->provider_struct->Process_Provider($CI, $count, $d, $d[0], 'comdep');
@@ -129,9 +131,9 @@ class Comdep{
                 $i++;
             }
 
-            $ins_prod = $CI->products_struct->Insert_Data($CI, 'products');
-            $ins_regro = $CI->regroupement_struct->Insert_Data($CI, 'regroupement');
-            $ins_ean = $CI->ean_struct->Insert_Data($CI, 'ean');
+            $ins_prod = $CI->products_struct->Insert_Data($CI, 'products', 'no');
+            $ins_regro = $CI->regroupement_struct->Insert_Data($CI, 'regroupement', 'no');
+            $ins_ean = $CI->ean_struct->Insert_Data($CI, 'ean', 'no');
             if ($ins){
                 $CI->corresfour_struct->Insert_Data($CI, 'corres_four', 'no');
                 $CI->provider_struct->Insert_Data($CI, 'providers', 'no');
@@ -139,11 +141,14 @@ class Comdep{
             }
 
             if ($ins_prod && $ins_regro && $ins_ean){
+                $CI->time_process->end_process($CI, $users, $all, 'ok');
                 return true;
             }else{
+                $CI->time_process->end_process($CI, $users, $all, 'error', 'db');
                 return false;
             }
         }else{
+            $CI->time_process->end_process($CI, $users, $all, 'error', 'file');
             return false;
         }
     }
