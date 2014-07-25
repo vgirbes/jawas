@@ -78,7 +78,14 @@ class Time_Process{
 	}
 
 	public function send_request(){
-        exec('curl '.$this->url);
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+
+		curl_exec($ch);
+		curl_close($ch);
 	}
 
 	public function init_process($CI){
