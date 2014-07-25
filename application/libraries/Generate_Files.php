@@ -33,7 +33,7 @@ class Generate_Files{
         $marge_p = $CI->db_op->Get_Default_Value($CI, 'marge_p');
         $tva = $CI->db_op->Get_Default_Value($CI, 'TVA');
         $query = $this->Get_Data_To_File($CI, $user_id);
-
+        $users = $CI->db_op->Get_Usuarios($CI, $user_id);
         $save = 0;
         $no_price = 0;
         $ret = 0;
@@ -129,10 +129,12 @@ class Generate_Files{
 
     public function Get_AIH_PRIARTWEB($Conn){
         $sql = "SELECT PRIVENLOC, CODART from src.aih.AIH_PRIARTWEB where CODCEN = '9901';";
+        log_message('error', 'Privenloc '.$sql);
         $stmt = sqlsrv_query($Conn, $sql);
         while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
             $this->AIH_PRIARTWEB[$row['CODART']] = $row['PRIVENLOC'];
         }
+        log_message('error', 'Fin privenloc');
     }
 
     public function Get_PRIVENLOC($idProd){

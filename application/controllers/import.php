@@ -142,21 +142,6 @@ class Import extends CI_Controller{
 
     public function index(){
         $CI =& get_instance();
-        mail('vgirbes@norauto.es', 'hola', 'hola');
-        
-        $this->load->library('email');
-        
-        //$this->email->initialize($config);
-        $this->email->from('vgirbes@norauto.es', 'Stock Application');
-        $this->email->to('vgirbes@norauto.es'); 
-        $this->email->subject('Acción realizada con éxito');
-        $this->email->message('hopla');
-        if ($this->email->send()){
-            echo 'OK';
-        }else{
-            echo $this->email->print_debugger();
-        }
-
         if(isset($this->session->userdata['username'])){
             $user_id = $this->session->userdata['id'];
             $datos['import_state'] = $this->ficheros->import_state($user_id);
