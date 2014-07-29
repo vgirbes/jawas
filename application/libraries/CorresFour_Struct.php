@@ -48,9 +48,9 @@ class CorresFour_Struct extends DB_op{
         
         $users = $this->Get_Usuarios($CI);
         foreach ($users as $user){
-            $insert_corres_four = array('nomFour' => "$data[11]", 'codeFour' => "$codeFour", 'user_id', $this->db_op->user_id);
-            $this->Load_Data($insert_corres_four, $this->db_op->item_cf);
-            $this->db_op->item_cf++;
+            $insert_corres_four = array('nomFour' => "$data[10]", 'codeFour' => "$codeFour", 'user_id', $this->user_id);
+            $this->Load_Data($insert_corres_four, $this->item_cf);
+            $this->item_cf++;
         }
 
         return $codeFour;

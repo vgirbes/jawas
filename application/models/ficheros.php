@@ -15,12 +15,12 @@ class Ficheros extends CI_Model{
        
     public function process_comdep_aty($provider, $user_id = ''){
         $res = true;
-        //$importacion = $this->check_import_state($user_id, $provider);
         if ($provider == 'atyse'){
             $CI =& get_instance();
             $users = $this->db_op->Get_Usuarios($CI, $user_id);
             if ($users != false){
                 $all = ($user_id != '' ? true : false);
+                $this->Reset_Tables($CI, $users);
                 foreach ($users as $user){
                     $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider, $user['countries_id'], $user['username']), $user['id'], $all);
                     if ($res) $this->update_state($user['id'], strtoupper($provider), $this->adapter->filename);
@@ -173,5 +173,10 @@ class Ficheros extends CI_Model{
         }else{
             return false;
         }
+    }
+
+    public function Reset_Tables($CI, $users){
+        $CI->db_op->Truncate_Tables($CI, $users, 'products');
+        $CI->db_op->Truncate_Tables($CI, $users, 'ean');
     }
 }

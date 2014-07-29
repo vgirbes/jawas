@@ -28,6 +28,8 @@ class Products_Struct extends DB_op{
         'currency' => '',
         'withVAT' => '',
         'priceVar' => '',
+        'priceMin' => '',
+        'priceMinPlusP' => '',
         'stockValue' => '',
         'stockValueB' => '',
         'stockVar' => '',

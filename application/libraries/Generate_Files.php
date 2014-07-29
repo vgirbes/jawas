@@ -115,7 +115,7 @@ class Generate_Files{
 
     public function Get_Data_To_File($CI, $user_id){
         $CI->db->distinct('dm.idProd, dm.valPro, dm.country, r.stockValue, r.priceMin');
-        $CI->db->from('data_mch dm, regroupement r');
+        $CI->db->from('data_mch dm, products r');
         $CI->db->where('r.codeRegroupement = dm.valPro');
         $CI->db->where('dm.numPro = "codeRegroupement"');
         $CI->db->where('dm.country != "NOES"');

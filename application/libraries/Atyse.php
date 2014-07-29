@@ -40,56 +40,33 @@ class Atyse{
             {
                 if ($row > 1)
                 {
-                    if (!isset($data[70])) break;
-                    switch($data[70]){
-                        case 'ENT':
-                            $brand = 'ATYSE';
-                            $codProv = '111';
-                            $query = $CI->db_op->Info_Provider($CI, 'p.SupplierKey', $codProv);
-                            $ligne_f = $query->result();
-                            if ($query->num_rows() > 0) $ligne_f = $ligne_f[0];
-                        break;
-                        case 'TPP':
-                            $brand = $data[11];
-                            $query = $CI->db_op->Info_Provider($CI, 'p.nom', $brand);
-                            if ($query->num_rows() > 0){
-                                $query = $CI->db_op->Info_Provider($CI, 'p.nom', $brand, $CI->db_op->user_id);
-                                $ligne_f = $query->result();
-                                $ligne_f = $ligne_f[0];
-                                $codProv = $ligne_f->SupplierKey;
-                            }else{
-                                $ins = true;
-                                $code_four = $CI->corresfour_struct->Code_Four($CI, $item, $data);
-                                $ins_provider = $CI->provider_struct->Process_Provider($CI, $item, $data, $code_four, 'atyse');
-                                $ins_userprovider = $CI->usersproviders_struct->Process_UserProvider($CI, $item, $code_four, $ins_provider);
-                                $codProv = $code_four;
-                            } 
-                        break;
-                    }
+                    echo 'Entra';
+                    if (!isset($data[9])) break;
+                    $codProv = $data[9];
+                    $brand = $data[10];
+                    $query = $CI->db_op->Info_Provider($CI, 'p.SupplierKey', $codProv, $CI->db_op->user_id);
+                    if ($query->num_rows() > 0){
+                        $ligne_f = $query->result();
+                        $ligne_f = $ligne_f[0];
+                        $codProv = $ligne_f->SupplierKey;
+                    }else{
+                        $ins = true;
+                        $code_four = $CI->corresfour_struct->Code_Four($CI, $item, $data);
+                        $ins_provider = $CI->provider_struct->Process_Provider($CI, $item, $data, $code_four, 'atyse');
+                        $ins_userprovider = $CI->usersproviders_struct->Process_UserProvider($CI, $item, $code_four, $ins_provider);
+                        $codProv = $code_four;
+                        $ligne_f = null;
+                    } 
 
-                    if ($ligne_f->active == 1 || $ligne_f->active == "1"){
+                    if (!is_null($ligne_f) && ($ligne_f->active == 1 || $ligne_f->active == "1")){
                         $count = 0;
-                        $codeReg = $data[1];
-                        $CI->db->select('*');
-                        $CI->db->from('regroupement');
-                        $CI->db->where('codeRegroupement', "$codeReg");
-                        $CI->db->where('user_id', $CI->db_op->user_id);
-                        $query = $CI->db->get();
-                        $count = $query->num_rows();
-                        $ligne = $query->result();
+                        $codeReg = '00000000000'.$data[1];
                         log_message('error', 'Procesando '.$codeReg);
                         echo '<input type="hidden" name="atyse">';
-                        if ($count > 0) $ligne = $ligne[0];              
-                
-                        if ($count<=0)
-                        {
-                            $regroupement = $this->Get_Regroupement_array($codeReg, $data, $brand, $CI->db_op->user_id);
-                            $CI->regroupement_struct->Load_Data($regroupement, $item);
-                            $datos_ean = array('codeRegroupement' => "$codeReg", 'ean' => "$data[4]", 'user_id'  => $CI->db_op->user_id);
-                            $CI->ean_struct->Load_Data($datos_ean, $item);
-                        }
 
-                        $transport = $this->Calc_transport($data[64], $data[17], $ligne_f->transport);
+                        $datos_ean = array('codeRegroupement' => "$codeReg", 'ean' => "$data[3]", 'user_id'  => $CI->db_op->user_id);
+                        $CI->ean_struct->Load_Data($datos_ean, $item);
+
                         if ($ligne_f->forceStock == 1)
                         {
                             $ligne_prodForced = $ligne_f;
@@ -99,28 +76,19 @@ class Atyse{
                                $stockValue = (int)$ligne_prodForced->stock - $ligne_f->correctionstock;
                             }
                             else
-                               $stockValue = (int)$data[68] - $ligne_f->correctionstock;
+                               $stockValue = (int)$data[14] - $ligne_f->correctionstock;
                         }
                         else
-                            $stockValue = (int)$data[68] - $ligne_f->correctionstock;
+                            $stockValue = (int)$data[14] - $ligne_f->correctionstock;
                         if ($stockValue < 0)
                             $stockValue = 0;
-                        $result_price = (((double)$data[60] + (double)$ligne_f->ecotaxe) - (double)$ligne_f->RFAfixe) * (1 - ((double)$ligne_f->RFA_p / 100)) + (double)$ligne_f->CDS + (double)$transport;
+                        $result_price = (((double)$data[12] + (double)$ligne_f->ecotaxe) - (double)$ligne_f->RFAfixe) * (1 - ((double)$ligne_f->RFA_p / 100)) + (double)$ligne_f->CDS;
                         $prod_n = $CI->products_struct->Product_Exist($CI, $codeReg, $codProv, $CI->db_op->user_id);
                         if ($prod_n <= 0){
                             $products = $this->Get_Products_array($codeReg, $codProv, $data, $result_price, $stockValue, $CI->db_op->user_id);
                             $CI->products_struct->Load_Data($products, $item);
                         }
-                        log_message('error', 'stock '.$data[68]);
-                        $priceMin = ($count > 0 ? $ligne->priceMin : '3000000');
-                        $l_stockValue = ($count > 0 ? $ligne->stockValue : $stockValue);
-                        $res_stockValue = $l_stockValue + $stockValue;
-                        $stockupdate = array('stockValue' => "$res_stockValue", 'codeRegroupement' => "$codeReg");
-                        if (($priceMin < 0 || $priceMin > $result_price) && $stockValue > 4){
-                            $res_pricemin = array('priceMin' => "$result_price");
-                            $stockupdate = array_merge($stockupdate, $res_pricemin);
-                        }
-                        $update_regroup[$item] = $stockupdate;
+                        log_message('error', 'stock '.$data[14]);
                         $item++;
                     }
                 }
@@ -136,12 +104,9 @@ class Atyse{
         }
         log_message('error', 'Preinsert products');
         $CI->products_struct->Insert_Data($CI, 'products', 'no');
-        log_message('error', 'Preinsert regroupement');
-        $CI->regroupement_struct->Insert_Data($CI, 'regroupement', 'no');
         log_message('error', 'Preinsert ean');
         $CI->ean_struct->Insert_Data($CI, 'ean', 'no');
-        log_message('error', 'Preinsert updateregroup');
-        $CI->db->update_batch('regroupement', $update_regroup, 'codeRegroupement', ' AND user_id = '.$CI->db_op->user_id);
+        
         if ($ins){
             $CI->corresfour_struct->Insert_Data($CI, 'corres_four', 'no');
             $CI->provider_struct->Insert_Data($CI, 'providers', 'no');
@@ -152,58 +117,19 @@ class Atyse{
         return true;
     }
 
-    public function Get_Regroupement_array($codeReg, $data, $brand, $user_id){
-        $regroupement = array(
-            'codeRegroupement' => "$codeReg",
-            'typeVehicule' => "$data[64]",
-            'codeTypeVehicule' => '',
-            'typeProduct' => "$data[64]",
-            'season' => "$data[65]",
-            'brand' => "$brand",
-            'height' => "$data[15]",
-            'width' => "$data[14]",
-            'diameter' => "$data[17]",
-            'radial' => "$data[16]",
-            'poids' => "$data[50]",
-            'poidsUnite' => "$data[51]",
-            'volume' => "$data[52]",
-            'volumeUnite' => "$data[53]",
-            'manufacturerRef' => '',
-            'priceMin' => '3000000',
-            'user_id' => $user_id
-        );
-
-        return $regroupement;
-    }
-
     public function Get_Products_array($codeReg, $codProv, $data, $result_price, $stockValue, $user_id){
         $products = array(
             'codeRegroupement' => "$codeReg",
             'supplierKey' => "$codProv",
-            'supplierRef' => "$codProv",
+            'supplierRef' => "00000$data[11]",
             'attached' => 'true',
-            'name' => "$data[13]",
-            'poidnet' => "$data[50]",
-            'poidnetunit' => "$data[51]",
-            'volume' => "$data[52]",
-            'volumeunit' => "$data[53]",
-            'temperatureResistanceGrade' => '',
+            'name' => "$data[2]",
+            'currency' => $data[13],
             'supplierPrice' => "$result_price",
-            'supplierPriceB' => "$data[60]",
             'stockValue' => "$stockValue",
-            'stockValueB' => "$data[68]",
             'user_id' => $user_id
         );
 
         return $products;
-    }
-
-    public function Calc_transport($typeVehicule, $diameter, $l_transport){
-        if ((strcmp($typeVehicule, "TOURISME") == 0 && (int)$diameter <= 18) || (strcmp($typeVehicule, "UTILITAIRE") == 0 && (int)$diameter <= 16))
-            $transport = (double)$l_transport / 2;
-        else
-            $transport = (double)$l_transport;
-
-        return $transport;
     }
 }

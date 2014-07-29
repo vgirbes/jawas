@@ -138,6 +138,59 @@ class DB_op{
         }
     }
 
+    public function Get_Property_MCH($CI, $idProd, $valor, $Conn_MCH){
+        $campo = $this->Get_Property_test($valor);
+        $req = ("SELECT *
+                FROM [REFMCH].[mch].[NCOM_PRD_PRO_BU]
+                WHERE numpro = ".$campo." AND IDEPRD = ".$idProd." AND CODLANISO in ('*','fr')");
+        $stmt = sqlsrv_query($Conn_MCH, $req);
+
+        $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+        return strtoupper($row['VALPRO']);
+    }
+
+    public function Get_Property_MCH_List($CI, $valor, $Conn_MCH){
+        $campo = $this->Get_Property_test($valor);
+        $req = ("SELECT *
+                FROM [REFMCH].[mch].[NCOM_PRD_PRO_BU]
+                WHERE numpro = ".$campo." AND CODLANISO in ('*','fr')");
+        $stmt = sqlsrv_query($Conn_MCH, $req);
+        $res = array();
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
+            $res[$row['IDEPRD']] = strtoupper($row['VALPRO']);    
+        }
+
+        return $res;
+    }
+
+    public function Get_Property_test($valor){
+        switch($valor){
+            case 'type_pneu':
+                $campo = 890;
+            break;
+
+            case 'diameter':
+                $campo = 224;
+            break;
+        }
+        
+        return $campo;
+    }
+
+    public function Get_Property($valor){
+        switch($valor){
+            case 'type_pneu':
+                $campo = 779;
+            break;
+
+            case 'diameter':
+                $campo = 231;
+            break;
+        }
+        
+        return $campo;
+    }
+
     public function Connect_WRK(){
         $ServerName = HOST_WRK;
         $ConnectionOptions  = array("Database" => DB_WRK, "UID"=> USER_WRK, "PWD"=> PASS_WRK);

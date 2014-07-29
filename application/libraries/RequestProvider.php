@@ -31,7 +31,7 @@ class RequestProvider{
         if ($user_name != ''){
             $archivo = $this->Request_Files('ATYSE', $CI);
         }
-        //$archivo = 'NOR-SP_AVECPRIX_AVECSTOCK_20140630072253.csv';
+        $archivo = 'maquette ZFOUR_ATYSE.csv';
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
     	   return $archivo;

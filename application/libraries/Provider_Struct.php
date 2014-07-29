@@ -35,7 +35,7 @@ class Provider_Struct extends DB_op{
 
     public function Process_Provider($CI, $item, $data, $codeFour, $origin = ''){
         if (!in_array($codeFour, $this->codes_prod) && !in_array((int)$codeFour, $this->codes)){
-            $insert_provider = array('nom' => utf8_encode($data[11]), 'SupplierKey' => "$codeFour", 'commentaires' => 'N', 'statut' => "$origin");
+            $insert_provider = array('nom' => utf8_encode($data[10]), 'SupplierKey' => "$codeFour", 'commentaires' => 'N', 'statut' => "$origin");
             $this->codes[] = (int)$codeFour;
             $this->Load_Data($insert_provider, $item);
             return true;

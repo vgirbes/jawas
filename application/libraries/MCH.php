@@ -2,6 +2,8 @@
 class MCH{
     var $Provider = 'MCH';
     var $count = 0;
+    var $diameter_list = array();
+    var $typepneu_list = array();
 
     function __construct(){
         $CI =& get_instance();
@@ -11,20 +13,23 @@ class MCH{
         $CI->load->library('Time_Process');
         $CI->load->library('Mch_Struct');
         $CI->load->library('Regroupement_Struct');
+        $CI->load->library('Products_Struct');
         $CI->load->library('DB_op');
     }
 
-    function Procesar_Items($check, $user_id = ''){
-    	$CI =& get_instance();
-        //$user_id = $CI->session->userdata['id'];
-        $query = $this->Groupe_Marchandise($CI);
-        $count_line = $query->num_rows();
-        $Conn = $CI->db_op->Connect_MCH();
-        $CI->time_process->flag = 'mch';
-        $CI->time_process->user_id = $user_id;
-        $users = $CI->db_op->Get_Usuarios($CI, $user_id);
-        $CI->db_op->Truncate_Tables($CI, $users, 'data_mch');
-        $all = ($user_id != '' ? true : false);
+    function Procesar_Items($user_id = ''){
+	  	$CI =& get_instance();
+	    $query = $this->Groupe_Marchandise($CI);
+	    $count_line = $query->num_rows();
+	    $Conn = $CI->db_op->Connect_WRK();
+	    $Conn_MCH = $CI->db_op->Connect_MCH();
+	    $CI->time_process->flag = 'mch';
+	    $CI->time_process->user_id = $user_id;
+	    $users = $CI->db_op->Get_Usuarios($CI, $user_id);
+	    $CI->db_op->Truncate_Tables($CI, $users, 'data_mch');
+	    $all = ($user_id != '' ? true : false);
+	    $this->diameter_list = $diameter = $CI->db_op->Get_Property_MCH_List($CI, 'diameter', $Conn_MCH);
+	    $this->typepneu_list = $diameter = $CI->db_op->Get_Property_MCH_List($CI, 'type_pneu', $Conn_MCH);
 		$i = 0;
 		log_message('error', 'Entra');
 		if ($Conn){
@@ -44,7 +49,7 @@ class MCH{
 				$i++;
 			}
 
-			$stmt = sqlsrv_query($Conn, $sql);
+			$stmt = sqlsrv_query($Conn_MCH, $sql);
 			$j = 0;
 			$item = 0;
 			//---------------------------------------------------------------------------------------------transfert des données de la MCH vers la bdd referentiel_atyse
@@ -75,8 +80,8 @@ class MCH{
 				}
 			}
 			log_message('error', 'Preinsert');
-			$CI->mch_struct->Insert_Data($CI, 'data_mch', 'si');
-			$res = $this->Calc_Stock_MCH($CI, $users);
+			$CI->mch_struct->Insert_Data($CI, 'data_mch', 'no');
+			$res = $this->Calc_Stock_MCH($CI, $users, $Conn_MCH);
 			$CI->time_process->end_process($CI, $users, $all, 'ok');
 			log_message('error', 'Fin');
 			return $res;
@@ -113,11 +118,11 @@ class MCH{
     }
 
     public function Groupe_Marchandise($CI){
-    	$CI->db->select('*');
-        $CI->db->from('groupe_marchandise');
-        $query = $CI->db->get();
+	    $CI->db->select('*');
+	    $CI->db->from('groupe_marchandise');
+	    $query = $CI->db->get();
 
-        return $query;
+	    return $query;
     }
 
     public function Get_Data_Mch($IDEPRD, $CODPRO, $country, $valor, $user_id){
@@ -132,10 +137,10 @@ class MCH{
 		return $data_mch;
     }
 
-    public function Calc_Stock_MCH($CI, $users){
+    public function Calc_Stock_MCH($CI, $users, $Conn_MCH){
     	$pourcent = $CI->db_op->Get_Default_Value($CI, 'p_stock');
     	foreach ($users as $user){
-			$CI->db->select('valPro');
+			$CI->db->select('idProd, valPro');
 			$CI->db->from('data_mch');
 			$CI->db->where('numPro = "codeRegroupement"');
 			$CI->db->where('user_id', $user['id']);
@@ -144,55 +149,79 @@ class MCH{
 			if ($query->num_rows() > 0){
 				foreach ($query->result() as $ligne)
 				{
-					 $this->Calc($pourcent, $ligne->valPro, $CI, $user['id']);
+					 $this->Calc($pourcent, $ligne->valPro, $ligne->idProd, $CI, $user['id'], $Conn_MCH);
 				}
-				$CI->db->update_batch('regroupement', $CI->regroupement_struct->datos_regroupement, 'codeRegroupement', ' AND user_id = '.$user['id']);
-				
+				$CI->db->update_batch('products', $CI->products_struct->datos_products, 'codeRegroupement', ' AND user_id = '.$user['id']);
 			}
     	}
 
     	return true;
     }
 
-    public function Calc($pourcent, $valPro, $CI, $user_id){
-		$result_stock = 0;
-		$result = 0;
+    public function Calc($pourcent, $valPro, $idProd, $CI, $user_id, $Conn_MCH){
+  		$result_stock = 0;
+  		$result = 0;
+  		$res_price = 300000000000000;
+  		$stock_mini = $CI->db_op->Get_Default_Value($CI, 'stock_mini');
+  		$ligne_val_prix_min = $CI->db_op->Get_Default_Value($CI, 'Prix_min');
+		$CI->db->select('supplierKey, supplierPrice, stockValue');
+		$CI->db->from('products');
+		$CI->db->where('codeRegroupement', $valPro);
+		$CI->db->where('user_id', $user_id);
+		$query = $CI->db->get();
+		log_message('error', 'idProd '.$idProd);
+		log_message('error', 'codeRegroupement '.$valPro);
 
-		$query = $CI->db_op->Get_Regroupement($CI, $valPro, $user_id);
+		foreach ($query->result() as $prod)
+		{
+			$query_p = $CI->db_op->Info_Provider($CI, 'p.SupplierKey', $prod->supplierKey, $user_id);
+			if ($query_p->num_rows()>0){
+				$ligne_f = $query_p->result();
+				$ligne_f = $ligne_f[0];
+				$diameter = (isset($this->diameter_list[$idProd]) ? $this->diameter_list[$idProd] : 0);
+				log_message('error', 'diameter '.$diameter);
+				$type_pneu = (isset($this->typepneu_list[$idProd]) ? $this->typepneu_list[$idProd] : 0);
+				log_message('error', 'type pneu '.$type_pneu);
+				$transport = $this->Calc_transport($type_pneu, $diameter, $ligne_f->transport);
+				$result_price = (((double)$prod->supplierPrice + (double)$ligne_f->ecotaxe) - (double)$ligne_f->RFAfixe) * (1 - ((double)$ligne_f->RFA_p / 100)) + (double)$ligne_f->CDS + (double)$transport;
+						
+                if ($result_price < $res_price && $res_price >= (int)$ligne_val_prix_min && (int)$prod->stockValue > $stock_mini)
+                    $res_price = (double)$result_price;
 
-		if ($query->num_rows() > 0){
-			$ligne = $query->result();
-			$ligne = $ligne[0];
-			$CI->db->select('supplierPrice, stockValue');
-			$CI->db->from('products');
-			$CI->db->where('codeRegroupement', $ligne->codeRegroupement);
-			$CI->db->where('user_id', $user_id);
-			$query = $CI->db->get();
-
-			foreach ($query->result() as $prod)
-			{
-				$result = $ligne->priceMin + ($ligne->priceMin * $pourcent / 100);
+				$result = $res_price + ($res_price * $pourcent / 100);
 				if ($prod->supplierPrice <= $result)
 				{
 					$result_stock = $result_stock + $prod->stockValue;
 				}
-
+			}else{
+				return false;
 			}
 
-			$regroupement = array(
-				'stockValue' => $result_stock,
-				'priceMinPlusP' => $result,
-				'codeRegroupement' => $ligne->codeRegroupement
-			);
-			var_dump($regroupement);
-			echo '<br/><hr></hr>';
-
-			$CI->regroupement_struct->Load_Data($regroupement, $this->count);
-			$this->count++;
-			return true;
-		}else{
-			return false;
 		}
+
+		$products = array(
+			'stockValue' => $result_stock,
+			'priceMin' => $res_price,
+			'priceMinPlusP' => $result,
+			'codeRegroupement' => $valPro
+		);
 		
+		log_message('error', 'stockValue '.$result_stock);
+		log_message('error', 'priceMin '.$res_price);
+		log_message('error', 'priceMinPlusP '.$result);
+
+		$CI->products_struct->Load_Data($products, $this->count);
+		$this->count++;
+		return true;
+		
+    }
+
+    public function Calc_transport($typeVehicule, $diameter, $l_transport){
+        if ((strcmp($typeVehicule, "TOURISME") == 0 && (int)$diameter <= 18) || (strcmp($typeVehicule, "UTILITAIRE") == 0 && (int)$diameter <= 16))
+            $transport = (double)$l_transport / 2;
+        else
+            $transport = (double)$l_transport;
+
+        return $transport;
     }
 }
