@@ -34,6 +34,15 @@ $lang['import_msg.importacion'] = "Import of";
 $lang['import_msg.archivo_importado'] = "Imported file";
 $lang['import_msg.no_informacion'] = "No information";
 $lang['import_msg.ver_datos'] = "View data";
+$lang['import_msg.importacion_diaria'] = "Daily data import";
+$lang['import_msg.importacion_usuario'] = "Data import initiated by the user";
+$lang['import_msg.proceso_ok'] = "Process succeed.";
+$lang['import_msg.ninguna_accion'] = "No action taken.";
+$lang['import_msg.tiempo_estimado'] = "Estimated time:";
+$lang['import_msg.el_proceso'] = "Process";
+$lang['import_msg.inicio_accion'] = "Action start:";
+$lang['import_msg.sigue_activo'] = "still active.";
+
 $lang['list_msg.nombre_fichero'] = "File name";
 $lang['list_msg.fecha'] = "Date";
 $lang['list_msg.descargar'] = "Download";

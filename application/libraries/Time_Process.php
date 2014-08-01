@@ -81,20 +81,23 @@ class Time_Process{
         exec('curl '.$this->url);
 	}
 
-	public function init_process($CI){
-		$CI->db->delete('process', array('user_id' => $this->user_id));
-		$CI->db->delete('error_process', array('user_id' => $this->user_id));
-		$insert = array(
-			'flag' => $this->flag,
-			'state' => $this->state,
-			'f_start' => $this->f_start,
-			'user_id' => $this->user_id
-		);
+	public function init_process($CI, $users){
+		foreach($users as $user){
+			$CI->db->delete('process', array('user_id' => $user['id']));
+			$CI->db->delete('error_process', array('user_id' => $user['id']));
+			$insert = array(
+				'flag' => $this->flag,
+				'state' => $this->state,
+				'f_start' => $this->f_start,
+				'user_id' => $user['id']
+			);
 
-		$CI->db->insert('process', $insert);
+			$CI->db->insert('process', $insert);
+		}
 	}
 
 	public function get_process($CI, $user_id){
+		echo 0;
 		$CI->db->select('*');
 		$CI->db->from('process');
 		if ($this->flag != ''){
@@ -133,9 +136,11 @@ class Time_Process{
 		}else{
 			if ($status == 'error'){
 				foreach ($users as $user){
+					$process = $this->get_process($CI, $user['id']);
 					$this->insert_error($CI, $process->id, $msg_error, $user['id']);
 				}
 			}
+
 		}
 
 	}

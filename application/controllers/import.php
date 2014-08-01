@@ -18,23 +18,6 @@ class Import extends CI_Controller{
         $this->load->view('comdep_list.php', $output);
     }
 
-    public function comdep(){
-        $result = false;
-        $user_id = $this->time_process->check();
-        if ($user_id != false){
-            $result = $this->ficheros->process_comdep_aty('comdep', $user_id);
-        }
-    	
-        if ($result){
-            $datos['import_state'] = $this->ficheros->import_state($user_id);
-            $this->load->view('principal', $datos);
-        }else{
-            $datos['errores'] = lang('import.comdep_error');
-            $this->load->view('principal', $datos);
-        }   
-
-    }
-
     public function atyse(){
         $result = false;
         $user_id = $this->time_process->check();
@@ -51,31 +34,44 @@ class Import extends CI_Controller{
     }
 
     public function all(){
+        $CI =& get_instance();
         $ip = $_SERVER['REMOTE_ADDR'];
 
         if ($ip == '127.0.0.1'){
-            $comdep = $this->ficheros->process_comdep_aty('comdep');
-            $atyse = $this->ficheros->process_comdep_aty('atyse');
+            $user_id = $this->time_process->check();
+            if ($user_id == ''){
+                $users = $this->db_op->Get_Usuarios($CI, $user_id);
+                $this->db_op->Truncate_Tables($CI, $users, 'process');
+                $this->db_op->Truncate_Tables($CI, $users, 'error_process');
+                $this->time_process->flag = 'all';
+                $this->time_process->f_start = date('Y-m-d H:i:s');
+                $this->time_process->init_process($CI, $users);
+                $atyse = $this->ficheros->process_comdep_aty('atyse');
+                $mch = $this->ficheros->process_comdep_aty('mch');
+                $files = $this->ficheros->generate_files($user_id);
+                if ($atyse && $mch && $files){
+                    foreach ($users as $user){
+                        $this->time_process->user_id = $user['id'];
+                        $process = $this->time_process->get_process($CI, $user['id']);
+                        $min = time() - strtotime($process->f_start);
+                        $this->db->delete('process', array('flag' => 'all', 'user_id' => $user['id']));
+                        $time = array(
+                            'minutes' => abs(round($min/60)),
+                            'type' => 'all'
+                        );
+                        $this->db->insert('time_process', $time);
+                    }
+                }
+            }
         }
 
-        $this->load->view('principal', $datos);
-    /*    $sesion_data = array(
-                'username' => 'all',
-                'password' => '',
-                'lang' => 'es',
-                'rol' => 1,
-                'id' => 1
-        );
-        $this->session->set_userdata($sesion_data);
-        $CI =& get_instance();
-        $user_id = 1;
-        $archivo = $this->requestprovider->Request_Files('COMDEP', $CI);*/
-
+        $this->load->view('principal');
     }
 
     public function mch(){
         $result = false;
         $user_id = $this->time_process->check();
+
         if ($user_id != false){
             $result = $this->ficheros->process_comdep_aty('mch', $user_id);
         }
@@ -129,7 +125,7 @@ class Import extends CI_Controller{
                 $crud->set_theme('flexigrid');
                 $crud->set_table('products');
                 $crud->set_subject('Products');
-                $crud->columns('codeRegroupement', 'name', 'description', 'supplierPrice', 'supplierPriceB', 'priceVar', 'stockValue', 'stockValueB', 'stockVar');
+                $crud->columns('codeRegroupement', 'name', 'description', 'supplierPrice', 'currency', 'supplierPriceB', 'priceVar', 'stockValue', 'stockValueB', 'stockVar');
                 $crud->where('user_id', $user_id);
                  
                 $output = $crud->render();
@@ -149,7 +145,7 @@ class Import extends CI_Controller{
             $process = $this->time_process->get_process($CI, $user_id);
             if ($process != false){
                 $this->time_process->flag = $process->flag;
-                if ($process->flag == 'all') $datos['process_all'] = true;
+                   if ($process->flag == 'all') $datos['process_all'] = true;
                 $datos['process'] = $process;
                 $datos['error_process'] = $this->time_process->get_error_process($CI, $process->id);
                 $datos['time_process'] = $this->time_process->get_time_process($CI);
@@ -173,10 +169,11 @@ class Import extends CI_Controller{
         $this->time_process->user_id = $user_id;
         $url = base_url().$this->session->userdata['lang'].'/import/'.$provider.'/'.$user_id.'/'.$this->session->userdata['token'];
         if ($this->time_process->is_ready($CI)){
+            $users = $this->db_op->Get_Usuarios($CI, $user_id);
             $this->time_process->url = $url;
             $this->time_process->flag = $provider;
             $this->time_process->f_start = date('Y-m-d H:i:s');
-            $this->time_process->init_process($CI);
+            $this->time_process->init_process($CI, $users);
             $this->time_process->send_request();
         }
         $datos['import_state'] = $this->ficheros->import_state($user_id);

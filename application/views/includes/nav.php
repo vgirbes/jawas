@@ -13,7 +13,6 @@
 		<?php if (isset($editable) && $editable) { ?>
 		<div id="submenu">
 			<ul id="menu-ul">
-				<li><a href="javascript:send_request('stockcomdep');"><?= lang('submenu.comdep');?></a></li>
 				<li><a href="javascript:send_request('stockatyse');"><?= lang('submenu.atyse');?></a></li>
 				<li><a href="javascript:send_request('stockmch');"><?= lang('submenu.mch');?></a></li>
 				<li><a href="javascript:send_request('stockfiles');"><?= lang('submenu.ficheros');?></a></li>

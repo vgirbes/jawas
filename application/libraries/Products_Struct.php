@@ -2,6 +2,7 @@
 class Products_Struct extends DB_op{
     var $products = array(
         'codeRegroupement' => '',
+        'id_products' => '',
         'supplierKey' => '',
         'supplierRef' => '',
         'attached' => '',

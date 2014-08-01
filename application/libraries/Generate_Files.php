@@ -53,7 +53,7 @@ class Generate_Files{
         if ($query->num_rows()>0){
             foreach ($query->result() as $ligne)
             {
-                log_message('error', 'idProd '.$ligne->idProd);
+                log_message('error', 'Entra FILES idProd '.$ligne->idProd);
                 echo '<input type="hidden" name="generate">';
                 $count++;
                 $row['PRIVENLOC'] = $this->Get_PRIVENLOC($ligne->idProd);
@@ -129,12 +129,10 @@ class Generate_Files{
 
     public function Get_AIH_PRIARTWEB($Conn){
         $sql = "SELECT PRIVENLOC, CODART from src.aih.AIH_PRIARTWEB where CODCEN = '9901';";
-        log_message('error', 'Privenloc '.$sql);
         $stmt = sqlsrv_query($Conn, $sql);
         while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
             $this->AIH_PRIARTWEB[$row['CODART']] = $row['PRIVENLOC'];
         }
-        log_message('error', 'Fin privenloc');
     }
 
     public function Get_PRIVENLOC($idProd){

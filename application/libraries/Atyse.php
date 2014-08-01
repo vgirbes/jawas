@@ -40,7 +40,7 @@ class Atyse{
             {
                 if ($row > 1)
                 {
-                    echo 'Entra';
+                    log_message('error', 'Entra ATYSE '.$data[1].' '.$user_id);
                     if (!isset($data[9])) break;
                     $codProv = $data[9];
                     $brand = $data[10];

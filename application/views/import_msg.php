@@ -10,28 +10,32 @@
 		<br/>
 		<?php } else{ ?>
 		<br/>
-		No hay información disponible.
+		<?= lang('import_msg.no_informacion');?>
 		<?php } ?>
 		<hr></hr>
-		<div class="info-title">Importación de datos diaria</div><br/>
-		<?php if (isset($process_global) && $error_process == false){
-			echo 'El proceso sigue activo. Tiempo estimado: '.$time_process;
+		<div class="info-title"><?= lang('import_msg.importacion_diaria');?></div><br/>
+		<?php if (isset($process_all) && $error_process == false){
+				echo lang('import_msg.el_proceso').' '.strtoupper($process->flag).' '.lang('import_msg.sigue_activo').'<br/>';
+				echo lang('import_msg.inicio_accion').' '.$process->f_start.'<br/>';
+				echo lang('import_msg.tiempo_estimado').' '.$time_process;
 		}?>
-		<?php if (isset($process_global) && $error_process != false){
+		<?php if (isset($process_all) && $error_process != false){
 			echo $error_process->msg;
 		}?>
-		<?php if (!isset($process_global)){
-			echo 'Proceso finalizado con éxito.';
+		<?php if (!isset($process_all)){
+			echo lang('import_msg.proceso_ok');
 		}?>
 		<br/><br/>
 		<?php if (isset($process)){ ?>
-			<div class="info-title">Importación iniciada por el usuario</div><br/>
-			<?php if (!isset($process_global) && $error_process == false){
-				echo 'El proceso '.strtoupper($process->flag).' sigue activo.<br/>';
-				echo 'Inicio de la acción: '.$process->f_start.'<br/>';
-				echo 'Tiempo estimado: '.$time_process;
+			<div class="info-title"><?= lang('import_msg.importacion_usuario');?></div><br/>
+			<?php if (!isset($process_all) && $error_process == false){
+				echo lang('import_msg.el_proceso').' '.strtoupper($process->flag).' '.lang('import_msg.sigue_activo').'<br/>';
+				echo lang('import_msg.inicio_accion').' '.$process->f_start.'<br/>';
+				echo lang('import_msg.tiempo_estimado').' '.$time_process;
+			}else{
+				echo lang('import_msg.ninguna_accion');
 			}?>
-			<?php if (!isset($process_global) && $error_process != false){
+			<?php if (!isset($process_all) && $error_process != false){
 				echo $error_process->msg;
 			}?>
 		<?php } ?>
