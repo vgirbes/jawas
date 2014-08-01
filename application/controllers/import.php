@@ -46,8 +46,10 @@ class Import extends CI_Controller{
                 $this->time_process->flag = 'all';
                 $this->time_process->f_start = date('Y-m-d H:i:s');
                 $this->time_process->init_process($CI, $users);
-                $atyse = $this->ficheros->process_comdep_aty('atyse');
-                $mch = $this->ficheros->process_comdep_aty('mch');
+            /*    $atyse = $this->ficheros->process_comdep_aty('atyse');
+                $mch = $this->ficheros->process_comdep_aty('mch');*/
+                $atyse = true;
+                $mch = true;
                 $files = $this->ficheros->generate_files($user_id);
                 if ($atyse && $mch && $files){
                     foreach ($users as $user){

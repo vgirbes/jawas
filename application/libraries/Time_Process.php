@@ -97,7 +97,6 @@ class Time_Process{
 	}
 
 	public function get_process($CI, $user_id){
-		echo 0;
 		$CI->db->select('*');
 		$CI->db->from('process');
 		if ($this->flag != ''){

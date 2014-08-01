@@ -53,7 +53,7 @@ class Generate_Files{
         if ($query->num_rows()>0){
             foreach ($query->result() as $ligne)
             {
-                log_message('error', 'Entra FILES idProd '.$ligne->idProd);
+                log_message('error', 'Entra FILES idProd '.$ligne->idProd.' Usuario '.$user_id);
                 echo '<input type="hidden" name="generate">';
                 $count++;
                 $row['PRIVENLOC'] = $this->Get_PRIVENLOC($ligne->idProd);
@@ -61,6 +61,7 @@ class Generate_Files{
                 {
                     if ($this->checkArt($ligne->idProd) == 1)
                     {
+                        log_message('error', 'Entra FILES idProd procesado '.$ligne->idProd);
                         if ($ligne->stockValue >= $stock_mini)
                         {
                             if ($ligne->priceMin == -1)
@@ -293,7 +294,7 @@ class Generate_Files{
 
     public function Get_Data_To_Alert($CI, $user_id){
         $CI->db->distinct('r.codeRegroupement, r.stockValue, r.priceMin, l.priceRec, l.idProd, l.price_wrk, l.statut, l.reason, r.priceMinPlusP');
-        $CI->db->from('regroupement r, lastdayacti l');
+        $CI->db->from('products r, lastdayacti l');
         $CI->db->where('r.codeRegroupement = l.codeRegroupement');
         $CI->db->where('l.user_id', $user_id);
         $CI->db->where('r.user_id', $user_id);
