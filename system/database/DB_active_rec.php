@@ -1317,7 +1317,7 @@ class CI_DB_active_record extends CI_DB_driver {
 	 * @param	string	the where key
 	 * @return	object
 	 */
-	public function update_batch($table = '', $set = NULL, $index = NULL)
+	public function update_batch($table = '', $set = NULL, $index = NULL, $aux = '')
 	{
 		// Combine any cached components with the current statements
 		$this->_merge_cache();
@@ -1365,8 +1365,7 @@ class CI_DB_active_record extends CI_DB_driver {
 		for ($i = 0, $total = count($this->ar_set); $i < $total; $i = $i + 100)
 		{
 			$sql = $this->_update_batch($this->_protect_identifiers($table, TRUE, NULL, FALSE), array_slice($this->ar_set, $i, 100), $this->_protect_identifiers($index), $this->ar_where);
-
-			$this->query($sql);
+			$this->query($sql.$aux);
 		}
 
 		$this->_reset_write();

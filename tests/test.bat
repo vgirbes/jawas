@@ -1,0 +1,1 @@
+..\..\..\vendor\bin\phpunit %1 --color
