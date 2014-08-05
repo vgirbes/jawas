@@ -5,5 +5,4 @@
 <?php }else{
 	$this->load->view('login');
 } ?>
-
 <?php $this->load->view('includes/footer.php');?>

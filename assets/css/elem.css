@@ -55,4 +55,26 @@ input[type="submit"] .boton{
 	width:100%;
 }
 
+.addusuario{
+	position:absolute;
+	top:50px;
+	width:90%;
+	padding-left:5%;
+	height:90%;
+	background-color:#fff;
+}
 
+#error-create{
+	border:1px solid #ccc;
+	height:auto;
+	width:350px;
+	right:40px;
+	top:81px;
+	position:absolute;
+	border-radius:5px;
+	padding:20px;
+}
+
+#error-create ul li{
+	margin-bottom:15px;
+}

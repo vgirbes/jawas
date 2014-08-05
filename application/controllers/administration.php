@@ -8,10 +8,11 @@ class Administration extends CI_Controller{
         $this->load->library('grocery_CRUD');
         $this->load->helper('language');
         $this->lang->load('norauto');
+        $this->load->model('usuarios');
     }
 
     public function index(){
-        $rol = $this->rol_ok();
+        $rol = $this->usuarios->rol_ok();
     	if ($rol){
     		$datos['admin'] = true;
     		$url = base_url().$this->session->userdata['lang'].'/';
@@ -36,17 +37,9 @@ class Administration extends CI_Controller{
         $this->load->view('edit_admin.php', $output);
     }
 
-    public function rol_ok(){
-        if (isset($this->session->userdata['rol'])&&($this->session->userdata['rol']==1)){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
     public function load(){
         $select = $this->uri->segment(4);
-        $rol = $this->rol_ok();
+        $rol = $this->usuarios->rol_ok();
         if ($select!=''){
             if ($rol){
                 $table = $this->select_table($select);
