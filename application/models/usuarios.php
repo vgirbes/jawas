@@ -7,7 +7,6 @@ class Usuarios extends CI_Model{
         $this->load->database();
     }
        
-       
     public function getLogin($username, $password){
         $data = array(
             'username' => $username,
@@ -41,13 +40,13 @@ class Usuarios extends CI_Model{
     public function can_create($user, $pass, $rpass){
         $err = array();
         $check_user = $this->check_user($user);
-        if (!$check_user) $err[] = 'El usuario elegido ya existe, por favor, indique otro nombre de usuario';
+        if (!$check_user) $err[] = lang('adduser.error_1');
 
         if ($rpass != $pass){
-            $err[] = 'La contraseña no coincide';
+            $err[] = lang('adduser.error_2');
         }else{
             if (strlen($pass) < 6){
-                $err[] = 'La contraseña debe de tener almenos 6 caracteres '.$pass;
+                $err[] = lang('adduser.error_3');
             }
         }
 
@@ -56,6 +55,7 @@ class Usuarios extends CI_Model{
     }
 
     public function insert_user($user, $pass, $email, $name, $rol, $country){
+        $user_prov = array();
         $ins = array(
             'username' => $user,
             'password' => md5($pass),
@@ -67,6 +67,37 @@ class Usuarios extends CI_Model{
         );
 
         $res = $this->db->insert('users', $ins);
+        $id = $this->db->insert_id();
+
+        $this->db->select('*');
+        $this->db->from('users_providers');
+        $this->db->where('users_id', 1);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row){
+            $user_prov = $this->insert_user_provider($row, $id);
+            $this->db->insert('users_providers', $user_prov);
+        }
+
+        return $res;
+    }
+
+    public function insert_user_provider($row, $id){
+        $res = array(
+            'SupplierKey' => $row->SupplierKey, 
+            'users_id' => $id, 
+            'active' => $row->active, 
+            'correctionstock' => $row->correctionstock, 
+            'ecotaxe' => $row->ecotaxe, 
+            'CDS' => $row->CDS, 
+            'transport' => $row->transport, 
+            'delay' => $row->delay, 
+            'RFAfixe' => $row->RFAfixe, 
+            'RFA_p' => $row->RFA_p, 
+            'comments' => $row->comments, 
+            'forceStock' => $row->forceStock, 
+            'stock' => $row->stock
+        );
 
         return $res;
     }

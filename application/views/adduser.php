@@ -6,19 +6,16 @@
 	<form method="post" class="form-horizontal addusuario" action="<?= base_url();?><?= $this->session->userdata['lang'];?>/users/adduser">
 		<fieldset>
 
-		<!-- Form Name -->
-		<legend>Crear nuevo usuario</legend>
+		<legend><?= lang('adduser.form_name');?></legend>
 
-		<!-- Text input-->
 		<div class="control-group">
-		  <label class="control-label" for="textinput">Nombre</label>
+		  <label class="control-label" for="textinput"><?= lang('adduser.name');?></label>
 		  <div class="controls">
-		    <input id="textinput" name="name" placeholder="Nombre" class="input-xlarge" required="" type="text">
+		    <input id="textinput" name="name" placeholder="<?= lang('adduser.name');?>" class="input-xlarge" required="" type="text">
 		    
 		  </div>
 		</div>
 
-		<!-- Text input-->
 		<div class="control-group">
 		  <label class="control-label" for="textinput">Email</label>
 		  <div class="controls">
@@ -27,69 +24,67 @@
 		  </div>
 		</div>
 
-		<!-- Text input-->
 		<div class="control-group">
-		  <label class="control-label" for="textinput">Usuario</label>
+		  <label class="control-label" for="textinput"><?= lang('adduser.user');?></label>
 		  <div class="controls">
-		    <input id="textinput" name="usuario" placeholder="Usuario" class="input-xlarge" required="" type="text">
+		    <input id="textinput" name="usuario" placeholder="<?= lang('adduser.user');?>" class="input-xlarge" required="" type="text">
 		    
 		  </div>
 		</div>
 
-		<!-- Password input-->
 		<div class="control-group">
-		  <label class="control-label" for="passwordinput">Contraseña</label>
+		  <label class="control-label" for="passwordinput"><?= lang('adduser.password');?></label>
 		  <div class="controls">
-		    <input id="passwordinput" name="password" placeholder="Contraseña" class="input-xlarge" required="" type="password">
+		    <input id="passwordinput" name="password" placeholder="<?= lang('adduser.password');?>" class="input-xlarge" required="" type="password">
 		    
 		  </div>
 		</div>
 
-		<!-- Password input-->
 		<div class="control-group">
-		  <label class="control-label" for="passwordinput">Repite contraseña</label>
+		  <label class="control-label" for="passwordinput"><?= lang('adduser.rpassword');?></label>
 		  <div class="controls">
-		    <input id="passwordinput" name="rpassword" placeholder="Contraseña" class="input-xlarge" required="" type="password">
+		    <input id="passwordinput" name="rpassword" placeholder="<?= lang('adduser.rpassword');?>" class="input-xlarge" required="" type="password">
 		    
 		  </div>
 		</div>
 
-		<!-- Select Basic -->
 		<div class="control-group">
-		  <label class="control-label" for="selectbasic">País</label>
+		  <label class="control-label" for="selectbasic"><?= lang('adduser.country');?></label>
 		  <div class="controls">
-		    <select id="selectbasic" name="pais" class="input-xlarge">
-		      <option value="1">España</option>
-		      <option value="2">Francia</option>
-		      <option value="4">Bélgica</option>
+		    <select id="selectbasic" name="country" class="input-xlarge">
+		    	<?php
+		    	foreach ($countries->result() as $country){
+		    		echo '<option value="'.$country->id.'">'.$country->name.'</option>'."\n";
+		    	}
+		    	?>
 		    </select>
 		  </div>
 		</div>
 
-		<!-- Select Basic -->
 		<div class="control-group">
 		  <label class="control-label" for="selectbasic">Rol</label>
 		  <div class="controls">
-		    <select id="selectbasic" name="selectrol" class="input-xlarge">
-		      <option value="0">Usuario</option>
-		      <option value="1">Administrador</option>
+		    <select id="selectbasic" name="rol" class="input-xlarge">
+		      <option value="0"><?= lang('adduser.rol_user');?></option>
+		      <option value="1"><?= lang('adduser.rol_admin');?></option>
 		    </select>
 		  </div>
 		</div>
 
-		<!-- Button -->
 		<div class="control-group">
 		  <label class="control-label" for="singlebutton"></label>
 		  <div class="controls">
-		    <button id="singlebutton" name="singlebutton" class="btn">Crear usuario</button>
+		    <button id="singlebutton" name="singlebutton" class="btn"><?= lang('adduser.button');?></button>&nbsp;&nbsp;&nbsp;
+		    <a href="<?= base_url();?><?= $this->session->userdata['lang'];?>/administration" class="btn"><?= lang('adduser.cancel');?></a> 
 		  </div>
+
 		</div>
 		<?php if (isset($estado)){ ?>
 		<div id="error-create">
 			<ul>
 			<?php
 			foreach ($estado as $err){
-				echo '<li>'.$err.'</li>';
+				echo '<li>'.$err.'</li>'."\n";
 			}
 			?>
 			</ul>

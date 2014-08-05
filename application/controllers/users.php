@@ -47,31 +47,47 @@ class Users extends CI_Controller{
         }
 
         public function adduser(){
+            $datos = array();
+            $datos['countries'] = $this->get_countries();
             $user = $this->input->post('usuario');
             $pass = $this->input->post('password');
             $rpass = $this->input->post('rpassword');
             $email = $this->input->post('email');
             $name = $this->input->post('name');
             $rol = $this->input->post('rol');
+            $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+            $this->form_validation->set_message('valid_email', lang('adduser.validmail'));
+
             $country = $this->input->post('country');
             $lang = $this->session->userdata['lang'];
-            $datos = array();
             $estado = $this->usuarios->can_create($user, $pass, $rpass);
+            if ($this->form_validation->run() == FALSE){
+                $estado[] = validation_errors();
+            }
+
             if (count($estado) <= 0){
                 $res = $this->usuarios->insert_user($user, $pass, $email, $name, $rol, $country);
                 if ($res) redirect($lang.'/administration/load/users');
             }
+
             $datos['estado'] = $estado;
             $this->load->view('adduser', $datos);
         }
 
         public function add(){
             $rol = $this->usuarios->rol_ok();
+            $datos['countries'] = $this->get_countries();
             if ($rol){
-                $this->load->view('adduser');
+                $this->load->view('adduser', $datos);
             }else{
                 $this->load->view('principal');
             }
+        }
+
+        public function get_countries(){
+            $query = $this->db->get('countries');
+
+            return $query;
         }
       
 }
