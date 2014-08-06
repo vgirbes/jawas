@@ -29,7 +29,7 @@ class Atyse{
         $CI->time_process->flag = 'atyse';
         $users = $CI->db_op->Get_Usuarios($CI, $user_id);
         $CI->time_process->user_id = $user_id;
-        
+        log_message('error', 'Atyse '.$archivo);
         if (file_exists('assets/files/atyse/'.$archivo) && $archivo != false) 
         {
             $handle = fopen('assets/files/atyse/'.$archivo, "r");

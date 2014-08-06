@@ -33,6 +33,22 @@ class Import extends CI_Controller{
         }   
     }
 
+    public function aspitop(){
+        $result = false;
+        $user_id = 1;
+
+        if ($user_id != false){
+            $result = $this->ficheros->process_comdep_aty('aspitop', $user_id);
+        }
+        if ($result){
+            $datos['import_state'] = $this->ficheros->import_state($user_id);
+            $this->load->view('principal', $datos);
+        }else{
+            $datos['errores'] = lang('import.aspitop_error');
+            $this->load->view('principal', $datos);
+        }   
+    }
+
     public function all(){
         $CI =& get_instance();
         $ip = $_SERVER['REMOTE_ADDR'];
@@ -49,7 +65,8 @@ class Import extends CI_Controller{
                 $atyse = $this->ficheros->process_comdep_aty('atyse');
                 $mch = $this->ficheros->process_comdep_aty('mch');
                 $files = $this->ficheros->generate_files($user_id);
-                if ($atyse && $mch && $files){
+                $aspitop = $this->ficheros->process_comdep_aty('aspitop');
+                if ($atyse && $mch && $files && $aspitop){
                     foreach ($users as $user){
                         $this->time_process->user_id = $user['id'];
                         $process = $this->time_process->get_process($CI, $user['id']);
@@ -64,7 +81,7 @@ class Import extends CI_Controller{
                 }
             }
         }
-
+        log_message('error', 'Alguien ha llamado a ALL '.$_SERVER['REMOTE_ADDR'].' desde '.$_SERVER['HTTP_REFERER']);
         $this->load->view('principal');
     }
 
@@ -113,6 +130,7 @@ class Import extends CI_Controller{
                 $datos['process'] = $process;
                 $datos['error_process'] = $this->time_process->get_error_process($CI, $process->id);
                 $datos['time_process'] = $this->time_process->get_time_process($CI);
+
                 if ($datos['error_process'] == false){
                     $datos['editable'] = false;
                 }else{
@@ -147,6 +165,7 @@ class Import extends CI_Controller{
                 $this->time_process->flag = $process->flag;
                    if ($process->flag == 'all') $datos['process_all'] = true;
                 $datos['process'] = $process;
+                $datos['flag'] = $process->flag;
                 $datos['error_process'] = $this->time_process->get_error_process($CI, $process->id);
                 $datos['time_process'] = $this->time_process->get_time_process($CI);
                 if ($datos['error_process'] == false){
@@ -168,6 +187,7 @@ class Import extends CI_Controller{
         $CI =& get_instance();
         $this->time_process->user_id = $user_id;
         $url = base_url().$this->session->userdata['lang'].'/import/'.$provider.'/'.$user_id.'/'.$this->session->userdata['token'];
+        log_message('error', 'Alguien ha llamado a processtyres '.$_SERVER['REMOTE_ADDR'].' desde '.$_SERVER['HTTP_REFERER']);
         if ($this->time_process->is_ready($CI)){
             $users = $this->db_op->Get_Usuarios($CI, $user_id);
             $this->time_process->url = $url;

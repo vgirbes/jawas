@@ -13,24 +13,47 @@
   			$(function() {
     			$( "#msg-import" ).draggable();
     			$( ".login-box" ).draggable();
+    			$( "#status" ).draggable();
   			});
+  			<?php if (isset($this->session->userdata["username"])){ ?>
   			function send_request(type)
 			{
-				 $.ajax({
+				$.ajax({
 					 type: 'POST',
 					 url: '<?php echo base_url(); ?><?= $this->session->userdata["lang"];?>/import/'+type, 
 					 success: function(resp) { 
 					 	
 					 }
-				 });
-
-				 window.setTimeout(reloadpage, 1000)
+				});
+				
+                window.setTimeout(reloadpage, 1000)
 
 			 }
 
 			 function reloadpage(){
 			 	window.location = '<?= base_url();?><?= $this->session->userdata["lang"];?>/import';
 			 }
+			 <?php } ?>
+			 <?php if ($debugger){ ?>
+			 function cerrar_status(){
+			 	$('#status').hide();
+			 }
+
+			 function status_file(){
+			 		$.ajax({
+					 type: 'POST',
+					 url: '<?php echo base_url(); ?><?= $this->session->userdata["lang"];?>/debug', 
+					 success: function(resp) { 
+					 	respuesta = eval('(' + resp + ')');
+					 	$('#status-text').html(respuesta.msg);
+					 }
+
+					
+					});
+					window.setTimeout(status_file, 1000); 
+				}
+			 window.setTimeout(status_file, 1000);
+			 <?php } ?>
   		</script>
 		<?php 
 		if (isset($css_files)){

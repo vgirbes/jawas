@@ -11,7 +11,8 @@ class Adapter{
     	$CI =& get_instance();
     	switch($provider){
     		case 'Atyse':
-    			$items = $CI->requestprovider->Cargar_Atyse($CI, $country_id, $user_name);
+                log_message('error', 'erroraco ');
+    			$items = $CI->requestprovider->Cargar_Archivos($CI, $country_id, $user_name, $provider);
                 $this->filename = $CI->requestprovider->filename;
     			return $items;
     		break;
@@ -24,6 +25,12 @@ class Adapter{
 
             case 'MCH':
                 return true;
+            break;
+
+            case 'Aspitop':
+                $items = $CI->requestprovider->Cargar_Archivos($CI, $country_id, $user_name, $provider);
+                $this->filename = $CI->requestprovider->filename;
+                return $items;
             break;
     	}
 

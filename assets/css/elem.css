@@ -78,3 +78,33 @@ input[type="submit"] .boton{
 #error-create ul li{
 	margin-bottom:15px;
 }
+
+#status{
+	border:5px solid #d4d4d4;
+	left:20px;
+	box-shadow:10px 10px 5px #888;
+	z-index:999;
+	border-radius:5px;
+	position:absolute;
+	width:60%;
+	top:85px;
+	height:auto;
+	background-color:#000;
+	color:#fff;
+}
+
+#status-title{
+	color:#000;
+	width:100%;
+	height:20px;
+	text-align:center;
+	background-color:#d4d4d4;
+}
+
+#status-text{
+	padding:10px;
+}
+
+#cerrar-status{
+	float:right;
+}
