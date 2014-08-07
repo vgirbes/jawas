@@ -13,6 +13,7 @@ class DB_op{
     var $datos_userprovider = array();
     var $datos_mch = array();
     var $datos_lastdayacti = array();
+    var $AIH_PRIARTWEB = array();
 
 	function __construct(){
 		$CI =& get_instance();
@@ -98,6 +99,22 @@ class DB_op{
             $val = 0;
 
         return $val;
+    }
+
+    public function Get_AIH_PRIARTWEB($Conn){
+        $sql = "SELECT PRIVENLOC, CODART from src.aih.AIH_PRIARTWEB where CODCEN = '9901';";
+        $stmt = sqlsrv_query($Conn, $sql);
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
+            $this->AIH_PRIARTWEB[$row['CODART']] = $row['PRIVENLOC'];
+        }
+    }
+
+    public function Get_PRIVENLOC($idProd){
+        if (array_key_exists($idProd, $this->AIH_PRIARTWEB)){
+            return $this->AIH_PRIARTWEB[$idProd];
+        }else{
+            return false;
+        }
     }
 
     public function Get_Regroupement($CI, $codeRegroupement, $user_id = ''){

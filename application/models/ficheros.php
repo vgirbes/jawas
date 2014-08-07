@@ -18,6 +18,7 @@ class Ficheros extends CI_Model{
         $res = true;
         if ($provider == 'atyse' || $provider == 'aspitop'){
             $CI =& get_instance();
+            if ($provider == 'aspitop') $user_id = 1;
             $users = $this->db_op->Get_Usuarios($CI, $user_id);
             if ($users != false){
                 $all = ($user_id != '' ? true : false);

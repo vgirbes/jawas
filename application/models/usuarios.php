@@ -10,7 +10,8 @@ class Usuarios extends CI_Model{
     public function getLogin($username, $password){
         $data = array(
             'username' => $username,
-            'password' => $password
+            'password' => $password,
+            'active' => 1
         );
        
         $query = $this->db->get_where('users', $data);

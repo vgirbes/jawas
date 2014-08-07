@@ -1,6 +1,6 @@
 <?php 
-$debugger = true; 
-$datos['debugger'] = true;
+$debugger = DEBUG; 
+$datos['debugger'] = DEBUG;
 ?>
 <?php $this->load->view('includes/header.php', $datos);?>
 <?php if(isset($this->session->userdata['username'])){ ?>
@@ -23,7 +23,17 @@ $datos['debugger'] = true;
 	<?php } ?>
 	<?php if ($debugger){ ?>
 	<div id="status">
-		<div id="status-title">Debugger<div id="cerrar-status" style=""><a href="javascript:cerrar_status()">X</a></div></div>
+		<div id="status-title">Debugger
+			<div id="cerrar-status">
+				<a href="javascript:cerrar_status()">X</a>
+			</div>
+			<div id="cerrar-status">
+				<a href="javascript:windows('max')">O</a>
+			</div>
+			<div id="cerrar-status">
+				<a href="javascript:windows('min')">_</a>
+			</div>
+		</div>
 		<div id="status-text">
 		Iniciando debugger
 		</div>

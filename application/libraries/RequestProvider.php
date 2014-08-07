@@ -46,8 +46,8 @@ class RequestProvider{
         if ($user_name != ''){
             $archivo = $this->Request_Files(strtoupper($provider), $CI);
         }
-        $archivo = 'maquette ZFOUR_ATYSE.csv';
-        //$archivo = 'aspitop_vgirbes_test.csv';
+        //$archivo = 'maquette ZFOUR_ATYSE.csv';
+        $archivo = 'aspitop_vgirbes_test.csv';
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
            return $archivo;
