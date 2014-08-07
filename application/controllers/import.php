@@ -34,6 +34,7 @@ class Import extends CI_Controller{
     }
 
     public function aspitop(){
+        $CI =& get_instance();
         $result = false;
         $user_id = 1;
 
@@ -42,8 +43,26 @@ class Import extends CI_Controller{
         }
         if ($result){
             $datos['import_state'] = $this->ficheros->import_state($user_id);
+            $this->time_process->user_id = $user_id;
+            $process = $this->time_process->get_process($CI, $user_id);
+            if ($process != false){
+                $this->time_process->flag = $process->flag;
+                if ($process->flag == 'all') $datos['process_all'] = true;
+                $datos['process'] = $process;
+                $datos['flag'] = $process->flag;
+                $datos['error_process'] = $this->time_process->get_error_process($CI, $process->id);
+                $datos['time_process'] = $this->time_process->get_time_process($CI);
+                if ($datos['error_process'] == false){
+                    $datos['editable'] = false;
+                }else{
+                    $datos['editable'] = true;
+                }
+            }else{
+                $datos['editable'] = true;
+            }
             $this->load->view('principal', $datos);
         }else{
+            $datos['editable'] = false;
             $datos['errores'] = lang('import.aspitop_error');
             $this->load->view('principal', $datos);
         }   

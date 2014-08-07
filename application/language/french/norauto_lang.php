@@ -75,3 +75,8 @@ $lang['time_process.error_file'] = "chargement du fichier";
 $lang['time_process.line_1_ha_finalizado_con_exito'] = "Complété avec succès le processus";
 $lang['time_process.line_2_puede_continuar_aplicacion'] = "Vous pouvez continuer à utiliser l'application.";
 $lang['time_process.asunto_accion_exito'] = "Action réalisée avec succès";
+
+$lang['aspitop.producto'] = "Produit";
+$lang['aspitop.precio_competencia'] = "Les prix sur la concurrence";
+$lang['aspitop.mas_barato'] = "il est moins cher";
+$lang['aspitop.nuestro_precio'] = "Notre prix est";

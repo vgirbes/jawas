@@ -85,7 +85,7 @@ input[type="submit"] .boton{
 	box-shadow:10px 10px 5px #888;
 	z-index:90;
 	border-radius:5px;
-	position:absolute;
+	position:fixed;
 	width:60%;
 	top:85px;
 	height:auto;
