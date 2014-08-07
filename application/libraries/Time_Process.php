@@ -11,7 +11,7 @@ class Time_Process{
         $CI->load->database();
         $CI->load->helper('url');
         $CI->load->helper('language');
-        $CI->load->library('email');
+        $CI->load->library('Mailer');
         $CI->load->library('DB_Op');
 	}
 
@@ -147,12 +147,10 @@ class Time_Process{
 	public function send_mail($CI, $usuario, $process){
 		$txt = lang('time_process.line_1_ha_finalizado_con_exito').' '.strtoupper($process->flag).'.<br/>';
 		$txt .= lang('time_process.line_2_puede_continuar_aplicacion');
-		$CI->email->from('no-reply@norauto.com', 'Stock Application');
-		$CI->email->to($usuario[0]['email']); 
-		$CI->email->subject(lang('time_process.asunto_accion_exito'));
-		$CI->email->message($txt);
-
-		$CI->email->send();
+		$CI->mailer->to = $usuario[0]['email'];
+		$CI->mailer->subject = lang('time_process.asunto_accion_exito');
+		$CI->mailer->message = $txt;
+		$CI->mailer->send();
 	}
 
 	public function get_error($msg_error){
