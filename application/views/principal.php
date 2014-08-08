@@ -24,14 +24,14 @@ $datos['debugger'] = DEBUG;
 	<?php if ($debugger){ ?>
 	<div id="status">
 		<div id="status-title">Debugger
-			<div id="cerrar-status">
+			<div class="cerrar-status">
 				<a href="javascript:cerrar_status()">X</a>
 			</div>
-			<div id="cerrar-status">
-				<a href="javascript:windows('max')">O</a>
+			<div class="cerrar-status">
+				<a href="javascript:windows('max', '')">O</a>
 			</div>
-			<div id="cerrar-status">
-				<a href="javascript:windows('min')">_</a>
+			<div class="cerrar-status">
+				<a href="javascript:windows('min', '')">_</a>
 			</div>
 		</div>
 		<div id="status-text">

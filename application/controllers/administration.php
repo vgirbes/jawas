@@ -26,6 +26,8 @@ class Administration extends CI_Controller{
     		$datos['list_admin'][3]['url'] = $url.'administration/load/providers';
     		$datos['list_admin'][4]['name'] = lang('admin.defaut');
     		$datos['list_admin'][4]['url'] = $url.'administration/load/defaut';
+            $datos['list_admin'][5]['name'] = 'Mensajes';
+            $datos['list_admin'][5]['url'] = $url.'administration/load/messages';
     		$this->load->view('principal', $datos);
     	}else{
     		$this->load->view('principal');

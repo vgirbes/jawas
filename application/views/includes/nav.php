@@ -8,7 +8,11 @@
 				<?php } ?>
 				<li><a href="<?= base_url();?><?= $this->session->userdata['lang'];?>/users/logout" title="<?= lang('menu.logout');?>"><?= lang('menu.logout');?></a></li>
 			</ul>
+			<div class="notif"><?= lang('general.notificaciones');?>:
+				<div id="notif-num"><a href="#">0</a></div>
+			</div>
 		</nav>
+
 		<?php if ($this->uri->segment(2)=='import'){ ?>
 		<?php if (isset($editable) && $editable) { ?>
 		<div id="submenu">
