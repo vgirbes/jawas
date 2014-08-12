@@ -18,6 +18,7 @@ $lang['import.atyse_error'] = "Error: Could not load Atyse file.";
 $lang['import.mch_error'] = "Error: Could not load MCH.";
 $lang['import.files_error'] = "There aren't files to display.";
 $lang['import.generate_error'] = "Error: No files have been generated.";
+$lang['import.aspitop_error'] = "Erreur: Impossible de charger le fichier Aspitop.";
 $lang['users.login_error'] = "Unable to log in.";
 $lang['files.error'] = "There aren't files to display.";
 $lang['admin.paises'] = "Countries";
@@ -51,3 +52,35 @@ $lang['login.usuario'] = "User";
 $lang['login.password'] = "Password";
 $lang['login.enter'] = "Enter";
 $lang['list_admin.text'] = "Here you can manage the application data.";
+
+$lang['adduser.form_name'] = "Create new user";
+$lang['adduser.name'] = "Name";
+$lang['adduser.user'] = $lang['login.usuario'];
+$lang['adduser.password'] = $lang['login.password'];
+$lang['adduser.rpassword'] = "Repeat password";
+$lang['adduser.country'] = "Country";
+$lang['adduser.rol_user'] = $lang['adduser.user'];
+$lang['adduser.rol_admin'] = "Administrator";
+$lang['adduser.button'] = "Create user";
+$lang['adduser.validmail'] = "Invalid email introduced";
+$lang['adduser.error_1'] = "The user already exists, please indicate different username";
+$lang['adduser.error_2'] = "The password don't match";
+$lang['adduser.error_3'] = "The password must have at least 6 characters";
+$lang['adduser.cancel'] = "Cancel";
+
+$lang['time_process.minutos'] = "minutes";
+$lang['time_process.horas'] = "hours";
+$lang['time_process.error_db'] = "loading registers in the database";
+$lang['time_process.error_file'] = "loading file";
+$lang['time_process.line_1_ha_finalizado_con_exito'] = "Process completed successfully";
+$lang['time_process.line_2_puede_continuar_aplicacion'] = "Puede continuar utilizando la aplicación.";
+$lang['time_process.asunto_accion_exito'] = "Action completed successfully";
+
+$lang['aspitop.producto'] = "Product";
+$lang['aspitop.precio_competencia'] = "The competitor price is";
+$lang['aspitop.mas_barato'] = "is more cheaper";
+$lang['aspitop.nuestro_precio'] = "Our price is";
+$lang['aspitop.asunto_informe'] = "Report on competitor pricing";
+
+$lang['general.notificaciones'] = "Notifications";
+$lang['general.mensajes'] = "Messages";

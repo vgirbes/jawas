@@ -11,7 +11,7 @@ class Time_Process{
         $CI->load->database();
         $CI->load->helper('url');
         $CI->load->helper('language');
-        $CI->load->library('email');
+        $CI->load->library('Mailer');
         $CI->load->library('DB_Op');
 	}
 
@@ -97,7 +97,6 @@ class Time_Process{
 	}
 
 	public function get_process($CI, $user_id){
-		echo 0;
 		$CI->db->select('*');
 		$CI->db->from('process');
 		if ($this->flag != ''){
@@ -146,25 +145,23 @@ class Time_Process{
 	}
 
 	public function send_mail($CI, $usuario, $process){
-		$txt = 'Ha finalizado con éxito el proceso '.strtoupper($process->flag).'.<br/>';
-		$txt .= 'Puede continuar utilizando la aplicación.';
-		$CI->email->from('no-reply@norauto.com', 'Stock Application');
-		$CI->email->to($usuario[0]['email']); 
-		$CI->email->subject('Acción realizada con éxito');
-		$CI->email->message($txt);
-
-		$CI->email->send();
+		$txt = lang('time_process.line_1_ha_finalizado_con_exito').' '.strtoupper($process->flag).'.<br/>';
+		$txt .= lang('time_process.line_2_puede_continuar_aplicacion');
+		$CI->mailer->to = $usuario[0]['email'];
+		$CI->mailer->subject = lang('time_process.asunto_accion_exito');
+		$CI->mailer->message = $txt;
+		$CI->mailer->send();
 	}
 
 	public function get_error($msg_error){
 		$txt = '';
 		switch ($msg_error){
 			case 'db':
-				$txt = 'Error '.strtoupper($this->flag).' cargando registros en la base de datos.';
+				$txt = 'Error '.strtoupper($this->flag).' '.lang('time_process.error_db').'.';
 			break;
 
 			case 'file':
-				$txt = 'Error '.strtoupper($this->flag).' cargando fichero.';
+				$txt = 'Error '.strtoupper($this->flag).' '.lang('time_process.error_file').'.';
 			break;
 		}
 
@@ -209,10 +206,10 @@ class Time_Process{
 			$row = $query->result();
 			$row = $row[0];
 			if ($row->minute < 59){
-				return number_format($row->minute, 0).' minutos.';
+				return number_format($row->minute, 0).' '.lang('time_process.minutos').'.';
 			}else{
 				$tiempo = abs(round($row->minute/60));
-				return number_format($tiempo, 0).' horas.';
+				return number_format($tiempo, 0).' '.lang('time_process.horas').'.';
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Generate_Files{
+class Generate_Files extends DB_Op{
     var $item = 0;
     var $TMP_PRDNOEBU = array();
     var $TMP_PRDGMABU_PRIX_OK = array();
@@ -12,7 +12,6 @@ class Generate_Files{
         $CI =& get_instance();
         $CI->load->database();
         $CI->load->helper('array');
-        $CI->load->library('DB_op');
         $CI->load->library('session');
         $CI->load->library('Time_Process');
         $CI->load->library('Lastdayacti_Struct');
@@ -24,16 +23,16 @@ class Generate_Files{
         $this->user_name = $user_name;
         $CI->time_process->flag = 'generate';
         $CI->time_process->user_id = $user_id;
-        $Conn = $CI->db_op->Connect_MCH();
-        $Conn_wrk = $CI->db_op->Connect_WRK();
+        $Conn = $this->Connect_MCH();
+        $Conn_wrk = $this->Connect_WRK();
         $nom_csv = $user_name."_validationProduit_csv_" . date('YmdHis');
         log_message('error', 'Entra files '.$user_id);
-        $stock_mini = $CI->db_op->Get_Default_Value($CI, 'stock_mini');
-        $marge_e = $CI->db_op->Get_Default_Value($CI, 'marge_e');
-        $marge_p = $CI->db_op->Get_Default_Value($CI, 'marge_p');
-        $tva = $CI->db_op->Get_Default_Value($CI, 'TVA');
+        $stock_mini = $this->Get_Default_Value($CI, 'stock_mini');
+        $marge_e = $this->Get_Default_Value($CI, 'marge_e');
+        $marge_p = $this->Get_Default_Value($CI, 'marge_p');
+        $tva = $this->Get_Default_Value($CI, 'TVA');
         $query = $this->Get_Data_To_File($CI, $user_id);
-        $users = $CI->db_op->Get_Usuarios($CI, $user_id);
+        $users = $this->Get_Usuarios($CI, $user_id);
         $save = 0;
         $no_price = 0;
         $ret = 0;
@@ -53,7 +52,7 @@ class Generate_Files{
         if ($query->num_rows()>0){
             foreach ($query->result() as $ligne)
             {
-                log_message('error', 'Entra FILES idProd '.$ligne->idProd);
+                log_message('error', 'Entra FILES idProd '.$ligne->idProd.' Usuario '.$user_id);
                 echo '<input type="hidden" name="generate">';
                 $count++;
                 $row['PRIVENLOC'] = $this->Get_PRIVENLOC($ligne->idProd);
@@ -61,6 +60,7 @@ class Generate_Files{
                 {
                     if ($this->checkArt($ligne->idProd) == 1)
                     {
+                        log_message('error', 'Entra FILES idProd procesado '.$ligne->idProd);
                         if ($ligne->stockValue >= $stock_mini)
                         {
                             if ($ligne->priceMin == -1)
@@ -125,22 +125,6 @@ class Generate_Files{
         $CI->db->order_by('valPro', 'asc');
 
         return $CI->db->get();
-    }
-
-    public function Get_AIH_PRIARTWEB($Conn){
-        $sql = "SELECT PRIVENLOC, CODART from src.aih.AIH_PRIARTWEB where CODCEN = '9901';";
-        $stmt = sqlsrv_query($Conn, $sql);
-        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
-            $this->AIH_PRIARTWEB[$row['CODART']] = $row['PRIVENLOC'];
-        }
-    }
-
-    public function Get_PRIVENLOC($idProd){
-        if (array_key_exists($idProd, $this->AIH_PRIARTWEB)){
-            return $this->AIH_PRIARTWEB[$idProd];
-        }else{
-            return false;
-        }
     }
 
     public function check_art_tables($connexion, $table = ''){
@@ -293,7 +277,7 @@ class Generate_Files{
 
     public function Get_Data_To_Alert($CI, $user_id){
         $CI->db->distinct('r.codeRegroupement, r.stockValue, r.priceMin, l.priceRec, l.idProd, l.price_wrk, l.statut, l.reason, r.priceMinPlusP');
-        $CI->db->from('regroupement r, lastdayacti l');
+        $CI->db->from('products r, lastdayacti l');
         $CI->db->where('r.codeRegroupement = l.codeRegroupement');
         $CI->db->where('l.user_id', $user_id);
         $CI->db->where('r.user_id', $user_id);

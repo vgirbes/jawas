@@ -40,6 +40,22 @@ class RequestProvider{
         }
     }
 
+    public function Cargar_Archivos($CI, $country_id = '', $user_name = '', $provider){
+        $this->country_id = $country_id;
+        $this->user_name = $user_name;
+        if ($user_name != ''){
+            $archivo = $this->Request_Files(strtoupper($provider), $CI);
+        }
+        //$archivo = 'maquette ZFOUR_ATYSE.csv';
+        //$archivo = 'aspitop_vgirbes_test.csv';
+        $this->filename = $archivo;
+        if ($archivo != '' && $archivo){
+           return $archivo;
+        }else{
+            return false;
+        }
+    }
+
     public function Cargar_Pirelli(){
     	return $items;
     }
@@ -54,7 +70,7 @@ class RequestProvider{
         $CI->db->select('*');
         $CI->db->from('files_providers');
         $CI->db->where('name', "$provider");
-        if ($provider == 'ATYSE'){
+        if ($provider == 'ATYSE' || $provider == 'ASPITOP'){
             $CI->db->where('countries_id', $this->country_id);
         }
         $query = $CI->db->get();
@@ -93,13 +109,12 @@ class RequestProvider{
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_FTP_SSL, CURLFTPSSL_TRY);
-        curl_setopt( $ch, CURLOPT_HEADER, true );
+        curl_setopt($ch, CURLOPT_HEADER, true);
         if ($archivo != ''){
             $fp = fopen('assets/files/'.$provider, 'w');
             curl_setopt($ch, CURLOPT_FILE, $fp);
         }else{
             curl_setopt($ch, CURLOPT_FTPLISTONLY, TRUE);
-            
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($ch);
@@ -108,7 +123,7 @@ class RequestProvider{
         if ($archivo == ''){
             $files = explode("\n", $output);
             $cur = count($files)-2;
-            $archivo = $files[0];
+            $archivo = ($provider_name == 'aspitop' ? $s_data->file.'09082014.'.$s_data->ext.' ' : $files[0]);
             $result = ($archivo !='' && count($files)>0 ? $this->Get_File($s_data, $CI, $archivo) : $this->Get_Last_File($provider_name));
         }else{
             fwrite($fp, $output);
