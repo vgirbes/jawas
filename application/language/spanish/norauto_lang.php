@@ -80,6 +80,7 @@ $lang['aspitop.producto'] = "Producto";
 $lang['aspitop.precio_competencia'] = "El precio de la competencia";
 $lang['aspitop.mas_barato'] = "es más barato";
 $lang['aspitop.nuestro_precio'] = "Nuestro precio es de";
+$lang['aspitop.asunto_informe'] = "Informe sobre precios de la competencia";
 
 $lang['general.notificaciones'] = "Notificaciones";
 $lang['general.mensajes'] = "Mensajes";

@@ -20,7 +20,6 @@ class Aspitop extends DB_Op{
         $CI->time_process->flag = 'aspitop';
         $users = $this->Get_Usuarios($CI, $user_id);
         $CI->time_process->user_id = $user_id;
-        //$this->Truncate_Tables($CI, $users, 'code6alert');
         $this->Get_AIH_PRIARTWEB($Conn_wrk);
         log_message('error', 'Inicio ASPITOP');
 
@@ -34,11 +33,11 @@ class Aspitop extends DB_Op{
                     if ($data[0] != ''){
                         log_message('error', 'Procesando idProd '.$data[0]);
                         $our_price = $this->Get_PRIVENLOC($data[0]);
-                        $txt .= lang('aspitop.producto').': <a href="http://www.norauto.fr/INTERSHOP/web/WFS/NI-NOFR-Site/fr_FR/-/EUR/ViewParametricSearch-SimpleOfferSearch?SearchTerm='.$data[0].'" target="_blank">'.$data[0].'</a><br/>';
                         log_message('error', lang('aspitop.producto').': <a href="http://www.norauto.fr/INTERSHOP/web/WFS/NI-NOFR-Site/fr_FR/-/EUR/ViewParametricSearch-SimpleOfferSearch?SearchTerm='.$data[0].'" target="_blank">'.$data[0].'</a><br/>');
                         $price = (double)str_replace(',', '.', $data[1]);
-                        if ($price > $our_price){
-                            $txt .= lang('aspitop.precio_competencia').' '.$price.' '.lang('aspitop.mas_barato').'('.$data[2].'). '.lang('aspitop.nuestro_precio').' '.$our_price.'.<br/><br/>';
+                        if ((double)$price < $our_price){
+                            $txt .= lang('aspitop.producto').': <a href="http://www.norauto.fr/INTERSHOP/web/WFS/NI-NOFR-Site/fr_FR/-/EUR/ViewParametricSearch-SimpleOfferSearch?SearchTerm='.$data[0].'" target="_blank">'.$data[0].'</a><br/>';
+                            $txt .= lang('aspitop.precio_competencia').' '.$price.' '.lang('aspitop.mas_barato').' ('.$data[2].'). '.lang('aspitop.nuestro_precio').' '.$our_price.'.<br/><br/>';
                             log_message('error', lang('aspitop.precio_competencia').' '.$price.' '.lang('aspitop.mas_barato').' (<a href="http://'.$data[2].'" target="_blank">'.$data[2].'</a>). '.lang('aspitop.nuestro_precio').' '.$our_price.'.<br/>');
                         }
                     }else{
@@ -47,6 +46,14 @@ class Aspitop extends DB_Op{
                 }
                 $row++;
             }
+
+            if ($txt != ''){
+                $CI->mailer->to = 'vgirbes@norauto.es';
+                $CI->mailer->subject = lang('aspitop.asunto_informe');
+                $CI->mailer->message = $txt;
+                $CI->mailer->send();
+            }
+
             log_message('error', 'Fin ASPITOP');
             return true;
 

@@ -21,7 +21,6 @@ class Mailer{
 		$CI->email->to($this->to); 
 		$CI->email->subject($this->subject);
 		$CI->email->message($this->message);
-
 		$CI->email->send();
 	}
 
