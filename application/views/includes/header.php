@@ -39,8 +39,7 @@
 			 function reloadpage(){
 			 	window.location = '<?= base_url();?><?= $this->session->userdata["lang"];?>/import';
 			 }
-			 <?php } ?>
-
+			 
 			 window.setInterval(function() {
 			 		$.ajax({
 					 type: 'POST',
@@ -76,6 +75,7 @@
 			 	url = '<?php echo base_url(); ?><?= $this->session->userdata["lang"];?>/status/close_notify';
 			 	close_notify(url);
 			 }
+			 
 			 <?php if (isset($debugger) && $debugger){ ?>
 			 window.setInterval(function() {
 			 	$.ajax({
@@ -106,6 +106,7 @@
 					})
 			 }, 1000);
 
+			 <?php } ?>
 			 <?php } ?>
   		</script>
 		<?php 

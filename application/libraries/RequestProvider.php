@@ -47,7 +47,7 @@ class RequestProvider{
             $archivo = $this->Request_Files(strtoupper($provider), $CI);
         }
         //$archivo = 'maquette ZFOUR_ATYSE.csv';
-        $archivo = 'aspitop_vgirbes_test.csv';
+        //$archivo = 'aspitop_vgirbes_test.csv';
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
            return $archivo;
@@ -123,7 +123,7 @@ class RequestProvider{
         if ($archivo == ''){
             $files = explode("\n", $output);
             $cur = count($files)-2;
-            $archivo = ($provider_name == 'aspitop' ? $s_data->file.'19022014.'.$s_data->ext.' ' : $files[0]);
+            $archivo = ($provider_name == 'aspitop' ? $s_data->file.'09082014.'.$s_data->ext.' ' : $files[0]);
             $result = ($archivo !='' && count($files)>0 ? $this->Get_File($s_data, $CI, $archivo) : $this->Get_Last_File($provider_name));
         }else{
             fwrite($fp, $output);

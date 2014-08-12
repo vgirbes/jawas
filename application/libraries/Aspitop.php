@@ -31,14 +31,18 @@ class Aspitop extends DB_Op{
             while ((($data = fgetcsv($handle, 3000, ';')) !== FALSE) && !$process) 
             {
                 if ($row >= 1){
-                    log_message('error', 'Procesando idProd '.$data[0]);
-                    $our_price = $this->Get_PRIVENLOC($data[0]);
-                    $txt .= lang('aspitop.producto').': <a href="http://www.norauto.fr/INTERSHOP/web/WFS/NI-NOFR-Site/fr_FR/-/EUR/ViewParametricSearch-SimpleOfferSearch?SearchTerm='.$data[0].'" target="_blank">'.$data[0].'</a><br/>';
-                    log_message('error', lang('aspitop.producto').': <a href="http://www.norauto.fr/INTERSHOP/web/WFS/NI-NOFR-Site/fr_FR/-/EUR/ViewParametricSearch-SimpleOfferSearch?SearchTerm='.$data[0].'" target="_blank">'.$data[0].'</a><br/>');
-                    $price = (double)str_replace(',', '.', $data[1]);
-                    if ($price > $our_price){
-                        $txt .= lang('aspitop.precio_competencia').' '.$price.' '.lang('aspitop.mas_barato').'('.$data[2].'). '.lang('aspitop.nuestro_precio').' '.$our_price.'.<br/><br/>';
-                        log_message('error', lang('aspitop.precio_competencia').' '.$price.' '.lang('aspitop.mas_barato').' (<a href="http://'.$data[2].'" target="_blank">'.$data[2].'</a>). '.lang('aspitop.nuestro_precio').' '.$our_price.'.<br/>');
+                    if ($data[0] != ''){
+                        log_message('error', 'Procesando idProd '.$data[0]);
+                        $our_price = $this->Get_PRIVENLOC($data[0]);
+                        $txt .= lang('aspitop.producto').': <a href="http://www.norauto.fr/INTERSHOP/web/WFS/NI-NOFR-Site/fr_FR/-/EUR/ViewParametricSearch-SimpleOfferSearch?SearchTerm='.$data[0].'" target="_blank">'.$data[0].'</a><br/>';
+                        log_message('error', lang('aspitop.producto').': <a href="http://www.norauto.fr/INTERSHOP/web/WFS/NI-NOFR-Site/fr_FR/-/EUR/ViewParametricSearch-SimpleOfferSearch?SearchTerm='.$data[0].'" target="_blank">'.$data[0].'</a><br/>');
+                        $price = (double)str_replace(',', '.', $data[1]);
+                        if ($price > $our_price){
+                            $txt .= lang('aspitop.precio_competencia').' '.$price.' '.lang('aspitop.mas_barato').'('.$data[2].'). '.lang('aspitop.nuestro_precio').' '.$our_price.'.<br/><br/>';
+                            log_message('error', lang('aspitop.precio_competencia').' '.$price.' '.lang('aspitop.mas_barato').' (<a href="http://'.$data[2].'" target="_blank">'.$data[2].'</a>). '.lang('aspitop.nuestro_precio').' '.$our_price.'.<br/>');
+                        }
+                    }else{
+                        log_message('error', 'No se dispone de referencia del producto.');
                     }
                 }
                 $row++;
