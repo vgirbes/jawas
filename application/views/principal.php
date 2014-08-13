@@ -16,6 +16,11 @@ $datos['debugger'] = DEBUG;
 	<?php if (isset($admin)){ 
 	$this->load->view('list_admin.php', $list_admin);
 	} ?>
+	<?php if (isset($lista_tipo)){
+	$datos['lista_tipo'] = $lista_tipo;
+	$datos['lista_emails'] = $lista_emails;
+	$this->load->view('alertas.php', $datos);	
+	}?>
 	<?php if (isset($errores)){ ?>
 	<div id="error">
 		<?= $errores;?>

@@ -169,3 +169,92 @@ input[type="submit"] .boton{
 	margin-left:10px;
 	text-align: center;
 }
+
+#status-save{
+	position:absolute;
+	color:#fff;
+	text-align:center;
+	width:100%;
+	top:31px;
+	height:28px;
+	display:none;
+	opacity:0.7;
+}
+
+#izq-mails-back{
+	position:absolute;
+	text-align:center;
+	background-color:#fff;
+	top:60px;
+	left:30px;
+	border:5px dashed #ccc;
+	opacity:0.9;
+	width:40%;
+	min-width:350px;
+	height:80%;
+}
+
+#izq-mails{
+	position:absolute;
+	text-align:center;
+	top:60px;
+	left:30px;
+	border:5px dashed #ccc;
+	width:40%;
+	min-width:350px;
+	height:80%;
+}
+
+.import-mails{
+	position:relative;
+	margin-top:35%;
+}
+
+.title-mails{
+	font-size:20pt;
+	color:#050087;
+}
+
+.btn-alert{
+	width:70%;
+}
+
+.input_type{
+	width:67%;
+	height:30px;
+}
+
+#der-mails-back{
+	position:absolute;
+	text-align:center;
+	background-color:#fff;
+	top:60px;
+	right:30px;
+	border:5px dashed #ccc;
+	opacity:0.9;
+	width:40%;
+	min-width:350px;
+	height:80%;
+}
+
+#der-mails{
+	position:absolute;
+	text-align:center;
+	top:60px;
+	right:30px;
+	border:5px dashed #ccc;
+	width:40%;
+	min-width:350px;
+	height:80%;
+	overflow-y:scroll;
+}
+
+.mail-contact{
+	position:relative;
+	cursor:pointer;
+	color:#050087;
+	padding:12px;
+	font-size:17pt;
+	height:26px;
+	border:1px dashed #ccc;
+}

@@ -9,10 +9,13 @@ class Administration extends CI_Controller{
         $this->load->helper('language');
         $this->lang->load('norauto');
         $this->load->model('usuarios');
+        $this->load->model('alerts');
+        $this->load->library('form_validation');
     }
 
     public function index(){
         $rol = $this->usuarios->rol_ok();
+        $datos = array();
     	if ($rol){
     		$datos['admin'] = true;
     		$url = base_url().$this->session->userdata['lang'].'/';
@@ -26,13 +29,14 @@ class Administration extends CI_Controller{
     		$datos['list_admin'][3]['url'] = $url.'administration/load/providers';
     		$datos['list_admin'][4]['name'] = lang('admin.defaut');
     		$datos['list_admin'][4]['url'] = $url.'administration/load/defaut';
-            $datos['list_admin'][5]['name'] = 'Mensajes';
+            $datos['list_admin'][5]['name'] = lang('general.mensajes');
             $datos['list_admin'][5]['url'] = $url.'administration/load/messages';
-    		$this->load->view('principal', $datos);
-    	}else{
-    		$this->load->view('principal');
+            $datos['list_admin'][6]['name'] = lang('admin.lista_alertas');
+            $datos['list_admin'][6]['url'] = 'javascript:show_alert()';
+    		
     	}
 
+        $this->load->view('principal', $datos);
     }
 
     public function __output($output = null){
@@ -71,6 +75,55 @@ class Administration extends CI_Controller{
         }
 
         return $table;
+    }
+
+    public function alerts(){
+        $rol = $this->usuarios->rol_ok();
+        $type = $this->uri->segment(4); 
+        $datos = array();
+        $estado = array();
+        if ($rol && $type != ''){
+            $type_save = $this->input->post('type');
+            if ($type_save != ''){
+                $datos['errores'] = '';
+                $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+                if ($this->form_validation->run() == FALSE){
+                    $estado[] = validation_errors();
+                }
+
+                if (count($estado) <= 0){
+                    $result = $this->alerts->Save_Contact($type_save, $this->input->post('email'));
+                    if (!$result) $datos['errores'] = lang('alerts.contacto_existe');
+                }else{
+                    $datos['errores'] = $estado;
+                }
+                $datos['email'] = $this->input->post('email');
+                print json_encode($datos);
+            }else{
+                $datos['lista_emails'] = $this->alerts->Load_List($type);
+                $datos['lista_tipo'] = $type;
+                $this->load->view('principal', $datos);
+            }
+               
+        }else{
+            $this->load->view('principal');
+        }
+    }
+
+    public function deletealerts(){
+        $rol = $this->usuarios->rol_ok();
+        $type = $this->uri->segment(4); 
+        $datos = array();
+        $estado = '';
+        if ($rol && $type != ''){
+            $datos['errores'] = '';
+            $result = $this->alerts->Delete_Contact($type, $this->input->post('email'));
+            if (!$result) $datos['errores'] = lang('alerts.error_borrar');
+            $datos['email'] = $this->input->post('email');
+            print json_encode($datos);
+        }else{
+            $this->load->view('principal');
+        }
     }
 
 }
