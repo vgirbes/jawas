@@ -245,4 +245,22 @@ class DB_op{
 
         return true;
     }
+
+    public function Get_Destinatarios($CI, $type){
+        $dest = '';
+        $CI->db->select('email');
+        $CI->db->from('alerts_list');
+        $CI->db->where('type', $type);
+        $query = $CI->db->get();
+
+        if ($query->num_rows() > 0){
+            foreach ($query->result() as $row){
+                $dest .= $row->email.','; 
+            }
+
+            return rtrim($dest, ',');
+        }else{
+            return false;
+        }
+    }
 }
