@@ -84,3 +84,14 @@ $lang['aspitop.asunto_informe'] = "Rapport sur ​​les prix des concurrents";
 
 $lang['general.notificaciones'] = "Notifications";
 $lang['general.mensajes'] = "Messages";
+
+$lang['list_admin.lista_stock'] = "Liste d'alerte stock";
+$lang['list_admin.lista_precios'] = "Alerte de prix";
+$lang['list_admin.volver'] = "Reviens";
+$lang['alerts.lista_titulo'] = "Liste d'alerte";
+$lang['alerts.importar_contacto'] = "Importer des contacts";
+$lang['alerts.add_contact'] = "Ajouter ce contact";
+$lang['alerts.sin_contactos'] = "Aucun contact";
+$lang['alerts.contacto_existe'] = "Le contact est d&eacute;j&Agrave; dans la liste";
+$lang['alerts.error_borrar'] = "Il n'a pas été possible de supprimer le contact sélectionné";
+$lang['admin.lista_alertas'] = "Alerte list";

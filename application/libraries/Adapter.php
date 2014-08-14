@@ -11,7 +11,6 @@ class Adapter{
     	$CI =& get_instance();
     	switch($provider){
     		case 'Atyse':
-                log_message('error', 'erroraco ');
     			$items = $CI->requestprovider->Cargar_Archivos($CI, $country_id, $user_name, $provider);
                 $this->filename = $CI->requestprovider->filename;
     			return $items;

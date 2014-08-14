@@ -52,4 +52,9 @@ function close_notify(url){
 	}
 }
 
+function show_alert(){
+	$('#lista-m').toggle();
+	$('#alert-m').toggle();
+}
+
 	 

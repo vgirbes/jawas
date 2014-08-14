@@ -13,7 +13,9 @@
   		<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 		<script src="<?= asset_url();?>js/debugger.js"></script>
 		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
-
+		<?php if (isset($lista_tipo)){?>
+		<script src="<?= asset_url();?>js/alerts.js"></script>
+		<?php } ?>
   		<script>
   			$(function() {
     			$( "#msg-import" ).draggable();
@@ -54,7 +56,7 @@
 					 	}
 					 }
 					})
-				}, 5000);
+				}, 10000);
 
 			 window.setInterval(function() {
 			 		$.ajax({
