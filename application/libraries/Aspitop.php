@@ -47,11 +47,15 @@ class Aspitop extends DB_Op{
                 $row++;
             }
 
+            $destinatarios = $this->Get_Destinatarios($CI, 'stocks');
+
             if ($txt != ''){
-                $CI->mailer->to = 'vgirbes@norauto.es';
-                $CI->mailer->subject = lang('aspitop.asunto_informe');
-                $CI->mailer->message = $txt;
-                $CI->mailer->send();
+                if ($destinatarios != false){
+                    $CI->mailer->to = "$destinatarios";
+                    $CI->mailer->subject = lang('aspitop.asunto_informe');
+                    $CI->mailer->message = $txt;
+                    $CI->mailer->send();
+                }   
             }
 
             log_message('error', 'Fin ASPITOP');
