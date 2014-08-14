@@ -77,12 +77,46 @@ class Administration extends CI_Controller{
         return $table;
     }
 
+    public function gapps($auth_code){
+        $result = array();
+        $client_id = CLIENT_ID;
+        $client_secret = CLIENT_SECRET;
+        $redirect_uri = 'http://localhost/es/administration/alerts';
+        $max_results = 50;
+
+        $fields=array(
+            'code'=>  urlencode($auth_code),
+            'client_id'=>  urlencode($client_id),
+            'client_secret'=>  urlencode($client_secret),
+            'redirect_uri'=>  urlencode($redirect_uri),
+            'grant_type'=>  urlencode('authorization_code')
+        );
+        $post = '';
+        foreach($fields as $key=>$value) { $post .= $key.'='.$value.'&'; }
+        $post = rtrim($post,'&');
+
+        $accesstoken = $this->alerts->Get_Token($post);
+        $contacts = $this->alerts->Get_Google_Contacts($max_results, $accesstoken);
+
+        return $contacts;
+    }
+
     public function alerts(){
-        $rol = $this->usuarios->rol_ok();
-        $type = $this->uri->segment(4); 
         $datos = array();
         $estado = array();
+        $rol = $this->usuarios->rol_ok();
+        $type = $this->uri->segment(4); 
+        
+        if ($type == ''){
+            $type = $this->session->userdata['type_list'];
+        }else{
+            $this->session->set_userdata('type_list', $type);
+        }
+        
         if ($rol && $type != ''){
+            if (isset($_GET['code'])){
+                $datos['contacts'] = $this->gapps($_GET['code']);
+            }
             $type_save = $this->input->post('type');
             if ($type_save != ''){
                 $datos['errores'] = '';
