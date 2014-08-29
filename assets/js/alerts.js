@@ -40,6 +40,7 @@ function delete_mail(f){
 		email = f.attr('title');
 		url = $('#url_delete').val();
 		id = f.attr('id');
+		$('#der-mails').css({ 'border':'5px dashed red' });
 		$.ajax({
 			 type: 'POST',
 			 url: url, 
@@ -54,6 +55,7 @@ function delete_mail(f){
 			 success: function(resp) { 
 			 	respuesta = eval('(' + resp + ')');
 			 	$('#status-save').removeClass('blink_me');
+			 	$('#der-mails').css({ 'border':'5px dashed #ccc' });
 			 	if (respuesta.errores == ''){
 			 		$('#'+id).remove();
 			 		$('#status-save').html('Item deleted');

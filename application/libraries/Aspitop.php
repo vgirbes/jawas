@@ -17,7 +17,6 @@ class Aspitop extends DB_Op{
         $process = false;
         $row = 0;
         $Conn_wrk = $this->Connect_WRK();
-        $CI->time_process->flag = 'aspitop';
         $users = $this->Get_Usuarios($CI, $user_id);
         $CI->time_process->user_id = $user_id;
         $this->Get_AIH_PRIARTWEB($Conn_wrk);

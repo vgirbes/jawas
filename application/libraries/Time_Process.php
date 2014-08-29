@@ -104,6 +104,7 @@ class Time_Process{
 		}
 		$CI->db->where('user_id', $this->user_id);
 		$query = $CI->db->get();
+
 		if ($query->num_rows<=0){
 			return false;
 		}else{

@@ -44,7 +44,7 @@ class Ficheros extends CI_Model{
         $this->db_op->Truncate_Tables($CI, $users, 'lastdayacti');
         $all = ($user_id != '' ? true : false);
         foreach ($users as $user){
-            $res = $this->generate_files->do_it($user['id'], $user['username'], $all);
+            $res = $this->generate_files->do_it($user['id'], $user['username'], $user['codbu'], $all);
             if (!$res) return false;
         }
         return $res;
@@ -83,15 +83,11 @@ class Ficheros extends CI_Model{
     }
 
     public function file_exist($archivo, $user_name, $dir){
-        if (preg_match('/'.$user_name.'_validationProduit/i', $archivo) || preg_match('/'.$user_name.'_test_alert/i', $archivo)){
+        if (preg_match('/'.$user_name.'_validationProduit/i', $archivo) || preg_match('/'.$user_name.'_test_alert/i', $archivo) || preg_match('/'.$user_name.'_delay_file/i', $archivo)){
             return true;
         }else{
             return false;
         }
-    }
-
-    public function process_competitors(){
-
     }
 
     public function send_SAP(){

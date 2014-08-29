@@ -7,6 +7,10 @@ class Generate_Files extends DB_Op{
     var $AIH_PRIARTWEB = array();
     var $user_id = '';
     var $user_name = '';
+    var $providers_delay = array();
+    var $codbu = '';
+    var $delay_file = '';
+    var $validation_file = '';
 
     function __construct(){
         $CI =& get_instance();
@@ -17,7 +21,7 @@ class Generate_Files extends DB_Op{
         $CI->load->library('Lastdayacti_Struct');
     }
 
-    public function do_it($user_id, $user_name, $all){
+    public function do_it($user_id, $user_name, $codbu, $all){
         $CI =& get_instance();
         $this->user_id = $user_id;
         $this->user_name = $user_name;
@@ -25,7 +29,6 @@ class Generate_Files extends DB_Op{
         $CI->time_process->user_id = $user_id;
         $Conn = $this->Connect_MCH();
         $Conn_wrk = $this->Connect_WRK();
-        $nom_csv = $user_name."_validationProduit_csv_" . date('YmdHis');
         log_message('error', 'Entra files '.$user_id);
         $stock_mini = $this->Get_Default_Value($CI, 'stock_mini');
         $marge_e = $this->Get_Default_Value($CI, 'marge_e');
@@ -33,6 +36,8 @@ class Generate_Files extends DB_Op{
         $tva = $this->Get_Default_Value($CI, 'TVA');
         $query = $this->Get_Data_To_File($CI, $user_id);
         $users = $this->Get_Usuarios($CI, $user_id);
+        $this->codbu = $codbu;
+        $this->providers_delay = $this->Get_Providers_Delay($CI, $user_id);
         $save = 0;
         $no_price = 0;
         $ret = 0;
@@ -40,14 +45,18 @@ class Generate_Files extends DB_Op{
         $i = 2;
         $false = 0;
         $count = 0;
-        $this->TMP_PRDNOEBU = $this->check_art_tables($Conn, 'TMP_PRDNOEBU');
-        $this->TMP_PRDGMABU_PRIX_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_PRIX_OK');
-        $this->TMP_PRDGMABU_MASQ_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_MASQ_OK');
+        $this->TMP_PRDNOEBU = $this->check_art_tables($Conn, 'TMP_PRDNOEBU', $codbu);
+        $this->TMP_PRDGMABU_PRIX_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_PRIX_OK', $codbu);
+        $this->TMP_PRDGMABU_MASQ_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_MASQ_OK', $codbu);
         $this->Get_AIH_PRIARTWEB($Conn_wrk);
-        $name_file_csv = 'assets/files/'.$nom_csv .".csv";
-        $f = @fopen($name_file_csv, 'w+');
+        $name_file_csv = 'assets/files/'.$user_name."_validationProduit_csv_" . date('YmdHis').'.csv';
+        $delay_file_name = 'assets/files/'.$user_name.'_delay_file.csv';
+        $this->validation_file = @fopen($name_file_csv, 'w+');
+        $this->delay_file = @fopen($delay_file_name, 'w+');
+        $line_delay = 'CODBU;provider;id_prod;delay';
+        @fputcsv($this->delay_file, explode(',', $line_delay));
         $line = "OA;material;TYPE;val;date_debut;heure_debut;date_fin;heure_fin;sup";
-        @fputcsv($f, explode(',', $line));
+        @fputcsv($this->validation_file, explode(',', $line));
 
         if ($query->num_rows()>0){
             foreach ($query->result() as $ligne)
@@ -65,7 +74,7 @@ class Generate_Files extends DB_Op{
                         {
                             if ($ligne->priceMin == -1)
                             {
-                                $this->calcActi($CI, $ligne, $f, 'no_price');
+                                $this->calcActi($CI, $ligne, 'no_price');
                                 $no_price++;
                             }
                             else
@@ -74,12 +83,12 @@ class Generate_Files extends DB_Op{
 
                                 if ((double)$result <= (double)$row['PRIVENLOC'])
                                 {
-                                    $this->calcActi($CI, $ligne, $f, 'good', $row, $result);
+                                    $this->calcActi($CI, $ligne, 'good', $row, $result);
                                     $save++;
                                 }
                                 else
                                 {
-                                    $this->calcActi($CI, $ligne, $f, 'too_exp', $row, $result);
+                                    $this->calcActi($CI, $ligne, 'too_exp', $row, $result);
                                     $ret++;
                                 }
                                 $row++;
@@ -87,7 +96,7 @@ class Generate_Files extends DB_Op{
                         }
                         else
                         {
-                            $this->calcActi($CI, $ligne, $f, 'no_stock');
+                            $this->calcActi($CI, $ligne, 'no_stock');
                             $stock_ret++;
                         }
                         $i++;
@@ -100,7 +109,8 @@ class Generate_Files extends DB_Op{
             $CI->time_process->end_process($CI, $users, $all, 'error', 'db');
             return false;
         }
-        @fclose($f);
+        @fclose($this->validation_file);
+        @fclose($this->delay_file);
         $CI->lastdayacti_struct->Insert_Data($CI, 'lastdayacti', 'no');
         $csv = $this->Generate_Alert($CI, $user_id, $user_name);
         log_message('error', 'Fin');
@@ -114,11 +124,11 @@ class Generate_Files extends DB_Op{
     }
 
     public function Get_Data_To_File($CI, $user_id){
-        $CI->db->distinct('dm.idProd, dm.valPro, dm.country, r.stockValue, r.priceMin');
+        $CI->db->distinct('dm.idProd, dm.valPro, dm.country, r.stockValue, r.priceMin, r.supplierKey');
         $CI->db->from('data_mch dm, products r');
         $CI->db->where('r.codeRegroupement = dm.valPro');
         $CI->db->where('dm.numPro = "codeRegroupement"');
-        $CI->db->where('dm.country != "NOES"');
+        /*$CI->db->where('dm.country != "NOES"');*/
         $CI->db->where('dm.user_id', $user_id);
         $CI->db->where('r.user_id', $user_id);
         $CI->db->group_by('dm.valPro');
@@ -127,8 +137,8 @@ class Generate_Files extends DB_Op{
         return $CI->db->get();
     }
 
-    public function check_art_tables($connexion, $table = ''){
-        $req = ("SELECT IDEPRD from mch.".$table." ".($table == 'TMP_PRDNOEBU' ? " WHERE CODBU = 'NOES'" : ''));
+    public function check_art_tables($connexion, $table = '', $codbu){
+        $req = ("SELECT IDEPRD from mch.".$table." ".($table == 'TMP_PRDNOEBU' ? " WHERE CODBU = '".$codbu."'" : ''));
         $stmt = sqlsrv_query($connexion, $req);
 
         $tabla = array();
@@ -150,8 +160,9 @@ class Generate_Files extends DB_Op{
         }
     }
 
-    public function calcActi($CI, $ligne, $f, $type, $row = '', $result = ''){
+    public function calcActi($CI, $ligne, $type, $row = '', $result = ''){
         $statut = 'Y';
+        $prov_delay = $this->providers_delay[$ligne->supplierKey];
 
         switch($type){
             case 'no_price':
@@ -171,9 +182,18 @@ class Generate_Files extends DB_Op{
                 $reg = $this->Get_Reg_nostock($ligne, $this->user_id);
             break;
         }
+
+        if ($type != 'too_exp'){
+            if ($prov_delay > 0 && !is_null($prov_delay)){
+                $line_delay = $this->codbu.';'.$ligne->supplierKey.';'.$ligne->idProd.';'.($type == 'no_stock' ? 31 : $prov_delay);
+                log_message('error', $line_delay);
+                @fputcsv($this->delay_file, explode(',', $line_delay));
+            }
+        }
+
         $CI->lastdayacti_struct->Load_Data($reg, $this->item);
         $line = $ligne->country . ";" . $ligne->idProd . ";MASQUE;".$statut.";1/10/12;00:00:00;31/12/2099;23:59:00;";
-        @fputcsv($f, explode(',', $line));
+        @fputcsv($this->validation_file, explode(',', $line));
 
         return true;
     }

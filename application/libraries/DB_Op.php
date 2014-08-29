@@ -130,11 +130,12 @@ class DB_op{
 
     public function Get_Usuarios($CI, $user_id = ''){
         $users = array();
-        $CI->db->select('*');
-        $CI->db->from('users');
+        $CI->db->select('u.*, c.codbu');
+        $CI->db->from('users u, countries c');
         if ($user_id != ''){
-            $CI->db->where('id', $user_id);
+            $CI->db->where('u.id', $user_id);
         }
+        $CI->db->where('u.countries_id = c.id');
         $query = $CI->db->get();
         $i = 0;
 
@@ -146,6 +147,7 @@ class DB_op{
                 $users[$i]['email'] = $ligne->email;
                 $users[$i]['rol'] = $ligne->rol;
                 $users[$i]['name'] = $ligne->name;
+                $users[$i]['codbu'] = $ligne->codbu;
                 $i++;
              }
 
@@ -259,6 +261,24 @@ class DB_op{
             }
 
             return rtrim($dest, ',');
+        }else{
+            return false;
+        }
+    }
+
+    public function Get_Providers_Delay($CI, $user_id){
+        $CI->db->select('SupplierKey, delay');
+        $CI->db->from('users_providers');
+        $CI->db->where('users_id', $user_id);
+        $query = $CI->db->get();
+
+        if ($query->num_rows() > 0){
+            $res = array();
+            foreach ($query->result() as $row){
+                $res[$row->SupplierKey] = $row->delay;
+            }
+
+            return $res;
         }else{
             return false;
         }

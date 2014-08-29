@@ -61,6 +61,7 @@ class Atyse{
                     if (!is_null($ligne_f) && ($ligne_f->active == 1 || $ligne_f->active == "1")){
                         $count = 0;
                         $codeReg = '00000000000'.$data[1];
+                        log_message('error', 'Insertando proveedor '.$codProv);
                         log_message('error', 'Procesando '.$codeReg);
                         echo '<input type="hidden" name="atyse">';
 

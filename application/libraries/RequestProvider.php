@@ -46,7 +46,7 @@ class RequestProvider{
         if ($user_name != ''){
             $archivo = $this->Request_Files(strtoupper($provider), $CI);
         }
-        //$archivo = 'maquette ZFOUR_ATYSE.csv';
+        $archivo = 'maquette ZFOUR_ATYSE.csv';
         //$archivo = 'aspitop_vgirbes_test.csv';
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
@@ -110,6 +110,7 @@ class RequestProvider{
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_FTP_SSL, CURLFTPSSL_TRY);
         curl_setopt($ch, CURLOPT_HEADER, true);
+
         if ($archivo != ''){
             $fp = fopen('assets/files/'.$provider, 'w');
             curl_setopt($ch, CURLOPT_FILE, $fp);
@@ -118,6 +119,7 @@ class RequestProvider{
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($ch);
+        echo curl_error($ch);
         curl_close($ch);
 
         if ($archivo == ''){
@@ -127,6 +129,7 @@ class RequestProvider{
             $result = ($archivo !='' && count($files)>0 ? $this->Get_File($s_data, $CI, $archivo) : $this->Get_Last_File($provider_name));
         }else{
             fwrite($fp, $output);
+            var_dump($ftp_server);
             fclose($fp);
             $size = $this->Get_File_Size($ftp_server, $CI);
             if (filesize('assets/files/'.$provider) == $size){

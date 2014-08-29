@@ -68,6 +68,30 @@ class Import extends CI_Controller{
         }   
     }
 
+    public function test(){
+        $ftp_server = '212.99.40.90';
+        $user = 'scanprix';
+        $pass = 'KSoYct59w#';
+
+        $conn_id = ftp_ssl_connect($ftp_server);
+        $login_result = ftp_login($conn_id, $user, $pass);
+        echo ftp_pwd($conn_id);
+        ftp_close($conn_id);
+
+        
+        $ftp_server = 'ftps://'.$ftp_server; 
+        $ch = curl_init(); 
+        curl_setopt($ch, CURLOPT_URL, $ftp_server);
+        curl_setopt($ch, CURLOPT_USERPWD, $user.':'.$pass);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_FTP_SSL, CURLFTPSSL_TRY);
+        curl_setopt($ch, CURLOPT_FTPSSLAUTH, CURLFTPAUTH_TLS);
+        curl_exec($ch);
+        echo curl_error($ch);
+        curl_close($ch);
+    }
+
     public function all(){
         $CI =& get_instance();
         $ip = $_SERVER['REMOTE_ADDR'];
@@ -81,9 +105,12 @@ class Import extends CI_Controller{
                 $this->time_process->flag = 'all';
                 $this->time_process->f_start = date('Y-m-d H:i:s');
                 $this->time_process->init_process($CI, $users);
-                $atyse = $this->ficheros->process_comdep_aty('atyse');
+           /*     $atyse = $this->ficheros->process_comdep_aty('atyse');
                 $mch = $this->ficheros->process_comdep_aty('mch');
-                $files = $this->ficheros->generate_files($user_id);
+                $files = $this->ficheros->generate_files($user_id);*/
+                $atyse = true;
+                $mch = true;
+                $files = true;
                 $aspitop = $this->ficheros->process_comdep_aty('aspitop');
                 if ($atyse && $mch && $files && $aspitop){
                     foreach ($users as $user){
@@ -100,7 +127,7 @@ class Import extends CI_Controller{
                 }
             }
         }
-        log_message('error', 'Alguien ha llamado a ALL '.$_SERVER['REMOTE_ADDR'].' desde '.$_SERVER['HTTP_REFERER']);
+        log_message('error', 'Alguien ha llamado a ALL '.$_SERVER['REMOTE_ADDR']);
         $this->load->view('principal');
     }
 
@@ -206,7 +233,7 @@ class Import extends CI_Controller{
         $CI =& get_instance();
         $this->time_process->user_id = $user_id;
         $url = base_url().$this->session->userdata['lang'].'/import/'.$provider.'/'.$user_id.'/'.$this->session->userdata['token'];
-        log_message('error', 'Alguien ha llamado a processtyres '.$_SERVER['REMOTE_ADDR'].' desde '.$_SERVER['HTTP_REFERER']);
+        log_message('error', 'Alguien ha llamado a processtyres '.$_SERVER['REMOTE_ADDR']);
         if ($this->time_process->is_ready($CI)){
             $users = $this->db_op->Get_Usuarios($CI, $user_id);
             $this->time_process->url = $url;
