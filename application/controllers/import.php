@@ -68,30 +68,6 @@ class Import extends CI_Controller{
         }   
     }
 
-    public function test(){
-        $ftp_server = '212.99.40.90';
-        $user = 'scanprix';
-        $pass = 'KSoYct59w#';
-
-        $conn_id = ftp_ssl_connect($ftp_server);
-        $login_result = ftp_login($conn_id, $user, $pass);
-        echo ftp_pwd($conn_id);
-        ftp_close($conn_id);
-
-        
-        $ftp_server = 'ftps://'.$ftp_server; 
-        $ch = curl_init(); 
-        curl_setopt($ch, CURLOPT_URL, $ftp_server);
-        curl_setopt($ch, CURLOPT_USERPWD, $user.':'.$pass);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_FTP_SSL, CURLFTPSSL_TRY);
-        curl_setopt($ch, CURLOPT_FTPSSLAUTH, CURLFTPAUTH_TLS);
-        curl_exec($ch);
-        echo curl_error($ch);
-        curl_close($ch);
-    }
-
     public function all(){
         $CI =& get_instance();
         $ip = $_SERVER['REMOTE_ADDR'];

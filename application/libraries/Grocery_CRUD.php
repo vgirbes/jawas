@@ -929,6 +929,7 @@ class grocery_CRUD_Model_Driver extends grocery_CRUD_Field_Types
 				}
 
 				$insert_result =  $this->basic_model->db_insert($insert_data);
+				if ($this->basic_db_table == 'providers') $this->process_providers('insert', $insert_data);				
 
 				if($insert_result !== false)
 				{
@@ -976,6 +977,31 @@ class grocery_CRUD_Model_Driver extends grocery_CRUD_Field_Types
 
 		return false;
 
+	}
+
+	public function process_providers($type, $res_data){
+		$CI =& get_instance();
+		$users = array();
+        $CI->db->select('u.*, c.codbu');
+        $CI->db->from('users u, countries c');
+        $CI->db->where('u.countries_id = c.id');
+        $query = $CI->db->get();
+
+        if ($query->num_rows()>0){
+            foreach ($query->result() as $ligne){
+                $data = array(
+                	'users_id' => $ligne->id,
+                	'SupplierKey' => ($type == 'insert' ? $res_data['SupplierKey'] : $res_data)
+                );
+
+                if ($type == 'insert'){
+                	$CI->db->insert('users_providers', $data);
+            	}else{
+            		$CI->db->delete('users_providers', $data);
+            	}
+             }
+
+        }
 	}
 
 	protected function db_update($state_info)
@@ -1182,6 +1208,9 @@ class grocery_CRUD_Model_Driver extends grocery_CRUD_Field_Types
 			}
 
 			$delete_result = $this->basic_model->db_delete($primary_key);
+			if ($this->basic_db_table == 'providers'){
+				$this->process_providers('delete', $primary_key);
+			}
 
 			if($delete_result === false)
 			{
