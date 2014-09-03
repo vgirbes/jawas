@@ -21,7 +21,7 @@ class Generate_Files extends DB_Op{
         $CI->load->library('Lastdayacti_Struct');
     }
 
-    public function do_it($user_id, $user_name, $codbu, $all){
+    public function do_it($user_id, $user_name, $codbu, $codcen, $all){
         $CI =& get_instance();
         $this->user_id = $user_id;
         $this->user_name = $user_name;
@@ -48,7 +48,7 @@ class Generate_Files extends DB_Op{
         $this->TMP_PRDNOEBU = $this->check_art_tables($Conn, 'TMP_PRDNOEBU', $codbu);
         $this->TMP_PRDGMABU_PRIX_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_PRIX_OK', $codbu);
         $this->TMP_PRDGMABU_MASQ_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_MASQ_OK', $codbu);
-        $this->Get_AIH_PRIARTWEB($Conn_wrk);
+        $this->Get_AIH_PRIARTWEB($Conn_wrk, $codcen);
         $name_file_csv = 'assets/files/'.$user_name."_validationProduit_csv_" . date('YmdHis').'.csv';
         $delay_file_name = 'assets/files/'.$user_name.'_delay_file.csv';
         $this->validation_file = @fopen($name_file_csv, 'w+');

@@ -101,8 +101,8 @@ class DB_op{
         return $val;
     }
 
-    public function Get_AIH_PRIARTWEB($Conn){
-        $sql = "SELECT PRIVENLOC, CODART from src.aih.AIH_PRIARTWEB where CODCEN = '9901';";
+    public function Get_AIH_PRIARTWEB($Conn, $codcen = '9901'){
+        $sql = "SELECT PRIVENLOC, CODART from src.aih.AIH_PRIARTWEB where CODCEN = '$codcen';";
         $stmt = sqlsrv_query($Conn, $sql);
         while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
             $this->AIH_PRIARTWEB[$row['CODART']] = $row['PRIVENLOC'];
@@ -130,7 +130,7 @@ class DB_op{
 
     public function Get_Usuarios($CI, $user_id = ''){
         $users = array();
-        $CI->db->select('u.*, c.codbu');
+        $CI->db->select('u.*, c.codbu, c.codcen');
         $CI->db->from('users u, countries c');
         if ($user_id != ''){
             $CI->db->where('u.id', $user_id);
@@ -148,6 +148,7 @@ class DB_op{
                 $users[$i]['rol'] = $ligne->rol;
                 $users[$i]['name'] = $ligne->name;
                 $users[$i]['codbu'] = $ligne->codbu;
+                $users[$i]['codcen'] = $ligne->codcen;
                 $i++;
              }
 

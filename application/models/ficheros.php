@@ -44,7 +44,7 @@ class Ficheros extends CI_Model{
         $this->db_op->Truncate_Tables($CI, $users, 'lastdayacti');
         $all = ($user_id != '' ? true : false);
         foreach ($users as $user){
-            $res = $this->generate_files->do_it($user['id'], $user['username'], $user['codbu'], $all);
+            $res = $this->generate_files->do_it($user['id'], $user['username'], $user['codbu'], $user['codcen'], $all);
             if (!$res) return false;
         }
         return $res;

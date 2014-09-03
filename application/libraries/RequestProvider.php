@@ -119,7 +119,6 @@ class RequestProvider{
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($ch);
-        echo curl_error($ch);
         curl_close($ch);
 
         if ($archivo == ''){
