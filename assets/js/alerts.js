@@ -44,7 +44,7 @@ function delete_mail(f){
 		$.ajax({
 			 type: 'POST',
 			 url: url, 
-			 data: 'email='+email,
+			 data: 'email='+email+'&country_id='+$('#country_id').val(),
 			 beforeSend: function () {
                 html = 'Processing...';
                 $('#status-save').addClass('blink_me');
@@ -78,7 +78,7 @@ function save_mail_google(f){
 	$.ajax({
 		 type: 'POST',
 		 url: url, 
-		 data: 'email='+email+'&type='+type,
+		 data: 'email='+email+'&type='+type+'&country_id='+$('#country_id').val(),
 		 beforeSend: function () {
                 html = 'Processing...';
                 $('#status-save').addClass('blink_me');

@@ -16,6 +16,7 @@ class Administration extends CI_Controller{
     public function index(){
         $rol = $this->usuarios->rol_ok();
         $datos = array();
+        $this->session->unset_userdata('country');
     	if ($rol){
     		$datos['admin'] = true;
     		$url = base_url().$this->session->userdata['lang'].'/';
@@ -105,7 +106,9 @@ class Administration extends CI_Controller{
         $datos = array();
         $estado = array();
         $rol = $this->usuarios->rol_ok();
-        $type = $this->uri->segment(4); 
+        $type = $this->uri->segment(4);
+        $pais = (isset($this->session->userdata['country']) ? $this->session->userdata['country'] : $this->uri->segment(5));
+        log_message('error', 'id de pais '.$pais);
         
         if ($type == ''){
             $type = $this->session->userdata['type_list'];
@@ -116,6 +119,7 @@ class Administration extends CI_Controller{
         if ($rol && $type != ''){
             if (isset($_GET['code'])){
                 $datos['contacts'] = $this->gapps($_GET['code']);
+                log_message('error', 'entra gapps '.$_GET['code']);
             }
             $type_save = $this->input->post('type');
             if ($type_save != ''){
@@ -126,7 +130,7 @@ class Administration extends CI_Controller{
                 }
 
                 if (count($estado) <= 0){
-                    $result = $this->alerts->Save_Contact($type_save, $this->input->post('email'));
+                    $result = $this->alerts->Save_Contact($type_save, $this->input->post('email'), $pais);
                     if (!$result) $datos['errores'] = lang('alerts.contacto_existe');
                 }else{
                     $datos['errores'] = $estado;
@@ -134,9 +138,7 @@ class Administration extends CI_Controller{
                 $datos['email'] = $this->input->post('email');
                 print json_encode($datos);
             }else{
-                $datos['lista_emails'] = $this->alerts->Load_List($type);
-                $datos['lista_tipo'] = $type;
-                $this->load->view('principal', $datos);
+                $this->render_page($type, $pais, $datos);
             }
                
         }else{
@@ -144,14 +146,30 @@ class Administration extends CI_Controller{
         }
     }
 
+    public function render_page($type, $pais, $datos){
+        if ($pais == ''){
+            $query = $this->db->get('countries');
+            $datos['query'] = $query;
+            $datos['lista_tipo'] = 'country';
+        }else{
+            $this->session->set_userdata('country', $pais);
+            $datos['lista_emails'] = $this->alerts->Load_List($type, $pais);
+            $datos['lista_tipo'] = $type;
+            $datos['country'] = $pais;
+        }
+        $this->load->view('principal', $datos);
+    }
+
     public function deletealerts(){
         $rol = $this->usuarios->rol_ok();
-        $type = $this->uri->segment(4); 
+        $type = $this->uri->segment(4);
+        $pais = ($this->uri->segment(5) == '' ? $this->input->post('country_id') : $this->uri->segment(5));
+        log_message('error', 'pais delete '.$pais);
         $datos = array();
         $estado = '';
         if ($rol && $type != ''){
             $datos['errores'] = '';
-            $result = $this->alerts->Delete_Contact($type, $this->input->post('email'));
+            $result = $this->alerts->Delete_Contact($type, $this->input->post('email'), $pais);
             if (!$result) $datos['errores'] = lang('alerts.error_borrar');
             $datos['email'] = $this->input->post('email');
             print json_encode($datos);
