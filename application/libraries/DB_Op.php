@@ -130,13 +130,18 @@ class DB_op{
 
     public function Get_Usuarios($CI, $user_id = ''){
         $users = array();
-        $CI->db->select('u.*, c.codbu, c.codcen');
+        $CI->db->select('u.*, c.codbu, c.codcen, c.lng, c.web');
         $CI->db->from('users u, countries c');
         if ($user_id != ''){
-            $CI->db->where('u.id', $user_id);
+            if ($user_id == 'admin'){
+                $CI->db->where('u.rol', 1);
+            }else{
+                $CI->db->where('u.id', $user_id);
+            }
         }
         $CI->db->where('u.countries_id = c.id');
         $query = $CI->db->get();
+        log_message('error', $CI->db->last_query());
         $i = 0;
 
         if ($query->num_rows()>0){
@@ -149,6 +154,8 @@ class DB_op{
                 $users[$i]['name'] = $ligne->name;
                 $users[$i]['codbu'] = $ligne->codbu;
                 $users[$i]['codcen'] = $ligne->codcen;
+                $users[$i]['lng'] = $ligne->lng;
+                $users[$i]['web'] = $ligne->web;
                 $i++;
              }
 
@@ -249,11 +256,12 @@ class DB_op{
         return true;
     }
 
-    public function Get_Destinatarios($CI, $type){
+    public function Get_Destinatarios($CI, $type, $country_id){
         $dest = '';
         $CI->db->select('email');
         $CI->db->from('alerts_list');
         $CI->db->where('type', $type);
+        $CI->db->where('countries_id', $country_id);
         $query = $CI->db->get();
 
         if ($query->num_rows() > 0){

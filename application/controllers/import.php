@@ -36,10 +36,10 @@ class Import extends CI_Controller{
     public function aspitop(){
         $CI =& get_instance();
         $result = false;
-        $user_id = $this->time_process->check();
+        $user_id = 1;
 
         if ($user_id != false){
-            $result = $this->ficheros->process_comdep_aty('aspitop', $user_id);
+            $result = $this->ficheros->process_comdep_aty('aspitop');
         }
         if ($result){
             $datos['import_state'] = $this->ficheros->import_state($user_id);

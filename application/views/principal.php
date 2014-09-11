@@ -16,11 +16,16 @@ $datos['debugger'] = DEBUG;
 	<?php if (isset($admin)){ 
 	$this->load->view('list_admin.php', $list_admin);
 	} ?>
-	<?php if (isset($lista_tipo)){
+	<?php if (isset($lista_tipo) && isset($lista_emails)){
 	$datos['lista_tipo'] = $lista_tipo;
 	$datos['lista_emails'] = $lista_emails;
+	$datos['country'] = $country;
 	$this->load->view('alertas.php', $datos);	
 	}?>
+	<?php if (isset($lista_tipo) && $lista_tipo == 'country'){ 
+	$datos['query'] = $query;
+	$this->load->view('alertas_pais.php', $datos);
+	} ?>
 	<?php if (isset($errores)){ ?>
 	<div id="error">
 		<?= $errores;?>

@@ -46,7 +46,7 @@ class RequestProvider{
         if ($user_name != ''){
             $archivo = $this->Request_Files(strtoupper($provider), $CI);
         }
-        $archivo = 'maquette ZFOUR_ATYSE.csv';
+        //$archivo = 'maquette ZFOUR_ATYSE.csv';
         //$archivo = 'aspitop_vgirbes_test.csv';
         $this->filename = $archivo;
         if ($archivo != '' && $archivo){
@@ -128,7 +128,6 @@ class RequestProvider{
             $result = ($archivo !='' && count($files)>0 ? $this->Get_File($s_data, $CI, $archivo) : $this->Get_Last_File($provider_name));
         }else{
             fwrite($fp, $output);
-            var_dump($ftp_server);
             fclose($fp);
             $size = $this->Get_File_Size($ftp_server, $CI);
             if (filesize('assets/files/'.$provider) == $size){
