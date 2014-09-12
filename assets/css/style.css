@@ -130,7 +130,7 @@ ul,ol{
 	margin-bottom:0;
 }
 
-#menu{
+#menu, .menu{
 	position:fixed;
 	top:0;
 	background-color:#050087;

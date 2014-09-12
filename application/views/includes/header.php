@@ -127,6 +127,7 @@
 			}
 		</style>
 		<?php } ?>
+		<?php if (!isset($list_admin)) {?>
 		<style>
 			body{
 				background-image: url(<?php echo asset_url();?>img/logo_norauto.gif);
@@ -135,5 +136,6 @@
 				background-position: center center;
 			}
 		</style>
+		<?php } ?>
 	</head>
 	<body>
