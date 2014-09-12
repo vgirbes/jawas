@@ -141,7 +141,6 @@ class DB_op{
         }
         $CI->db->where('u.countries_id = c.id');
         $query = $CI->db->get();
-        log_message('error', $CI->db->last_query());
         $i = 0;
 
         if ($query->num_rows()>0){

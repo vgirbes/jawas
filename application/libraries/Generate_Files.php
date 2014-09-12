@@ -49,8 +49,8 @@ class Generate_Files extends DB_Op{
         $this->TMP_PRDGMABU_PRIX_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_PRIX_OK', $codbu);
         $this->TMP_PRDGMABU_MASQ_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_MASQ_OK', $codbu);
         $this->Get_AIH_PRIARTWEB($Conn_wrk, $codcen);
-        $name_file_csv = 'assets/files/'.$user_name."_validationProduit_csv_" . date('YmdHis').'.csv';
-        $delay_file_name = 'assets/files/'.$user_name.'_delay_file.csv';
+        $name_file_csv = 'assets/files/countries/'.$users[0]['codbu'].'/validationProduit_csv_'.date('YmdHis').'.csv';
+        $delay_file_name = 'assets/files/countries/'.$users[0]['codbu'].'/delay_file_'.date('YmdHis').'.csv';
         $this->validation_file = @fopen($name_file_csv, 'w+');
         $this->delay_file = @fopen($delay_file_name, 'w+');
         $line_delay = 'CODBU;provider;id_prod;delay';
@@ -128,7 +128,6 @@ class Generate_Files extends DB_Op{
         $CI->db->from('data_mch dm, products r');
         $CI->db->where('r.codeRegroupement = dm.valPro');
         $CI->db->where('dm.numPro = "codeRegroupement"');
-        /*$CI->db->where('dm.country != "NOES"');*/
         $CI->db->where('dm.user_id', $user_id);
         $CI->db->where('r.user_id', $user_id);
         $CI->db->group_by('dm.valPro');
@@ -185,7 +184,7 @@ class Generate_Files extends DB_Op{
 
         if ($type != 'too_exp'){
             if ($prov_delay > 0 && !is_null($prov_delay)){
-                $line_delay = $this->codbu.';'.$ligne->supplierKey.';'.$ligne->idProd.';'.($type == 'no_stock' ? 31 : $prov_delay);
+                $line_delay = $this->codbu.';'.$ligne->supplierKey.';'.$ligne->idProd.';'.($type == 'no_stock' ? 99 : $prov_delay);
                 log_message('error', $line_delay);
                 @fputcsv($this->delay_file, explode(',', $line_delay));
             }
