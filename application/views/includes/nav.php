@@ -24,11 +24,4 @@
 		</div>
 		<?php } ?>
 		<?php } ?>
-		<?php if ($this->uri->segment(2)=='administration' && $this->uri->segment(3)!='alerts' && $this->uri->segment(4)==''){ ?>
-		<div id="submenu">
-			<ul id="menu-ul">
-				<li><a href="<?= base_url();?><?= $this->session->userdata['lang'];?>/users/add">Crear usuario</a></li>
-			</ul>
-		</div>
-		<?php } ?>
 	

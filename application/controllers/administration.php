@@ -20,21 +20,26 @@ class Administration extends CI_Controller{
     	if ($rol){
     		$datos['admin'] = true;
     		$url = base_url().$this->session->userdata['lang'].'/';
-    		$datos['list_admin'][0]['name'] = lang('admin.paises');
-    		$datos['list_admin'][0]['url'] = $url.'administration/load/countries';
-    		$datos['list_admin'][1]['name'] = lang('admin.lista_proveedores');
-    		$datos['list_admin'][1]['url'] = $url.'administration/load/list_providers';
-    		$datos['list_admin'][2]['name'] = lang('admin.usuarios');
-    		$datos['list_admin'][2]['url'] = $url.'administration/load/users';
-    		$datos['list_admin'][3]['name'] = lang('admin.proveedores');
-    		$datos['list_admin'][3]['url'] = $url.'administration/load/providers';
-    		$datos['list_admin'][4]['name'] = lang('admin.defaut');
-    		$datos['list_admin'][4]['url'] = $url.'administration/load/defaut';
-            $datos['list_admin'][5]['name'] = lang('general.mensajes');
-            $datos['list_admin'][5]['url'] = $url.'administration/load/messages';
-            $datos['list_admin'][6]['name'] = lang('admin.lista_alertas');
-            $datos['list_admin'][6]['url'] = 'javascript:show_alert()';
-    		
+            $datos['list_admin'] = true;
+            $datos['list_providers'][0]['name'] = lang('admin.proveedores');
+            $datos['list_providers'][0]['url'] = $url.'administration/load/providers';
+            $datos['list_providers'][1]['name'] = lang('admin.lista_proveedores');
+            $datos['list_providers'][1]['url'] = $url.'administration/load/list_providers';
+
+            $datos['list_users'][0]['name'] = lang('admin.usuarios');
+            $datos['list_users'][0]['url'] = $url.'administration/load/users';
+            $datos['list_users'][1]['name'] = lang('adduser.form_name');
+            $datos['list_users'][1]['url'] = $url.'users/add';
+            $datos['list_users'][2]['name'] = lang('general.mensajes');
+            $datos['list_users'][2]['url'] = $url.'administration/load/messages';
+
+            $datos['list_config'][0]['name'] = lang('admin.paises');
+            $datos['list_config'][0]['url'] = $url.'administration/load/countries';
+            $datos['list_config'][1]['name'] = lang('admin.defaut');
+            $datos['list_config'][1]['url'] = $url.'administration/load/defaut';
+            $datos['list_config'][2]['name'] = lang('admin.lista_alertas');
+            $datos['list_config'][2]['url'] = 'javascript:show_alert()';
+            
     	}
 
         $this->load->view('principal', $datos);
