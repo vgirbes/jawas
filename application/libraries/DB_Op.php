@@ -291,4 +291,10 @@ class DB_op{
             return false;
         }
     }
+
+    public function get_countries($CI){
+        $query = $CI->db->get('countries');
+
+        return $query;
+    }
 }
