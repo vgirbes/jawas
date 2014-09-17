@@ -21,10 +21,12 @@ class Administration extends CI_Controller{
     		$datos['admin'] = true;
     		$url = base_url().$this->session->userdata['lang'].'/';
             $datos['list_admin'] = true;
-            $datos['list_providers'][0]['name'] = lang('admin.proveedores');
+            $datos['list_providers'][0]['name'] = lang('admin.proveedores').' (Atyse)';
             $datos['list_providers'][0]['url'] = $url.'administration/load/providers';
             $datos['list_providers'][1]['name'] = lang('admin.lista_proveedores');
             $datos['list_providers'][1]['url'] = $url.'administration/load/list_providers';
+            $datos['list_providers'][2]['name'] = lang('admin.other_providers');
+            $datos['list_providers'][2]['url'] = $url.'providers/other_providers';
 
             $datos['list_users'][0]['name'] = lang('admin.usuarios');
             $datos['list_users'][0]['url'] = $url.'administration/load/users';
@@ -182,5 +184,4 @@ class Administration extends CI_Controller{
             $this->load->view('principal');
         }
     }
-
 }

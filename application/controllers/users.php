@@ -8,6 +8,7 @@ class Users extends CI_Controller{
             $this->load->library('form_validation');
             $this->load->library('session');
             $this->load->library('encrypt');
+            $this->load->library('DB_Op');
             $this->load->helper('language');
             $this->lang->load('norauto');
         }
@@ -75,19 +76,13 @@ class Users extends CI_Controller{
         }
 
         public function add(){
+            $CI =& get_instance();
             $rol = $this->usuarios->rol_ok();
-            $datos['countries'] = $this->get_countries();
+            $datos['countries'] = $this->db_op->get_countries($CI);
             if ($rol){
                 $this->load->view('adduser', $datos);
             }else{
                 $this->load->view('principal');
             }
         }
-
-        public function get_countries(){
-            $query = $this->db->get('countries');
-
-            return $query;
-        }
-      
 }

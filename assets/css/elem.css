@@ -302,3 +302,81 @@ input[type="submit"] .boton{
 .col-md-6{
 	padding:20px 0;
 }
+
+.cuadro{
+	width:80px;
+	height:auto;
+	min-height:80px;
+	border:3px dashed #ccc;
+	float:left;
+	margin-right:20px;
+	margin-bottom:15px;
+}
+
+.drag-field{
+	width:auto;
+	height:30px;
+	border:2px solid #ccc;
+	float:left;
+	margin-right:20px;
+	padding:10px;
+	padding-bottom:0px;
+	cursor:pointer;
+}
+
+#campos{
+	height:43px;
+	border:3px dotted #ccc;
+	padding:10px;
+	width:auto;
+}
+
+.err-prov{
+	top:auto;
+	right:auto;
+	/*margin-left:180px;*/
+	border:1px solid #ccc;
+	height:auto;
+	width:93%;
+	position:absolute;
+	border-radius:5px;
+	padding:20px;
+	/*display:none;*/
+}
+
+.panel-other-prov{
+	/*margin-top:95px;*/
+	width:99%;
+	border:2px solid #ccc;
+	border-radius:3px;
+	padding:10px;
+	margin-bottom:100px;
+}
+
+.row-other-prov{
+	width:100%;
+	margin-bottom:10px;
+	border-bottom:1px dotted #ccc;
+	cursor:pointer;
+}
+
+.row-other-prov:hover{
+	background-color:#f0f0f0;
+}
+
+#capa-sup{
+	height:auto;
+	display:none;
+	/*margin-bottom:120px;*/
+}
+
+.edited-field{
+	top:0;
+	left:0;
+	width:70%;
+	height:66px;
+}
+
+#close_prov{
+	display:none;
+}

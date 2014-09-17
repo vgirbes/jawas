@@ -16,13 +16,8 @@
 		<?php if (isset($lista_tipo)){?>
 		<script src="<?= asset_url();?>js/alerts.js"></script>
 		<?php } ?>
+		<script src="<?= asset_url();?>js/utils.js"></script>
   		<script>
-  			$(function() {
-    			$( "#msg-import" ).draggable();
-    			$( ".login-box" ).draggable();
-    			$( "#status" ).draggable().resizable();
-    			$( "#status-notif" ).draggable().resizable();
-  			});
   			<?php if (isset($this->session->userdata["username"])){ ?>
   			function send_request(type)
 			{
@@ -127,7 +122,7 @@
 			}
 		</style>
 		<?php } ?>
-		<?php if (!isset($list_admin)) {?>
+		<?php if (!isset($list_admin)&&(!isset($other_prov))) {?>
 		<style>
 			body{
 				background-image: url(<?php echo asset_url();?>img/logo_norauto.gif);
