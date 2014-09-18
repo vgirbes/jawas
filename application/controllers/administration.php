@@ -27,6 +27,8 @@ class Administration extends CI_Controller{
             $datos['list_providers'][1]['url'] = $url.'administration/load/list_providers';
             $datos['list_providers'][2]['name'] = lang('admin.other_providers');
             $datos['list_providers'][2]['url'] = $url.'providers/other_providers';
+            $datos['list_providers'][3]['name'] = lang('admin.custom_fields');
+            $datos['list_providers'][3]['url'] = $url.'administration/load/custom_fields';
 
             $datos['list_users'][0]['name'] = lang('admin.usuarios');
             $datos['list_users'][0]['url'] = $url.'administration/load/users';
@@ -79,6 +81,9 @@ class Administration extends CI_Controller{
             break;
             case 'defaut':
                 $table = 'info_defaut';
+            break;
+            case 'custom_fields':
+                $table = 'other_providers_fields_type';
             break;
         }
 
