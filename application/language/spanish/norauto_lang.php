@@ -114,3 +114,4 @@ $lang['other_provider.add_field'] = "Añadir campo";
 $lang['other_provider.add_file_provider'] = "Añadir fichero de proveedores";
 $lang['admin.other_providers'] = "Otros proveedores";
 $lang['other_provider.no_hay'] = "No hay ningún proveedor";
+$lang['admin.custom_fields'] = "Campos personalizados para otros proveedores";
