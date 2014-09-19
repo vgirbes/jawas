@@ -8,6 +8,7 @@ class Ficheros extends CI_Model{
         $this->load->library('Comdep');
         $this->load->library('Atyse');
         $this->load->library('Aspitop');
+        $this->load->library('Top');
         $this->load->library('DB_Op');
         $this->load->library('MCH');
         $this->load->library('Generate_Files');
@@ -16,13 +17,13 @@ class Ficheros extends CI_Model{
        
     public function process_comdep_aty($provider, $user_id = ''){
         $res = true;
-        if ($provider == 'atyse' || $provider == 'aspitop'){
+        if ($provider == 'atyse' || $provider == 'aspitop' || $provider == 'top'){
             $CI =& get_instance();
-            if ($provider == 'aspitop') $user_id = 'admin';
+            if ($provider == 'aspitop' || $provider == 'top') $user_id = 'admin';
             $users = $this->db_op->Get_Usuarios($CI, $user_id);
             if ($users != false){
                 $all = ($user_id != '' ? true : false);
-                if ($provider != 'aspitop') $this->Reset_Tables($CI, $users);
+                if ($provider != 'aspitop' && $provider != 'top') $this->Reset_Tables($CI, $users);
                 foreach ($users as $user){
                     $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider, $user['countries_id'], $user['username']), $user['id'], $all);
                     if ($res) $this->update_state($user['id'], strtoupper($provider), $this->adapter->filename);

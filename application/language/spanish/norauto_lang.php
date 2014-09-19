@@ -26,7 +26,7 @@ $lang['admin.lista_proveedores'] = "Lista ficheros proveedores";
 $lang['admin.usuarios'] = "Usuarios";
 $lang['admin.proveedores'] = "Proveedores";
 $lang['admin.defaut'] = "Variables globales";
-
+$lang['admin.config'] = "Configuración";
 
 $lang['import_msg.text'] = "Existe una importación previa en la base de datos.<br/>A continuación se muestra un resumen";
 $lang['import_msg.f_importacion'] = "Fecha de importación";
@@ -114,3 +114,5 @@ $lang['other_provider.add_field'] = "Añadir campo";
 $lang['other_provider.add_file_provider'] = "Añadir fichero de proveedores";
 $lang['admin.other_providers'] = "Otros proveedores";
 $lang['other_provider.no_hay'] = "No hay ningún proveedor";
+
+$lang['top.asunto'] = "Informe de stock del TOP 100 de productos";

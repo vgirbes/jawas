@@ -5,19 +5,19 @@
     	<div class="jumbotron">
     		<div class="container-fluid">
 	    		<div class="col-md-4">
-	    			<h2><span class="glyphicon glyphicon-briefcase"></span> Proveedores</h2>
+	    			<h2><span class="glyphicon glyphicon-briefcase"></span> <?= lang('menu.proveedores');?></h2>
 	    			<?php foreach ($list_providers as $row){
 	    				echo '<a href="'.$row['url'].'">'.$row['name'].'</a><br/>';
 	    			} ?>
 	    			</div>
 	    		<div class="col-md-4">
-	    			<h2><span class="glyphicon glyphicon-user"></span> Usuarios</h2>
+	    			<h2><span class="glyphicon glyphicon-user"></span> <?= lang('admin.usuarios');?></h2>
 	    			<?php foreach ($list_users as $row){
 	    				echo '<a href="'.$row['url'].'">'.$row['name'].'</a><br/>';
 	    			} ?>
 	    		</div>
 	    		<div class="col-md-4">
-	    			<h2><span class="glyphicon glyphicon-cog"></span> Configuración</h2>
+	    			<h2><span class="glyphicon glyphicon-cog"></span> <?= lang('admin.config');?></h2>
 	    			<?php foreach ($list_config as $row){
 	    				echo '<a href="'.$row['url'].'">'.$row['name'].'</a><br/>';
 	    			} ?>
