@@ -114,5 +114,5 @@ $lang['other_provider.add_field'] = "Add field";
 $lang['other_provider.add_file_provider'] = "Add file provider";
 $lang['admin.other_providers'] = "Other providers";
 $lang['other_provider.no_hay'] = "Aucun fournisseur";
-
 $lang['top.asunto'] = "Top 100 products stock report";
+$lang['admin.custom_fields'] = "Custom fields for other providers";

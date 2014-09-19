@@ -114,5 +114,5 @@ $lang['other_provider.add_field'] = "Ajouter domaines";
 $lang['other_provider.add_file_provider'] = "Ajouter fichiers de fournisseurs";
 $lang['admin.other_providers'] = "Autres fournisseurs";
 $lang['other_provider.no_hay'] = "No hay ningún proveedor";
-
 $lang['top.asunto'] = "Top 100 produit stock rapport";
+$lang['admin.custom_fields'] = "Les domaines personnalisés pour d'autres fournisseurs";

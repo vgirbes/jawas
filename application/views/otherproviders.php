@@ -53,7 +53,7 @@
 			  			$i++;
 			  		}
 			  		?>
-			  		<small><a href="<?= base_url().$this->session->userdata['lang'];?>/administration/load/list_providers/add"><?= lang('other_provider.add_field');?></a></small>
+			  		<small><a href="<?= base_url().$this->session->userdata['lang'];?>/administration/load/custom_fields/add"><?= lang('other_provider.add_field');?></a></small>
 			  	</div>
 			</div>
 
@@ -153,7 +153,7 @@
 					  			$i++;
 					  		}
 					  		?>
-					  		<small><a href="<?= base_url().$this->session->userdata['lang'];?>/administration/load/list_providers/add"><?= lang('other_provider.add_field');?></a></small>
+					  		<small><a href="<?= base_url().$this->session->userdata['lang'];?>/administration/load/custom_fields/add"><?= lang('other_provider.add_field');?></a></small>
 					  	</div>
 					</div>
 
