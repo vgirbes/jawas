@@ -26,7 +26,7 @@ $lang['admin.lista_proveedores'] = "Providers files list";
 $lang['admin.usuarios'] = "Users";
 $lang['admin.proveedores'] = "Providers";
 $lang['admin.defaut'] = "Global variables";
-
+$lang['admin.config'] = "Configuration";
 
 $lang['import_msg.text'] = "There is a previous database import. <br/> A summary is shown";
 $lang['import_msg.f_importacion'] = "Import date";
@@ -114,4 +114,5 @@ $lang['other_provider.add_field'] = "Add field";
 $lang['other_provider.add_file_provider'] = "Add file provider";
 $lang['admin.other_providers'] = "Other providers";
 $lang['other_provider.no_hay'] = "Aucun fournisseur";
+$lang['top.asunto'] = "Top 100 products stock report";
 $lang['admin.custom_fields'] = "Custom fields for other providers";
