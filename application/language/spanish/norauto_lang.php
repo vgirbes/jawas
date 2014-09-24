@@ -116,3 +116,6 @@ $lang['admin.other_providers'] = "Otros proveedores";
 $lang['other_provider.no_hay'] = "No hay ningún proveedor";
 $lang['top.asunto'] = "Informe de stock del TOP 100 de productos";
 $lang['admin.custom_fields'] = "Campos personalizados para otros proveedores";
+
+$lang['mail.alta_usuario'] = "Bienvenido a Stock Application";
+$lang['mail.welcome'] = "Hola,<br/>Ha sido dado de alta en nuestro servicio.";

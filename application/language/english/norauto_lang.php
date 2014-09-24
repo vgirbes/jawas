@@ -1,4 +1,4 @@
-<?php
+ <?php
 $lang['global.informacion'] = "Information";
 
 $lang['menu.importar_datos'] = "Data import";
@@ -116,3 +116,6 @@ $lang['admin.other_providers'] = "Other providers";
 $lang['other_provider.no_hay'] = "Aucun fournisseur";
 $lang['top.asunto'] = "Top 100 products stock report";
 $lang['admin.custom_fields'] = "Custom fields for other providers";
+
+$lang['mail.alta_usuario'] = "Welcome to Stock Application";
+$lang['mail.welcome'] = "Hello,<br/>Your account has been created.";

@@ -4,6 +4,7 @@ class Usuarios extends CI_Model{
     public function __construct(){
         $this->load->library('session');
         $this->load->library('encrypt');
+        $this->load->library('Mailer');
         $this->load->database();
     }
        
@@ -55,7 +56,7 @@ class Usuarios extends CI_Model{
 
     }
 
-    public function insert_user($user, $pass, $email, $name, $rol, $country){
+    public function insert_user($user, $pass, $email, $name, $rol, $country, $activo){
         $user_prov = array();
         $ins = array(
             'username' => $user,
@@ -64,6 +65,7 @@ class Usuarios extends CI_Model{
             'rol' => $rol,
             'countries_id' => $country,
             'email' => $email,
+            'active' => $activo,
             'token' =>  uniqid()
         );
 
@@ -80,7 +82,17 @@ class Usuarios extends CI_Model{
             $this->db->insert('users_providers', $user_prov);
         }
 
+        if ($res) $this->send_mail($user, $pass, $email, $name);
         return $res;
+    }
+
+    private function send_mail($user, $pass, $email, $name){
+        $this->mailer->to = $email;
+        $this->mailer->subject = lang('mail.alta_usuario');
+        $this->mailer->message = lang('mail.welcome').'<br/><br/>';
+        $this->mailer->message .= 'URL: <a href="http://10.250.16.20">http://10.250.16.20</a><br/>User: '.$user.'<br/>Pass: '.$pass.'<br/>';
+        $this->mailer->message .= $name;
+        $this->mailer->send();
     }
 
     public function insert_user_provider($row, $id){

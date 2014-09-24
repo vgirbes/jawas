@@ -57,6 +57,7 @@ class Users extends CI_Controller{
             $email = $this->input->post('email');
             $name = $this->input->post('name');
             $rol = $this->input->post('rol');
+            $activo = ($this->input->post('activo')==1 ? 1 : 0);
             $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
             $this->form_validation->set_message('valid_email', lang('adduser.validmail'));
 
@@ -68,7 +69,7 @@ class Users extends CI_Controller{
             }
 
             if (count($estado) <= 0){
-                $res = $this->usuarios->insert_user($user, $pass, $email, $name, $rol, $country);
+                $res = $this->usuarios->insert_user($user, $pass, $email, $name, $rol, $country, $activo);
                 if ($res) redirect($lang.'/administration/load/users');
             }
 

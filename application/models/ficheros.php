@@ -26,6 +26,7 @@ class Ficheros extends CI_Model{
                 if ($provider != 'aspitop' && $provider != 'top') $this->Reset_Tables($CI, $users);
                 foreach ($users as $user){
                     $res = $this->$provider->Procesar_Items($this->adapter->Load_Provider($this->$provider->Provider, $user['countries_id'], $user['username']), $user['id'], $all);
+                    if ($provider == 'Top') $this->adapter->filename = '';
                     if ($res) $this->update_state($user['id'], strtoupper($provider), $this->adapter->filename);
                 }
             }else{

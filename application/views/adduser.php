@@ -72,6 +72,13 @@
 		</div>
 
 		<div class="control-group">
+		  <label class="control-label" for="selectbasic"><?= lang('other_provider.activo');?></label>
+		  <div class="controls">
+		  	<input type="checkbox" name="activo" class="input-xlarge" value="1">
+		  </div>
+		</div>
+
+		<div class="control-group">
 		  <label class="control-label" for="singlebutton"></label>
 		  <div class="controls">
 		    <button id="singlebutton" name="singlebutton" class="btn"><?= lang('adduser.button');?></button>&nbsp;&nbsp;&nbsp;
