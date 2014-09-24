@@ -48,8 +48,9 @@ class Users extends CI_Controller{
         }
 
         public function adduser(){
+            $CI =& get_instance();
             $datos = array();
-            $datos['countries'] = $this->get_countries();
+            $datos['countries'] = $this->db_op->get_countries($CI);
             $user = $this->input->post('usuario');
             $pass = $this->input->post('password');
             $rpass = $this->input->post('rpassword');
