@@ -12,7 +12,6 @@
 			  <label class="control-label" for="textinput"><?= lang('adduser.name');?></label>
 			  <div class="controls">
 			    <input id="textinput" name="name" placeholder="<?= lang('adduser.name');?>" class="input-xlarge" required="" type="text">
-			    
 			  </div>
 			</div>
 
@@ -44,6 +43,48 @@
 			</div>
 
 			<div class="control-group">
+			  <label class="control-label" for="selectbasic">MCH</label>
+			  <div class="controls">
+			  	<select id="selectbasic" name="mch_tables" class="input-xlarge">
+			  		<?php
+			  		foreach ($list_mch as $mch){  
+			  			echo '<option value="'.$mch.'"'.($mch == 'NCOM_PRD_PRO_BU' ? ' selected="selected"' : '').'>'.$mch.'</option>'."\n";
+			  		}
+			  		?>
+			  	</select>
+			  	</div>
+			</div>
+
+			<div class="control-group">
+			  <label class="control-label" for="textinput">Query</label>
+			  <div class="controls">
+			    <input id="textinput" name="query" placeholder="IDEPROD = 8" class="input-xlarge" type="text">
+			  </div>
+			</div>
+
+
+			<div class="control-group">
+			  <label class="control-label" for="selectbasic">Delay</label>
+			  <div class="controls">
+			  	<input id="textinput" name="delay" min="0" pattern="\d*" placeholder="Delay" class="input-xlarge" required="" type="text">
+			  </div>
+			</div>
+
+			<div class="control-group">
+			  <label class="control-label" for="selectbasic">Force stock</label>
+			  <div class="controls">
+			  	<input type="checkbox" name="active_fstock" rel="new" class="active_fstock" value="1">
+			  </div>
+			</div>
+
+			<div class="control-group" id="stock-forced-new" style="display:none;">
+			  <label class="control-label" for="selectbasic">Stock</label>
+			  <div class="controls">
+			  	<input id="textinput" name="stock" min="0" pattern="\d*" placeholder="Stock" class="input-xlarge" type="text">
+			  </div>
+			</div>
+
+			<div class="control-group">
 			  <label class="control-label" for="selectbasic"><?= lang('other_provider.campos');?></label>
 			  <div class="controls active-field" id="campos">
 			  		<?php
@@ -61,9 +102,10 @@
 			  <label class="control-label" for="selectbasic"><?= lang('other_provider.posicion');?></label>
 			  <div class="controls">
 			  	<?php for ($x=1; $x<=$i; $x++){ ?>
-			    <div class="cuadro" title="position_<?= $x;?>"></div>
+			    <div class="cuadro" id="new" rel="<?= $x;?>" title="position_<?= $x;?>"></div>
 			    <input type="hidden" id="position_<?= $x;?>" name="position_<?= $x;?>" value="">
 			    <?php } ?>
+			    <input type="hidden" name="link_position" id="link_position_new" value="">
 			    <input type="hidden" name="total_reg" value="<?= $i;?>">
 			  </div>
 			</div>
@@ -82,8 +124,6 @@
 			    <a id="cancel-prov" href="#" class="btn"><?= lang('adduser.cancel');?></a> 
 			  </div>
 			</div>
-
-			
 		</div>
 		<?php if (isset($estado)){ ?>
 			<div class="err-prov" style="<?= (isset($_POST['edit_prov_id']) && isset($estado) ? '' : 'display:none;');?>">
@@ -136,7 +176,48 @@
 					  	</select>&nbsp;&nbsp;&nbsp;
 					  	<small><a href="<?= base_url().$this->session->userdata['lang'];?>/administration/load/list_providers/add"><?= lang('other_provider.add_file_provider');?></a></small>
 					  	</div>
+					</div>
 
+					<div class="control-group">
+					  <label class="control-label" for="selectbasic">MCH</label>
+					  <div class="controls">
+					  	<select id="selectbasic" name="mch_tables" class="input-xlarge prov_mch_<?= $prov_id;?>">
+					  		<?php
+					  		foreach ($list_mch as $mch){  
+					  			echo '<option value="'.$mch.'"'.($mch == $prov->table_db ? ' selected="selected"' : '').'>'.$mch.'</option>'."\n";
+					  		}
+					  		?>
+					  	</select>
+					  	</div>
+					</div>
+
+					<div class="control-group">
+					  <label class="control-label" for="textinput">Query</label>
+					  <div class="controls">
+					    <input id="textinput" name="query" placeholder="IDEPROD = 8" class="input-xlarge prov_query_<?= $prov_id;?>" type="text" value="<?= $prov->query;?>">
+					  </div>
+					</div>
+
+
+					<div class="control-group">
+					  <label class="control-label" for="selectbasic">Delay</label>
+					  <div class="controls">
+					  	<input id="textinput" name="delay" min="0" pattern="\d*" placeholder="Delay" class="input-xlarge prov_delay_<?= $prov_id;?>" required="" type="text" value="<?= $prov->delay;?>">
+					  </div>
+					</div>
+
+					<div class="control-group">
+					  <label class="control-label" for="selectbasic">Force stock</label>
+					  <div class="controls">
+					  	<input type="checkbox" name="active_fstock" rel="<?= $prov_id;?>" class="active_fstock prov_afstock_<?= $prov_id;?>" value="1"<?= ($prov->force_stock == 1 ? ' checked' : '');?>>
+					  </div>
+					</div>
+
+					<div class="control-group" id="stock-forced-<?= $prov_id?>" style="<?= ($prov->force_stock != 1 ? 'display:none;' : '');?>">
+					  <label class="control-label" for="selectbasic">Stock</label>
+					  <div class="controls">
+					  	<input id="textinput" name="stock" min="0" pattern="\d*" placeholder="Stock" class="input-xlarge prov_stock_<?= $prov_id;?>" type="text" value="<?= $prov->stock_forced;?>">
+					  </div>
 					</div>
 
 					<div class="control-group">
@@ -161,7 +242,7 @@
 					  <label class="control-label" for="selectbasic"><?= lang('other_provider.posicion');?></label>
 					  <div class="controls">
 					  	<?php for ($x=1; $x<=$i; $x++){ ?>
-					    <div class="cuadro" title="position_<?= $x;?>">
+					    <div class="cuadro<?= ($x==$prov->key_fields ? ' active-link' : '');?>" id="<?= $prov_id;?>" rel="<?= $x;?>" title="position_<?= $x;?>">
 					    	<?php if (isset($positions_saved[$prov_id][$x]['name'])){ ?>
 					    		<div class="drag-field edited-field" id="field_<?= $positions_saved[$prov_id][$x]['id'];?>">
 					    			<?= $positions_saved[$prov_id][$x]['name'];?>
@@ -169,6 +250,7 @@
 					    	<?php } ?> </div>
 					    <input type="hidden" id="prov_position_<?= $x;?>_id_<?= $prov_id;?>" value="<?= (isset($positions_saved[$prov_id][$x]['id']) ? 'field_'.$positions_saved[$prov_id][$x]['id'] : '');?>">
 					    <?php } ?>
+					    <input type="hidden" name="link_position" id="link_position_<?= $prov_id;?>" value="">
 					    <input type="hidden" id="total_reg" name="total_reg" value="<?= $i;?>">
 					  </div>
 					</div>
@@ -206,6 +288,12 @@
 		<input type="hidden" id="edit_prov_files" name="edit_prov_files" value="">
 		<input type="hidden" id="edit_activo" name="edit_activo" value="">
 		<input type="hidden" name="edit_total_reg" value="<?= $i;?>">
+		<input type="hidden" id="edit_link_position" name="edit_link_position" value="">
+		<input type="hidden" id="edit_query" name="edit_query" value="">
+		<input type="hidden" id="edit_delay" name="edit_delay" value="">
+		<input type="hidden" id="edit_mch_tables" name="edit_mch_tables" value="">
+		<input type="hidden" id="edit_active_fstock" name="edit_active_fstock" value="">
+		<input type="hidden" id="edit_stock" name="edit_stock" value="">
 		<?php for ($x=1; $x<=$i; $x++){ ?>
 		<input type="hidden" id="edit_position_<?= $x;?>" name="edit_position_<?= $x;?>" value="">
 		<?php } ?>

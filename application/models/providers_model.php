@@ -4,6 +4,7 @@ class Providers_Model extends CI_Model{
     public function __construct(){
         $this->load->library('session');
         $this->load->library('encrypt');
+        $this->load->library('DB_Op');
         $this->load->database();
     }
        
@@ -21,6 +22,12 @@ class Providers_Model extends CI_Model{
             'sap_name' => $post[$edit.'name'], 
             'countries_id' => $post[$edit.'country'],
             'active' => (isset($post[$edit.'activo']) ? $post[$edit.'activo'] : 0),
+            'force_stock' => (isset($post[$edit.'active_fstock']) ? $post[$edit.'active_fstock'] : 0),
+            'stock_forced' => ((isset($post[$edit.'stock']) || $post[$edit.'stock'] > 0) ? $post[$edit.'stock'] : 0),
+            'key_fields' => (isset($post[$edit.'link_position']) ? $post[$edit.'link_position'] : 1),
+            'table_db' => $post[$edit.'mch_tables'],
+            'query' => $post[$edit.'query'],
+            'delay' => $post[$edit.'delay'],
             'id_files_providers' => $post[$edit.'prov_files']
         );
 
@@ -75,6 +82,7 @@ class Providers_Model extends CI_Model{
         $this->db->select('op.*, c.id AS country_id, c.name AS country_name');
         $this->db->from($table.' op, countries c');
         $this->db->where('c.id = op.countries_id');
+        $this->db->order_by('c.name');
         $query = $this->db->get();
 
         if ($query->num_rows()>0){
@@ -116,6 +124,18 @@ class Providers_Model extends CI_Model{
             }
         }else{
             return false;
+        }
+
+        return $res;
+    }
+
+    public function get_list_tables(){
+        $mch = $this->db_op->Connect_MCH();
+        $req = ("SELECT * FROM sys.Tables ORDER BY name");
+        $stmt = sqlsrv_query($mch, $req);
+        $res = array();
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
+            $res[] = strtoupper($row['name']);    
         }
 
         return $res;

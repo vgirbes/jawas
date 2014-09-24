@@ -380,3 +380,7 @@ input[type="submit"] .boton{
 #close_prov{
 	display:none;
 }
+
+.active-link{
+	border:3px dashed #08c;
+}

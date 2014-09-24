@@ -19,8 +19,10 @@ class Import extends CI_Controller{
     }
 
     public function atyse(){
+        log_message('error', 'Entra Atyse controller');
         $result = false;
         $user_id = $this->time_process->check();
+        log_message('error', 'user_id atyse '.$user_id);
         if ($user_id != false){
             $result = $this->ficheros->process_comdep_aty('atyse', $user_id);
         }
@@ -208,6 +210,7 @@ class Import extends CI_Controller{
         $CI =& get_instance();
         $this->time_process->user_id = $user_id;
         $url = base_url().$this->session->userdata['lang'].'/import/'.$provider.'/'.$user_id.'/'.$this->session->userdata['token'];
+        log_message('error', 'URL '.$url);
         log_message('error', 'Alguien ha llamado a processtyres '.$_SERVER['REMOTE_ADDR']);
         if ($this->time_process->is_ready($CI)){
             $users = $this->db_op->Get_Usuarios($CI, $user_id);

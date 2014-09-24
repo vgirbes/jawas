@@ -79,6 +79,7 @@ class Providers extends CI_Controller{
         }
         
         $datos = $this->get_data_for_prov($CI);
+        $datos['list_mch'] = $this->providers_model->get_list_tables();
         if (count($estado)>0) $datos['estado'] = $estado;
         $this->render_other_prov($datos);
         

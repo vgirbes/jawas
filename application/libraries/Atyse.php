@@ -63,8 +63,6 @@ class Atyse{
                         $codeReg = '00000000000'.$data[1];
                         log_message('error', 'Insertando proveedor '.$codProv);
                         log_message('error', 'Procesando '.$codeReg);
-                        echo '<input type="hidden" name="atyse">';
-
                         $datos_ean = array('codeRegroupement' => "$codeReg", 'ean' => "$data[3]", 'user_id'  => $CI->db_op->user_id);
                         $CI->ean_struct->Load_Data($datos_ean, $item);
 

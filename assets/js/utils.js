@@ -48,7 +48,25 @@ function save_other_provider(){
 	$('#edit_name').val($('.prov_name_'+id).val());
 	$('#edit_country').val($('.prov_country_'+id).val());
 	$('#edit_prov_files').val($('.prov_files_'+id).val());
-	$('#edit_activo').val($('#prov_activo_'+id).val());
+
+	if ($('#prov_activo_'+id).is(':checked')){
+		$('#edit_activo').val(1);
+	}else{
+		$('#edit_activo').val(0);
+	}
+
+	$('#edit_link_position').val($('#link_position_'+id).val());
+	$('#edit_query').val($('.prov_query_'+id).val());
+	$('#edit_delay').val($('.prov_delay_'+id).val());
+	$('#edit_mch_tables').val($('.prov_mch_'+id).val());
+
+	if ($('.prov_afstock_'+id).is(':checked')){
+		$('#edit_active_fstock').val(1);
+	}else{
+		$('#edit_active_fstock').val(0);
+	}
+
+	$('#edit_stock').val($('.prov_stock_'+id).val());
 
 	for (i=1; i<=reg; i++){
 		field = $('#prov_position_'+i+'_id_'+id).val();
@@ -95,5 +113,22 @@ $( document ).ready(function() {
 	$('.row-other-prov').click(function(){
 		var id = $(this).attr('rel');
 		details(id);
+	});
+
+	$('.cuadro').click(function (){
+		var id = $(this).attr('rel');
+		var id_link = $(this).attr('id');
+		$('.cuadro').css({ 'border':'3px dashed #ccc' });
+		$(this).css({ 'border':'3px dashed #08c' });
+		$('#link_position_'+id_link).val(id);
+	});
+
+	$('.active_fstock').click(function(){
+		var id = $(this).attr('rel');
+		if ($(this).is(':checked')){
+			$('#stock-forced-'+id).show();
+		}else{
+			$('#stock-forced-'+id).hide();
+		}
 	});
 });

@@ -62,7 +62,6 @@ class MCH{
 				log_message('error', 'Entra MCH '.$row['IDEPRD']);
 				foreach ($users as $user){
 					$j++;
-					echo '<input type="hidden" name="MCH">';
 					$key = $user['id'].'_'.$row['VALPRO'];
 					$is_in = array_key_exists($key, $ean_list);
 					$codeReg = ($is_in ? $ean_list[$key] : '');

@@ -62,7 +62,7 @@ class Generate_Files extends DB_Op{
             foreach ($query->result() as $ligne)
             {
                 log_message('error', 'Entra FILES idProd '.$ligne->idProd.' Usuario '.$user_id);
-                echo '<input type="hidden" name="generate">';
+                //echo '<input type="hidden" name="generate">';
                 $count++;
                 $row['PRIVENLOC'] = $this->Get_PRIVENLOC($ligne->idProd);
                 if ($row['PRIVENLOC'] != false)
@@ -270,7 +270,6 @@ class Generate_Files extends DB_Op{
         if ($query){
             foreach ($query->result() as $ligne)
             {
-                echo '<input type="hidden" name="generate">';
                 $line = $ligne->codeRegroupement . ";" . $ligne->idProd . ";;" . $ligne->stockValue . ";;" . $ligne->priceMinPlusP . ";" . $ligne->priceMin . ";" . $ligne->priceRec . ";" . $ligne->price_wrk . ";" . $ligne->statut . ";" . $ligne->reason;
                 @fputcsv($f, explode(',', $line));
                 $query_reg = $this->Get_Products_Provider($CI, $user_id, $ligne);
