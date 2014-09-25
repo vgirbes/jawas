@@ -137,6 +137,9 @@
 			</div>
 		<?php } ?>
 		</fieldset>
+		</form>
+		<form class="form-horizontal addusuario">
+			<fieldset>
 		<div class="panel-other-prov" style="<?= (isset($_POST['edit_prov_id']) && isset($estado) ? 'margin-top:95px;' : '');?>">
 		<?php if (isset($other_prov) && $other_prov != false){
 			foreach($other_prov->result() as $prov){
@@ -275,6 +278,7 @@
 			echo lang('other_provider.no_hay');
 		}?>	
 		</div>
+		</fieldset>
 	</form>
 	<form method="POST" id="borrar" action="<?= base_url();?><?= $this->session->userdata['lang'];?>/providers/delete_other_provider">
 		<input type="hidden" name="edit_prov_id" id="borrar_id" value="">

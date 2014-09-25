@@ -12,6 +12,7 @@ class Ficheros extends CI_Model{
         $this->load->library('DB_Op');
         $this->load->library('MCH');
         $this->load->library('Generate_Files');
+        $this->load->library('RequestProvider');
         $this->load->database();
     }
        
@@ -38,6 +39,44 @@ class Ficheros extends CI_Model{
         }
         
         return $res;
+    }
+
+    public function other_providers($users){
+        $CI =& get_instance();
+        foreach ($users->result() as $user){
+            $this->db->select('*');
+            $this->db->from('other_providers');
+            $this->db->where('countries_id', $user->countries_id);
+            $query = $this->db->get();
+        
+            if ($query->num_rows() > 0){
+                $provider = $query->result();
+                $provider = $provider[0];
+                $provider_name = $this->get_provider_name($provider->id_files_providers);
+                if ($provider_name){
+                    $archivo = $this->requestprovider->Cargar_Archivos($CI, $user->countries_id, $user->username, $provider_name);
+                    $this->otherproviders->Procesar_Items($provider_name, $archivo, $user->id, $provider->id);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private function get_provider_name($provider_id){
+        $this->db->select('name');
+        $this->db->from('files_providers');
+        $this->db->where('id', $provider_id);
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0){
+            $provider = $query->result();
+            $provider = $provider[0];
+            return $provider->name;
+        }else{
+            return false;
+        }
+
     }
 
     public function generate_files($user_id = ''){
@@ -96,10 +135,6 @@ class Ficheros extends CI_Model{
     }
 
     public function send_SAP(){
-
-    }
-
-    public function generate_emails(){
 
     }
 

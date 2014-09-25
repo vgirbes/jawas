@@ -124,7 +124,7 @@ class Generate_Files extends DB_Op{
     }
 
     public function Get_Data_To_File($CI, $user_id){
-        $CI->db->distinct('dm.idProd, dm.valPro, dm.country, r.stockValue, r.priceMin, r.supplierKey');
+        $CI->db->distinct('dm.idProd, dm.valPro, dm.country, r.stockValue, r.priceMin, r.supplierKey, r.other_prov');
         $CI->db->from('data_mch dm, products r');
         $CI->db->where('r.codeRegroupement = dm.valPro');
         $CI->db->where('dm.numPro = "codeRegroupement"');

@@ -56,10 +56,6 @@ class RequestProvider{
         }
     }
 
-    public function Cargar_Pirelli(){
-    	return $items;
-    }
-
     public function Request_Files($provider, $CI){
         $s_data = $this->Get_Provider_Info($provider, $CI);
         $result = (count($s_data)==0 ? false : $this->Get_File($s_data[0], $CI));

@@ -84,11 +84,12 @@ class Import extends CI_Controller{
                 $this->time_process->f_start = date('Y-m-d H:i:s');
                 $this->time_process->init_process($CI, $users);
                 $atyse = $this->ficheros->process_comdep_aty('atyse');
+                $other_prov = $this->ficheros->other_providers($users);
                 $mch = $this->ficheros->process_comdep_aty('mch');
                 $files = $this->ficheros->generate_files($user_id);
                 $aspitop = $this->ficheros->process_comdep_aty('aspitop');
                 $top = $this->ficheros->process_comdep_aty('top');
-                if ($atyse && $mch && $files && $aspitop && $top){
+                if ($atyse && $mch && $files && $aspitop && $top && $other_prov){
                     $this->time_process->flag = 'all';
                     foreach ($users as $user){
                         $this->time_process->user_id = $user['id'];
@@ -106,6 +107,25 @@ class Import extends CI_Controller{
         }
         log_message('error', 'Alguien ha llamado a ALL '.$_SERVER['REMOTE_ADDR']);
         $this->load->view('principal');
+    }
+
+    public function otherproviders(){
+        $CI =& get_instance();
+        $result = false;
+        $user_id = $this->time_process->check();
+        $users = $this->db_op->Get_Usuarios($CI, $user_id);
+
+        if ($user_id != false){
+            $result = $this->ficheros->other_providers($users);
+        }
+        
+        if ($result){
+            $datos['import_state'] = $this->ficheros->import_state($user_id);
+            $this->load->view('principal', $datos);
+        }else{
+            $datos['errores'] = lang('import.mch_error');
+            $this->load->view('principal', $datos);
+        }
     }
 
     public function mch(){
@@ -261,6 +281,12 @@ class Import extends CI_Controller{
     public function stockfiles(){
         if(isset($this->session->userdata['username'])){
             $this->processtyres('generate', $this->session->userdata['id']);        
+        }    
+    }
+
+    public function providers(){
+        if(isset($this->session->userdata['username'])){
+            $this->processtyres('otherproviders', $this->session->userdata['id']);        
         }    
     }
 }

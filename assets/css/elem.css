@@ -56,7 +56,7 @@ input[type="submit"] .boton{
 }
 
 .addusuario{
-	position:absolute;
+	position:relative;
 	top:50px;
 	width:90%;
 	padding-left:5%;
@@ -334,14 +334,13 @@ input[type="submit"] .boton{
 .err-prov{
 	top:auto;
 	right:auto;
-	/*margin-left:180px;*/
 	border:1px solid #ccc;
 	height:auto;
 	width:93%;
 	position:absolute;
 	border-radius:5px;
 	padding:20px;
-	/*display:none;*/
+	z-index:999;
 }
 
 .panel-other-prov{
