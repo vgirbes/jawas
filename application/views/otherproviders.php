@@ -84,6 +84,13 @@
 			  </div>
 			</div>
 
+			<div class="control-group" id="correction-stock-new">
+			  <label class="control-label" for="selectbasic">Correction Stock</label>
+			  <div class="controls">
+			  	<input id="textinput" name="correction_stock" min="0" pattern="\d*" placeholder="Correction Stock" class="input-xlarge" type="text">
+			  </div>
+			</div>
+
 			<div class="control-group">
 			  <label class="control-label" for="selectbasic"><?= lang('other_provider.campos');?></label>
 			  <div class="controls active-field" id="campos">
@@ -213,10 +220,17 @@
 					  </div>
 					</div>
 
-					<div class="control-group" id="stock-forced-<?= $prov_id?>" style="<?= ($prov->force_stock != 1 ? 'display:none;' : '');?>">
+					<div class="control-group" id="stock-forced-<?= $prov_id;?>" style="<?= ($prov->force_stock != 1 ? 'display:none;' : '');?>">
 					  <label class="control-label" for="selectbasic">Stock</label>
 					  <div class="controls">
 					  	<input id="textinput" name="stock" min="0" pattern="\d*" placeholder="Stock" class="input-xlarge prov_stock_<?= $prov_id;?>" type="text" value="<?= $prov->stock_forced;?>">
+					  </div>
+					</div>
+
+					<div class="control-group" id="correction-stock-<?= $prov_id;?>">
+					  <label class="control-label" for="selectbasic">Correction Stock</label>
+					  <div class="controls">
+					  	<input id="textinput" name="correction_stock" min="0" pattern="\d*" placeholder="Correction Stock" class="input-xlarge prov_correction_stock_<?= $prov_id;?>" type="text" value="<?= $prov->correctionstock;?>">
 					  </div>
 					</div>
 
@@ -294,6 +308,7 @@
 		<input type="hidden" id="edit_mch_tables" name="edit_mch_tables" value="">
 		<input type="hidden" id="edit_active_fstock" name="edit_active_fstock" value="">
 		<input type="hidden" id="edit_stock" name="edit_stock" value="">
+		<input type="hidden" id="edit_correction_stock" name="edit_correction_stock" value="">
 		<?php for ($x=1; $x<=$i; $x++){ ?>
 		<input type="hidden" id="edit_position_<?= $x;?>" name="edit_position_<?= $x;?>" value="">
 		<?php } ?>
