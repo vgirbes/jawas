@@ -28,6 +28,7 @@ class Providers_Model extends CI_Model{
             'table_db' => $post[$edit.'mch_tables'],
             'query' => $post[$edit.'query'],
             'delay' => $post[$edit.'delay'],
+            'correctionstock' => $post[$edit.'correction_stock'],
             'id_files_providers' => $post[$edit.'prov_files']
         );
 
