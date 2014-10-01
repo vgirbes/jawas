@@ -119,3 +119,5 @@ $lang['admin.custom_fields'] = "Les domaines personnalisés pour d'autres fourni
 
 $lang['mail.alta_usuario'] = "Bienvenue à Stock Application";
 $lang['mail.welcome'] = "Bonjour,<br/>Votre compte a été créé.";
+$lang['import.otherprov_error'] = "Erreur: Impossible de charger le autres fournisseurs.";
+$lang['submenu.stockother'] = "Importation de données depuis autres fournisseurs";

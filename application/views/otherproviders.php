@@ -144,6 +144,9 @@
 			</div>
 		<?php } ?>
 		</fieldset>
+		</form>
+		<form class="form-horizontal addusuario">
+			<fieldset>
 		<div class="panel-other-prov" style="<?= (isset($_POST['edit_prov_id']) && isset($estado) ? 'margin-top:95px;' : '');?>">
 		<?php if (isset($other_prov) && $other_prov != false){
 			foreach($other_prov->result() as $prov){
@@ -256,7 +259,7 @@
 					  <label class="control-label" for="selectbasic"><?= lang('other_provider.posicion');?></label>
 					  <div class="controls">
 					  	<?php for ($x=1; $x<=$i; $x++){ ?>
-					    <div class="cuadro<?= ($x==$prov->key_fields ? ' active-link' : '');?>" id="<?= $prov_id;?>" rel="<?= $x;?>" title="position_<?= $x;?>">
+					    <div class="cuadro<?= ($x==$prov->key_fields ? ' active-link' : '');?> line_<?= $prov_id;?>" id="<?= $prov_id;?>" rel="<?= $x;?>" title="position_<?= $x;?>">
 					    	<?php if (isset($positions_saved[$prov_id][$x]['name'])){ ?>
 					    		<div class="drag-field edited-field" id="field_<?= $positions_saved[$prov_id][$x]['id'];?>">
 					    			<?= $positions_saved[$prov_id][$x]['name'];?>
@@ -289,6 +292,7 @@
 			echo lang('other_provider.no_hay');
 		}?>	
 		</div>
+		</fieldset>
 	</form>
 	<form method="POST" id="borrar" action="<?= base_url();?><?= $this->session->userdata['lang'];?>/providers/delete_other_provider">
 		<input type="hidden" name="edit_prov_id" id="borrar_id" value="">

@@ -19,6 +19,7 @@
 			<ul id="menu-ul">
 				<li><a href="javascript:send_request('stockatyse');"><?= lang('submenu.atyse');?></a></li>
 				<li><a href="javascript:send_request('stockmch');"><?= lang('submenu.mch');?></a></li>
+				<li><a href="javascript:send_request('stockother');"><?= lang('submenu.stockother');?></a></li>
 				<li><a href="javascript:send_request('stockfiles');"><?= lang('submenu.ficheros');?></a></li>
 			</ul>
 		</div>

@@ -34,6 +34,7 @@ class Products_Struct extends DB_op{
         'stockValue' => '',
         'stockValueB' => '',
         'stockVar' => '',
+        'other_prov' => '',
         'user_id' => ''
     );
 
