@@ -13,6 +13,9 @@ class DB_op{
     var $datos_userprovider = array();
     var $datos_mch = array();
     var $datos_lastdayacti = array();
+    var $TMP_PRDNOEBU = array();
+    var $TMP_PRDGMABU_PRIX_OK = array();
+    var $TMP_PRDGMABU_MASQ_OK = array();
     var $AIH_PRIARTWEB = array();
 
 	function __construct(){
@@ -274,16 +277,16 @@ class DB_op{
         }
     }
 
-    public function Get_Providers_Delay($CI, $user_id){
-        $CI->db->select('SupplierKey, delay');
-        $CI->db->from('users_providers');
-        $CI->db->where('users_id', $user_id);
+    public function Get_Providers_Delay($CI, $id, $delay, $table, $user_id = ''){
+        $CI->db->select($id.', '.$delay);
+        $CI->db->from($table);
+        if ($user_id != '') $CI->db->where('users_id', $user_id);
         $query = $CI->db->get();
 
         if ($query->num_rows() > 0){
             $res = array();
             foreach ($query->result() as $row){
-                $res[$row->SupplierKey] = $row->delay;
+                $res[$row->$id] = $row->$delay;
             }
 
             return $res;
@@ -296,5 +299,28 @@ class DB_op{
         $query = $CI->db->get('countries');
 
         return $query;
+    }
+
+    public function check_art_tables($connexion, $table = '', $codbu){
+        $req = ("SELECT IDEPRD from mch.".$table." ".($table == 'TMP_PRDNOEBU' ? " WHERE CODBU = '".$codbu."' OR CODBU = '*'" : ''));
+        $stmt = sqlsrv_query($connexion, $req);
+
+        $tabla = array();
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
+            $key = $row['IDEPRD'];
+            $tabla[$key] = '';
+            
+        }
+
+        return $tabla;
+    }
+
+    public function checkArt($idProd)
+    {
+        if (array_key_exists($idProd, $this->TMP_PRDNOEBU) && array_key_exists($idProd, $this->TMP_PRDGMABU_PRIX_OK) && array_key_exists($idProd, $this->TMP_PRDGMABU_MASQ_OK)){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

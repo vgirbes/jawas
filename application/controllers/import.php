@@ -84,8 +84,8 @@ class Import extends CI_Controller{
                 $this->time_process->f_start = date('Y-m-d H:i:s');
                 $this->time_process->init_process($CI, $users);
                 $atyse = $this->ficheros->process_comdep_aty('atyse');
-                $other_prov = $this->ficheros->other_providers($users);
                 $mch = $this->ficheros->process_comdep_aty('mch');
+                $other_prov = $this->ficheros->other_providers($users);
                 $files = $this->ficheros->generate_files($user_id);
                 $aspitop = $this->ficheros->process_comdep_aty('aspitop');
                 $top = $this->ficheros->process_comdep_aty('top');
@@ -113,6 +113,7 @@ class Import extends CI_Controller{
         $CI =& get_instance();
         $result = false;
         $user_id = $this->time_process->check();
+        $user_id = 1;
         $users = $this->db_op->Get_Usuarios($CI, $user_id);
 
         if ($user_id != false){
@@ -123,7 +124,7 @@ class Import extends CI_Controller{
             $datos['import_state'] = $this->ficheros->import_state($user_id);
             $this->load->view('principal', $datos);
         }else{
-            $datos['errores'] = lang('import.mch_error');
+            $datos['errores'] = lang('import.otherprov_error');
             $this->load->view('principal', $datos);
         }
     }
@@ -284,7 +285,7 @@ class Import extends CI_Controller{
         }    
     }
 
-    public function providers(){
+    public function stockother(){
         if(isset($this->session->userdata['username'])){
             $this->processtyres('otherproviders', $this->session->userdata['id']);        
         }    

@@ -245,7 +245,7 @@
 					  <label class="control-label" for="selectbasic"><?= lang('other_provider.posicion');?></label>
 					  <div class="controls">
 					  	<?php for ($x=1; $x<=$i; $x++){ ?>
-					    <div class="cuadro<?= ($x==$prov->key_fields ? ' active-link' : '');?>" id="<?= $prov_id;?>" rel="<?= $x;?>" title="position_<?= $x;?>">
+					    <div class="cuadro<?= ($x==$prov->key_fields ? ' active-link' : '');?> line_<?= $prov_id;?>" id="<?= $prov_id;?>" rel="<?= $x;?>" title="position_<?= $x;?>">
 					    	<?php if (isset($positions_saved[$prov_id][$x]['name'])){ ?>
 					    		<div class="drag-field edited-field" id="field_<?= $positions_saved[$prov_id][$x]['id'];?>">
 					    			<?= $positions_saved[$prov_id][$x]['name'];?>

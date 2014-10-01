@@ -118,7 +118,7 @@ $( document ).ready(function() {
 	$('.cuadro').click(function (){
 		var id = $(this).attr('rel');
 		var id_link = $(this).attr('id');
-		$('.cuadro').css({ 'border':'3px dashed #ccc' });
+		$('.line_'+id_link).css({ 'border':'3px dashed #ccc' });
 		$(this).css({ 'border':'3px dashed #08c' });
 		$('#link_position_'+id_link).val(id);
 	});
