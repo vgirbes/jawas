@@ -113,7 +113,6 @@ class Import extends CI_Controller{
         $CI =& get_instance();
         $result = false;
         $user_id = $this->time_process->check();
-        $user_id = 1;
         $users = $this->db_op->Get_Usuarios($CI, $user_id);
 
         if ($user_id != false){
