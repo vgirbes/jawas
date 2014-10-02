@@ -1,12 +1,11 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Atyse{
+class Atyse extends DB_Op{
     var $Provider = 'Atyse';
 
     function __construct(){
         $CI =& get_instance();
         $CI->load->database();
         $CI->load->helper('array');
-        $CI->load->library('DB_op');
         $CI->load->library('Products_Struct');
         $CI->load->library('Regroupement_Struct');
         $CI->load->library('Ean_Struct');
@@ -27,7 +26,8 @@ class Atyse{
         $code_four = '';
         $process = false;
         $CI->time_process->flag = 'atyse';
-        $users = $CI->db_op->Get_Usuarios($CI, $user_id);
+        $users = $this->Get_Usuarios($CI, $user_id);
+        $this->stock_literals = $this->get_stock_literals($CI, 'provider');
         $CI->time_process->user_id = $user_id;
         log_message('error', 'Atyse '.$archivo);
         if (file_exists('assets/files/atyse/'.$archivo) && $archivo != false) 
@@ -35,7 +35,7 @@ class Atyse{
             $handle = fopen('assets/files/atyse/'.$archivo, "r");
             $CI->corresfour_struct->Get_Codes($CI);
             $CI->provider_struct->Get_Codes($CI);
-            $CI->db_op->user_id = $user_id;
+            $this->user_id = $user_id;
             while ((($data = fgetcsv($handle, 3000, ';')) !== FALSE) && !$process) 
             {
                 if ($row > 1)
@@ -44,7 +44,7 @@ class Atyse{
                     if (!isset($data[9])) break;
                     $codProv = $data[9];
                     $brand = $data[10];
-                    $query = $CI->db_op->Info_Provider($CI, 'p.SupplierKey', $codProv, $CI->db_op->user_id);
+                    $query = $this->Info_Provider($CI, 'p.SupplierKey', $codProv, $this->user_id);
                     if ($query->num_rows() > 0){
                         $ligne_f = $query->result();
                         $ligne_f = $ligne_f[0];
@@ -63,8 +63,10 @@ class Atyse{
                         $codeReg = '00000000000'.$data[1];
                         log_message('error', 'Insertando proveedor '.$codProv);
                         log_message('error', 'Procesando '.$codeReg);
-                        $datos_ean = array('codeRegroupement' => "$codeReg", 'ean' => "$data[3]", 'user_id'  => $CI->db_op->user_id);
+                        $datos_ean = array('codeRegroupement' => "$codeReg", 'ean' => "$data[3]", 'user_id'  => $this->user_id);
                         $CI->ean_struct->Load_Data($datos_ean, $item);
+
+                        $stock = $this->check_stock($data[14], $codProv);
 
                         if ($ligne_f->forceStock == 1)
                         {
@@ -75,19 +77,19 @@ class Atyse{
                                $stockValue = (int)$ligne_prodForced->stock - $ligne_f->correctionstock;
                             }
                             else
-                               $stockValue = (int)$data[14] - $ligne_f->correctionstock;
+                               $stockValue = (int)$stock - $ligne_f->correctionstock;
                         }
                         else
-                            $stockValue = (int)$data[14] - $ligne_f->correctionstock;
+                            $stockValue = (int)$stock - $ligne_f->correctionstock;
                         if ($stockValue < 0)
                             $stockValue = 0;
                         $result_price = (((double)$data[12] + (double)$ligne_f->ecotaxe) - (double)$ligne_f->RFAfixe) * (1 - ((double)$ligne_f->RFA_p / 100)) + (double)$ligne_f->CDS;
-                        $prod_n = $CI->products_struct->Product_Exist($CI, $codeReg, $codProv, $CI->db_op->user_id);
+                        $prod_n = $CI->products_struct->Product_Exist($CI, $codeReg, $codProv, $this->user_id);
                         if ($prod_n <= 0){
-                            $products = $this->Get_Products_array($codeReg, $codProv, $data, $result_price, $stockValue, $CI->db_op->user_id);
+                            $products = $this->Get_Products_array($codeReg, $codProv, $data, $result_price, $stockValue, $this->user_id);
                             $CI->products_struct->Load_Data($products, $item);
                         }
-                        log_message('error', 'stock '.$data[14]);
+                        log_message('error', 'stock '.$stock);
                         $item++;
                     }
                 }
