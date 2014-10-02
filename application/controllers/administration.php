@@ -29,6 +29,10 @@ class Administration extends CI_Controller{
             $datos['list_providers'][2]['url'] = $url.'providers/other_providers';
             $datos['list_providers'][3]['name'] = lang('admin.custom_fields');
             $datos['list_providers'][3]['url'] = $url.'administration/load/custom_fields';
+            $datos['list_providers'][4]['name'] = lang('admin.stock_literal_atyse');
+            $datos['list_providers'][4]['url'] = $url.'administration/literalstock/provider';
+            $datos['list_providers'][5]['name'] = lang('admin.stock_literal_other_provider');
+            $datos['list_providers'][5]['url'] = $url.'administration/literalstock/other_provider';
 
             $datos['list_users'][0]['name'] = lang('admin.usuarios');
             $datos['list_users'][0]['url'] = $url.'administration/load/users';
@@ -51,6 +55,25 @@ class Administration extends CI_Controller{
 
     public function __output($output = null){
         $this->load->view('edit_admin.php', $output);
+    }
+
+    public function literalstock(){
+        $type = $this->uri->segment(4);
+        $rol = $this->usuarios->rol_ok();
+        if ($rol){
+            $crud = new grocery_CRUD();
+            $crud->set_theme('flexigrid');
+            $crud->set_table('stock_literals_'.$type.'s');
+            $crud->display_as('id','Id');
+            $crud->set_subject('Stock Literals');
+            $crud->columns('literal', 'value');
+         
+            $crud->set_relation($type.'_id', $type.'s', ($type=='other_provider' ? 'sap_name' : 'nom'));
+            $output = $crud->render();
+            $this->__output($output);
+        }else{
+            $this->load->view('principal');
+        }
     }
 
     public function load(){

@@ -38,6 +38,7 @@ class OtherProviders extends DB_op{
         $ids = '';
         $all = ($user_id != '' ? true : false);
         $users = $this->Get_Usuarios($CI, $user_id);
+        $this->stock_literals = $this->get_stock_literals($CI, 'other_provider');
         $this->get_other_provider($CI);
         $stock_id = $this->get_stock_id($CI);
         $stock_position = ($this->get_position($CI, $stock_id))-1;
@@ -49,11 +50,12 @@ class OtherProviders extends DB_op{
                 $handle = fopen('assets/files/'.$provider.'/'.$archivo, "r");
                 
                 while ((($data = fgetcsv($handle, 3000, ';')) !== FALSE)){
-                    if ($row > 1){
+                    if ($row >= 1){
                         $id = $data[$this->key];
                         $ids .= $id.',';
                         log_message('error', 'Preinsert other provider de '.$id);
-                        $this->stock = $this->calculate_stock($data[$stock_position]);
+                        $stock = $this->check_stock($data[$stock_position], $provider_id);
+                        $this->stock = $this->calculate_stock($stock);
                         $this->products_file[$id] = $this->stock;
                     }
                     $row++;
@@ -80,11 +82,11 @@ class OtherProviders extends DB_op{
         $CI->db->delete('products');
 
         $CI->db->where('user_id', $user_id);
-        $CI->db->where('LENGTH(codeRegroupement) <=13');
+        $CI->db->where('LENGTH(codeRegroupement) <= 13');
         $CI->db->delete('ean');
 
         $CI->db->where('user_id', $user_id);
-        $CI->db->where('LENGTH(valPro) <=13');
+        $CI->db->where('LENGTH(valPro) <= 13');
         $CI->db->delete('data_mch');
     }
 

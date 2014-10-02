@@ -17,6 +17,7 @@ class DB_op{
     var $TMP_PRDGMABU_PRIX_OK = array();
     var $TMP_PRDGMABU_MASQ_OK = array();
     var $AIH_PRIARTWEB = array();
+    var $stock_literals = array();
 
 	function __construct(){
 		$CI =& get_instance();
@@ -301,6 +302,21 @@ class DB_op{
         return $query;
     }
 
+    public function check_stock($stock, $provider_id){
+        if (isset($this->stock_literals[$provider_id])){
+            $stock_by_provider = $this->stock_literals[$provider_id];
+            if (array_key_exists($stock, $stock_by_provider)){
+                log_message('error', 'Existe stock');
+                $stock = $stock_by_provider[$stock];
+                log_message('error', 'Literal de stock valor: '.$stock);
+            }
+
+            return $stock;
+        }else{
+            return $stock;
+        }
+    }
+
     public function check_art_tables($connexion, $table = '', $codbu){
         $req = ("SELECT IDEPRD from mch.".$table." ".($table == 'TMP_PRDNOEBU' ? " WHERE CODBU = '".$codbu."' OR CODBU = '*'" : ''));
         $stmt = sqlsrv_query($connexion, $req);
@@ -313,6 +329,23 @@ class DB_op{
         }
 
         return $tabla;
+    }
+
+    public function get_stock_literals($CI, $provider){
+        $result = array();
+        $CI->db->select($provider.'_id AS prov_id, literal, value');
+        $CI->db->from('stock_literals_'.$provider.'s');
+        $query = $CI->db->get();
+
+        if ($query->num_rows() > 0){
+            foreach ($query->result() as $provider_row){
+                $result[$provider_row->prov_id][$provider_row->literal] = $provider_row->value; 
+            }
+
+            return $result;
+        }else{
+            return false;
+        }
     }
 
     public function checkArt($idProd)

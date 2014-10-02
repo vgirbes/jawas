@@ -27,6 +27,7 @@ class Providers extends CI_Controller{
         if(isset($this->session->userdata['username'])){
             $user_id = $this->session->userdata['id'];
             $crud = new grocery_CRUD();
+            $crud->user_id = $user_id;
             $crud->set_theme('flexigrid');
             $crud->set_table('users_providers');
             $crud->display_as('SupplierKey','Id');
