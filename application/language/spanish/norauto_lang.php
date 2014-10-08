@@ -119,3 +119,8 @@ $lang['admin.custom_fields'] = "Campos personalizados para otros proveedores";
 
 $lang['mail.alta_usuario'] = "Bienvenido a Stock Application";
 $lang['mail.welcome'] = "Hola,<br/>Ha sido dado de alta en nuestro servicio.";
+$lang['import.otherprov_error'] = "Error: No se ha podido cargar otros proveedores.";
+$lang['submenu.stockother'] = "Importar datos de otros proveedores";
+
+$lang['admin.stock_literal_atyse'] = "Literales de stock para Atyse";
+$lang['admin.stock_literal_other_provider'] = "Literales de stock para otros proveedores";

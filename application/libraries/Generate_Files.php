@@ -1,16 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Generate_Files extends DB_Op{
     var $item = 0;
-    var $TMP_PRDNOEBU = array();
-    var $TMP_PRDGMABU_PRIX_OK = array();
-    var $TMP_PRDGMABU_MASQ_OK = array();
-    var $AIH_PRIARTWEB = array();
     var $user_id = '';
     var $user_name = '';
     var $providers_delay = array();
+    var $other_providers_delay = array();
     var $codbu = '';
     var $delay_file = '';
     var $validation_file = '';
+    var $stock_mini = 0;
+    var $providers_reference = array();
 
     function __construct(){
         $CI =& get_instance();
@@ -30,14 +29,17 @@ class Generate_Files extends DB_Op{
         $Conn = $this->Connect_MCH();
         $Conn_wrk = $this->Connect_WRK();
         log_message('error', 'Entra files '.$user_id);
-        $stock_mini = $this->Get_Default_Value($CI, 'stock_mini');
+        $this->stock_mini = $this->Get_Default_Value($CI, 'stock_mini');
         $marge_e = $this->Get_Default_Value($CI, 'marge_e');
         $marge_p = $this->Get_Default_Value($CI, 'marge_p');
         $tva = $this->Get_Default_Value($CI, 'TVA');
         $query = $this->Get_Data_To_File($CI, $user_id);
         $users = $this->Get_Usuarios($CI, $user_id);
+        $this->providers_reference = $this->Get_Providers_Reference($CI, $Conn, $codbu, $user_id);
         $this->codbu = $codbu;
-        $this->providers_delay = $this->Get_Providers_Delay($CI, $user_id);
+        $this->providers_delay = $this->Get_Providers_Delay($CI, 'SupplierKey', 'delay', 'users_providers', $user_id);
+        $this->other_providers_delay = $this->Get_Providers_Delay($CI, 'id', 'delay', 'other_providers');
+        $is_other_provider = false;
         $save = 0;
         $no_price = 0;
         $ret = 0;
@@ -66,42 +68,50 @@ class Generate_Files extends DB_Op{
                 $row['PRIVENLOC'] = $this->Get_PRIVENLOC($ligne->idProd);
                 if ($row['PRIVENLOC'] != false)
                 {
-                    if ($this->checkArt($ligne->idProd) == 1)
-                    {
-                        log_message('error', 'Entra FILES idProd procesado '.$ligne->idProd);
-                        if ($ligne->stockValue >= $stock_mini)
+                    $is_other_provider = (!is_null($ligne->other_prov) ? true : false);
+                    if ($is_other_provider){
+                        log_message('error', 'Gestionando producto other provider '.$ligne->idProd);
+                        $this->Process_Other_Provider($CI, $ligne, $user_id);
+                    }else{
+                        if ($this->checkArt($ligne->idProd) == 1)
                         {
-                            if ($ligne->priceMin == -1)
+                            log_message('error', 'Entra FILES idProd procesado '.$ligne->idProd);
+                            if ($ligne->stockValue >= $this->stock_mini)
                             {
-                                $this->calcActi($CI, $ligne, 'no_price');
-                                $no_price++;
-                            }
-                            else
-                            {
-                                $result = (((double)$ligne->priceMin + (double)$marge_e) * (1 + ((double)$marge_p / 100))) * (1 + ((double)$tva / 100));
-
-                                if ((double)$result <= (double)$row['PRIVENLOC'])
+                                if ($ligne->priceMin == -1)
                                 {
-                                    $this->calcActi($CI, $ligne, 'good', $row, $result);
-                                    $save++;
+                                    $this->calcActi($CI, $ligne, 'no_price');
+                                    $no_price++;
                                 }
                                 else
                                 {
-                                    $this->calcActi($CI, $ligne, 'too_exp', $row, $result);
-                                    $ret++;
+                                    $result = (((double)$ligne->priceMin + (double)$marge_e) * (1 + ((double)$marge_p / 100))) * (1 + ((double)$tva / 100));
+
+                                    if ((double)$result <= (double)$row['PRIVENLOC'])
+                                    {
+                                        $this->calcActi($CI, $ligne, 'good', $row, $result);
+                                        $save++;
+                                    }
+                                    else
+                                    {
+                                        $this->calcActi($CI, $ligne, 'too_exp', $row, $result);
+                                        $ret++;
+                                    }
+                                    $row++;
                                 }
-                                $row++;
                             }
+                            else
+                            {
+                                $this->calcActi($CI, $ligne, 'no_stock');
+                                $stock_ret++;
+                            }
+                            $i++;
+                            
+                        }else{
+                            $false++;
                         }
-                        else
-                        {
-                            $this->calcActi($CI, $ligne, 'no_stock');
-                            $stock_ret++;
-                        }
-                        $i++;
                         $this->item = $this->item + 1;
-                    }else
-                        $false++;
+                    }
                 }
             }
         }else{
@@ -109,7 +119,7 @@ class Generate_Files extends DB_Op{
             return false;
         }
         @fclose($this->validation_file);
-        @fclose($this->delay_file);
+        @fclose($this->delay_file);+
         $CI->lastdayacti_struct->Insert_Data($CI, 'lastdayacti', 'no');
         $csv = $this->Generate_Alert($CI, $user_id, $user_name);
         log_message('error', 'Fin');
@@ -122,8 +132,17 @@ class Generate_Files extends DB_Op{
         }
     }
 
+    private function Process_Other_Provider($CI, $ligne, $user_id){
+        if ($ligne->stockValue >= $this->stock_mini){
+            $row['PRIVENLOC'] = '';
+            $this->calcActi($CI, $ligne, 'good', $row, 'other_provider');
+        }else{
+            $this->calcActi($CI, $ligne, 'no_stock', '', 'other_provider');
+        }
+    }
+
     public function Get_Data_To_File($CI, $user_id){
-        $CI->db->distinct('dm.idProd, dm.valPro, dm.country, r.stockValue, r.priceMin, r.supplierKey');
+        $CI->db->distinct('dm.idProd, dm.valPro, dm.country, r.stockValue, r.priceMin, r.supplierKey, r.other_prov');
         $CI->db->from('data_mch dm, products r');
         $CI->db->where('r.codeRegroupement = dm.valPro');
         $CI->db->where('dm.numPro = "codeRegroupement"');
@@ -135,32 +154,20 @@ class Generate_Files extends DB_Op{
         return $CI->db->get();
     }
 
-    public function check_art_tables($connexion, $table = '', $codbu){
-        $req = ("SELECT IDEPRD from mch.".$table." ".($table == 'TMP_PRDNOEBU' ? " WHERE CODBU = '".$codbu."'" : ''));
-        $stmt = sqlsrv_query($connexion, $req);
-
-        $tabla = array();
-        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
-            $key = $row['IDEPRD'];
-            $tabla[$key] = '';
-            
-        }
-
-        return $tabla;
-    }
-
-    public function checkArt($idProd)
-    {
-        if (array_key_exists($idProd, $this->TMP_PRDNOEBU) && array_key_exists($idProd, $this->TMP_PRDGMABU_PRIX_OK) && array_key_exists($idProd, $this->TMP_PRDGMABU_MASQ_OK)){
-            return true;
+    private function Get_Delay($ligne, $result){
+        if ($result == 'other_provider'){
+            log_message('error', 'Delay de other_provider '.$ligne->other_prov);
+            return $this->other_providers_delay[$ligne->other_prov];
         }else{
-            return false;
+            return $this->providers_delay[$ligne->supplierKey];
         }
     }
 
     public function calcActi($CI, $ligne, $type, $row = '', $result = ''){
         $statut = 'Y';
-        $prov_delay = $this->providers_delay[$ligne->supplierKey];
+        $provider_id = $ligne->supplierKey;
+        $prov_delay = $this->Get_Delay($ligne, $result);
+        if ($result == 'other_provider') $provider_id = $this->providers_reference[$ligne->idProd];
 
         switch($type){
             case 'no_price':
@@ -183,7 +190,7 @@ class Generate_Files extends DB_Op{
 
         if ($type != 'too_exp'){
             if ($prov_delay > 0 && !is_null($prov_delay)){
-                $line_delay = $ligne->idProd.';'.$this->codbu.';'.$ligne->supplierKey.';'.($type == 'no_stock' ? 99 : $prov_delay);
+                $line_delay = $ligne->idProd.';'.$this->codbu.';'.$provider_id.';'.($type == 'no_stock' ? 99 : $prov_delay);
                 log_message('error', $line_delay);
                 @fputcsv($this->delay_file, explode(',', $line_delay));
             }
@@ -254,7 +261,6 @@ class Generate_Files extends DB_Op{
 
     public function Generate_Alert($CI, $user_id, $user_name){
         $f = @fopen("assets/files/".$user_name."_test_alert.csv", 'w+');
-
         $line = "modele;";
         @fputcsv($f, explode(',', $line));
         $line = "codeRegroupement;référenceArticle;;stockValue;;priceMinPlusP;PrixMin;PrixRecalcul;prixVente;statut;reason";
@@ -263,9 +269,7 @@ class Generate_Files extends DB_Op{
         @fputcsv($f, explode(',', $line));
         $line = ";";
         @fputcsv($f, explode(',', $line));
-
         $query = $this->Get_Data_To_Alert($CI, $user_id);
-
         if ($query){
             foreach ($query->result() as $ligne)
             {

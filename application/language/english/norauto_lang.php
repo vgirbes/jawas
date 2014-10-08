@@ -119,3 +119,8 @@ $lang['admin.custom_fields'] = "Custom fields for other providers";
 
 $lang['mail.alta_usuario'] = "Welcome to Stock Application";
 $lang['mail.welcome'] = "Hello,<br/>Your account has been created.";
+$lang['import.otherprov_error'] = "Error: Could not load other providers.";
+$lang['submenu.stockother'] = "Import data from other providers";
+
+$lang['admin.stock_literal_atyse'] = "Stock literals for Atyse";
+$lang['admin.stock_literal_other_provider'] = "Stock literals for other providers";

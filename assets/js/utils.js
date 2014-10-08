@@ -59,6 +59,7 @@ function save_other_provider(){
 	$('#edit_query').val($('.prov_query_'+id).val());
 	$('#edit_delay').val($('.prov_delay_'+id).val());
 	$('#edit_mch_tables').val($('.prov_mch_'+id).val());
+	$('#edit_correction_stock').val($('.prov_correction_stock_'+id).val());
 
 	if ($('.prov_afstock_'+id).is(':checked')){
 		$('#edit_active_fstock').val(1);
@@ -118,7 +119,7 @@ $( document ).ready(function() {
 	$('.cuadro').click(function (){
 		var id = $(this).attr('rel');
 		var id_link = $(this).attr('id');
-		$('.cuadro').css({ 'border':'3px dashed #ccc' });
+		$('.line_'+id_link).css({ 'border':'3px dashed #ccc' });
 		$(this).css({ 'border':'3px dashed #08c' });
 		$('#link_position_'+id_link).val(id);
 	});

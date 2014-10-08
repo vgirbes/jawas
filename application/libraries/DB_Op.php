@@ -13,7 +13,11 @@ class DB_op{
     var $datos_userprovider = array();
     var $datos_mch = array();
     var $datos_lastdayacti = array();
+    var $TMP_PRDNOEBU = array();
+    var $TMP_PRDGMABU_PRIX_OK = array();
+    var $TMP_PRDGMABU_MASQ_OK = array();
     var $AIH_PRIARTWEB = array();
+    var $stock_literals = array();
 
 	function __construct(){
 		$CI =& get_instance();
@@ -150,6 +154,7 @@ class DB_op{
                 $users[$i]['username'] = $ligne->username;
                 $users[$i]['email'] = $ligne->email;
                 $users[$i]['rol'] = $ligne->rol;
+                $users[$i]['iso_code'] = $ligne->rol;
                 $users[$i]['name'] = $ligne->name;
                 $users[$i]['codbu'] = $ligne->codbu;
                 $users[$i]['codcen'] = $ligne->codcen;
@@ -187,6 +192,51 @@ class DB_op{
         }
 
         return $res;
+    }
+
+    public function Get_Providers_Reference($CI, $Conn_MCH, $codbu, $user_id){
+        $result = array();
+        $products = array();
+        $ids = '';
+
+        $CI->db->select('idProd');
+        $CI->db->from('data_mch');
+        $CI->db->where('user_id', $user_id);
+        $CI->db->where('LENGTH(valPro) < 13');
+        $query = $CI->db->get();
+
+        if ($query->num_rows() > 0){
+            foreach($query->result() as $prod){
+                $products[$prod->idProd] = '';
+                $ids .= $prod->idProd.',';
+            }
+
+            $result = $this->Get_Reference($products, rtrim($ids, ','), $codbu, $Conn_MCH);
+
+            return $result;
+        }else{
+            return false;
+        }
+    }
+
+    private function Get_Reference($products, $ids, $codbu, $Conn_MCH){
+        log_message('error', 'Entra a Get Reference');
+        $result = array();
+        $req = "SELECT [IDEPRD], [VALPROSEC] FROM [REFMCH].[mch].[NCOM_PRD_PRO_BU] WHERE IDEPRD IN ($ids) AND NUMPRO = 8 AND NUMORD = 5 AND (CODBU = '$codbu' OR CODBU = '*') AND DATSUP IS NULL";
+        log_message('error', $req);
+        $stmt = sqlsrv_query($Conn_MCH, $req, array(), array( "Scrollable" => 'keyset' ));
+        $has_rows = sqlsrv_has_rows($stmt);
+
+        if ($has_rows){
+            log_message('error', 'Entra en el bucle Get Reference');
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
+                $products[$row['IDEPRD']] = $row['VALPROSEC'];
+            }
+
+            return $products;
+        }else{
+            return false;
+        }
     }
 
     public function Get_Property_test($valor){
@@ -274,16 +324,16 @@ class DB_op{
         }
     }
 
-    public function Get_Providers_Delay($CI, $user_id){
-        $CI->db->select('SupplierKey, delay');
-        $CI->db->from('users_providers');
-        $CI->db->where('users_id', $user_id);
+    public function Get_Providers_Delay($CI, $id, $delay, $table, $user_id = ''){
+        $CI->db->select($id.', '.$delay);
+        $CI->db->from($table);
+        if ($user_id != '') $CI->db->where('users_id', $user_id);
         $query = $CI->db->get();
 
         if ($query->num_rows() > 0){
             $res = array();
             foreach ($query->result() as $row){
-                $res[$row->SupplierKey] = $row->delay;
+                $res[$row->$id] = $row->$delay;
             }
 
             return $res;
@@ -296,5 +346,60 @@ class DB_op{
         $query = $CI->db->get('countries');
 
         return $query;
+    }
+
+    public function check_stock($stock, $provider_id){
+        if (isset($this->stock_literals[$provider_id])){
+            $stock_by_provider = $this->stock_literals[$provider_id];
+            if (array_key_exists($stock, $stock_by_provider)){
+                log_message('error', 'Existe stock');
+                $stock = $stock_by_provider[$stock];
+                log_message('error', 'Literal de stock valor: '.$stock);
+            }
+
+            return $stock;
+        }else{
+            return $stock;
+        }
+    }
+
+    public function check_art_tables($connexion, $table = '', $codbu){
+        $req = ("SELECT IDEPRD from mch.".$table." ".($table == 'TMP_PRDNOEBU' ? " WHERE CODBU = '".$codbu."' OR CODBU = '*'" : ''));
+        $stmt = sqlsrv_query($connexion, $req);
+
+        $tabla = array();
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)){
+            $key = $row['IDEPRD'];
+            $tabla[$key] = '';
+            
+        }
+
+        return $tabla;
+    }
+
+    public function get_stock_literals($CI, $provider){
+        $result = array();
+        $CI->db->select($provider.'_id AS prov_id, literal, value');
+        $CI->db->from('stock_literals_'.$provider.'s');
+        $query = $CI->db->get();
+
+        if ($query->num_rows() > 0){
+            foreach ($query->result() as $provider_row){
+                $result[$provider_row->prov_id][$provider_row->literal] = $provider_row->value; 
+            }
+
+            return $result;
+        }else{
+            return false;
+        }
+    }
+
+    public function checkArt($idProd)
+    {
+        if (array_key_exists($idProd, $this->TMP_PRDNOEBU) && array_key_exists($idProd, $this->TMP_PRDGMABU_PRIX_OK) && array_key_exists($idProd, $this->TMP_PRDGMABU_MASQ_OK)){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

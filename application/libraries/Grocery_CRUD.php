@@ -477,6 +477,7 @@ class grocery_CRUD_Model_Driver extends grocery_CRUD_Field_Types
 	 * @var grocery_CRUD_Model
 	 */
 	public $basic_model = null;
+	var $user_id = '';
 
 	protected function set_default_Model()
 	{
@@ -1006,10 +1007,10 @@ class grocery_CRUD_Model_Driver extends grocery_CRUD_Field_Types
 
 	protected function db_update($state_info)
 	{
+		$CI =& get_instance();
 		$validation_result = $this->db_update_validation();
 
 		$edit_fields = $this->get_edit_fields();
-
 		if($validation_result->success)
 		{
 			$post_data 		= $state_info->unwrapped_data;
@@ -1075,9 +1076,15 @@ class grocery_CRUD_Model_Driver extends grocery_CRUD_Field_Types
 					}
 				}
 
-				if($this->basic_model->db_update($update_data, $primary_key) === false)
-				{
-					return false;
+				if ($this->basic_db_table == 'users_providers'){
+					$CI->db->where('users_id', $this->user_id);
+					$CI->db->where('SupplierKey', $primary_key);
+					$CI->db->update('users_providers', $update_data);
+				}else{
+					if($this->basic_model->db_update($update_data, $primary_key) === false)
+					{
+						return false;
+					}
 				}
 
 				if(!empty($this->relation_n_n))

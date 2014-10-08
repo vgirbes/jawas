@@ -94,6 +94,7 @@ class MCH{
     	$list = array();
     	$CI->db->select('*');
 		$CI->db->from('ean');
+		$CI->db->where('codeRegroupement <> ""');
 		$query = $CI->db->get();
 
 		foreach ($query->result() as $ligne){
