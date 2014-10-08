@@ -49,8 +49,8 @@ class Generate_Files extends DB_Op{
         $this->TMP_PRDGMABU_PRIX_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_PRIX_OK', $codbu);
         $this->TMP_PRDGMABU_MASQ_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_MASQ_OK', $codbu);
         $this->Get_AIH_PRIARTWEB($Conn_wrk, $codcen);
-        $name_file_csv = 'assets/files/countries/'.$users[0]['codbu'].'/validationProduit_csv_'.date('YmdHis').'.csv';
-        $delay_file_name = 'assets/files/countries/'.$users[0]['codbu'].'/delay_file_'.date('YmdHis').'.csv';
+        $name_file_csv = 'assets/files/countries/OBJNAT_MASSE_'.date('YmdHis').'.csv';
+        $delay_file_name = 'assets/files/countries/DELAI_FIA_'.date('YmdHis').'.csv';
         $this->validation_file = @fopen($name_file_csv, 'w+');
         $this->delay_file = @fopen($delay_file_name, 'w+');
         $line_delay = 'CODBU;provider;id_prod;delay';
@@ -62,7 +62,6 @@ class Generate_Files extends DB_Op{
             foreach ($query->result() as $ligne)
             {
                 log_message('error', 'Entra FILES idProd '.$ligne->idProd.' Usuario '.$user_id);
-                //echo '<input type="hidden" name="generate">';
                 $count++;
                 $row['PRIVENLOC'] = $this->Get_PRIVENLOC($ligne->idProd);
                 if ($row['PRIVENLOC'] != false)
@@ -184,14 +183,14 @@ class Generate_Files extends DB_Op{
 
         if ($type != 'too_exp'){
             if ($prov_delay > 0 && !is_null($prov_delay)){
-                $line_delay = $this->codbu.';'.$ligne->supplierKey.';'.$ligne->idProd.';'.($type == 'no_stock' ? 99 : $prov_delay);
+                $line_delay = $ligne->idProd.';'.$this->codbu.';'.$ligne->supplierKey.';'.($type == 'no_stock' ? 99 : $prov_delay);
                 log_message('error', $line_delay);
                 @fputcsv($this->delay_file, explode(',', $line_delay));
             }
         }
 
         $CI->lastdayacti_struct->Load_Data($reg, $this->item);
-        $line = $ligne->country . ";" . $ligne->idProd . ";MASQUE;".$statut.";1/10/12;00:00:00;31/12/2099;23:59:00;";
+        $line = $this->codbu . ";" . $ligne->idProd . ";MASQUE;".$statut.";".date("d/m/Y").";".date("H:i:s").";31/12/9999;23:59:00;";
         @fputcsv($this->validation_file, explode(',', $line));
 
         return true;
