@@ -260,7 +260,7 @@ class Generate_Files extends DB_Op{
     }
 
     public function Generate_Alert($CI, $user_id, $user_name){
-        $f = @fopen("assets/files/".$user_name."_test_alert.csv", 'w+');
+        $f = @fopen("assets/files/countries/".$user_name."_test_alert.csv", 'w+');
         $line = "modele;";
         @fputcsv($f, explode(',', $line));
         $line = "codeRegroupement;référenceArticle;;stockValue;;priceMinPlusP;PrixMin;PrixRecalcul;prixVente;statut;reason";

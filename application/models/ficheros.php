@@ -99,7 +99,7 @@ class Ficheros extends CI_Model{
         $CI =& get_instance();
         $users = $this->db_op->Get_Usuarios($CI, $this->session->userdata['id']);
         $codbu = $users[0]['codbu'];
-        $dir = 'assets/files/countries/'.$codbu.'/';
+        $dir = 'assets/files/countries/';
         $user_name = $this->session->userdata['username'];
         $files = array();
         $item = 0;
@@ -131,7 +131,7 @@ class Ficheros extends CI_Model{
     }
 
     public function file_exist($archivo, $user_name, $dir){
-        if (preg_match('/validationProduit/i', $archivo) || preg_match('/'.$user_name.'_test_alert/i', $archivo) || preg_match('/delay_file/i', $archivo)){
+        if (preg_match('/OBJNAT_MASSE_/i', $archivo) || preg_match('/'.$user_name.'_test_alert/i', $archivo) || preg_match('/DELAI_FIA/i', $archivo)){
             return true;
         }else{
             return false;
