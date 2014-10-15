@@ -68,7 +68,7 @@ class Generate_Files extends DB_Op{
                 $row['PRIVENLOC'] = $this->Get_PRIVENLOC($ligne->idProd);
                 if ($row['PRIVENLOC'] != false)
                 {
-                    $is_other_provider = (!is_null($ligne->other_prov) ? true : false);
+                    $is_other_provider = (!is_null($ligne->other_prov) && $ligne->other_prov == 1 ? true : false);
                     if ($is_other_provider){
                         log_message('error', 'Gestionando producto other provider '.$ligne->idProd);
                         $this->Process_Other_Provider($CI, $ligne, $user_id);
