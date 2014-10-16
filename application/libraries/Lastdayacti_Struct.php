@@ -7,6 +7,9 @@ class Lastdayacti_Struct extends DB_op{
         'reason' => '',
         'priceRec' => '',
         'price_wrk' => '',
+        'fecha' => '',
+        'countries_id' => '',
+        'active' => '',
         'user_id' => ''
     );
 

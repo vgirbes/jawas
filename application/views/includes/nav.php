@@ -14,7 +14,7 @@
 		</nav>
 
 		<?php if ($this->uri->segment(2)=='import'){ ?>
-		<?php if (isset($editable) && $editable) { ?>
+		<?php if (isset($editable) && $editable && $this->session->userdata['rol']==1) { ?>
 		<div id="submenu">
 			<ul id="menu-ul">
 				<li><a href="javascript:send_request('stockatyse');"><?= lang('submenu.atyse');?></a></li>

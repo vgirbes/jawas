@@ -10,6 +10,9 @@ class Generate_Files extends DB_Op{
     var $validation_file = '';
     var $stock_mini = 0;
     var $providers_reference = array();
+    var $country_id = '';
+    var $lastdayacti_products = array();
+    var $days = 6;
 
     function __construct(){
         $CI =& get_instance();
@@ -20,9 +23,10 @@ class Generate_Files extends DB_Op{
         $CI->load->library('Lastdayacti_Struct');
     }
 
-    public function do_it($user_id, $user_name, $codbu, $codcen, $all){
+    public function do_it($user_id, $user_name, $codbu, $codcen, $country_id, $all){
         $CI =& get_instance();
         $this->user_id = $user_id;
+        $this->country_id = $country_id;
         $this->user_name = $user_name;
         $CI->time_process->flag = 'generate';
         $CI->time_process->user_id = $user_id;
@@ -39,6 +43,7 @@ class Generate_Files extends DB_Op{
         $this->codbu = $codbu;
         $this->providers_delay = $this->Get_Providers_Delay($CI, 'SupplierKey', 'delay', 'users_providers', $user_id);
         $this->other_providers_delay = $this->Get_Providers_Delay($CI, 'id', 'delay', 'other_providers');
+        $this->Get_All_Lastdayacti($CI);
         $is_other_provider = false;
         $save = 0;
         $no_price = 0;
@@ -47,18 +52,16 @@ class Generate_Files extends DB_Op{
         $i = 2;
         $false = 0;
         $count = 0;
+        $name_file_csv = 'assets/files/countries/OBJNAT_MASSE_'.date('YmdHis').'.csv';
         $this->TMP_PRDNOEBU = $this->check_art_tables($Conn, 'TMP_PRDNOEBU', $codbu);
         $this->TMP_PRDGMABU_PRIX_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_PRIX_OK', $codbu);
         $this->TMP_PRDGMABU_MASQ_OK = $this->check_art_tables($Conn, 'TMP_PRDGMABU_MASQ_OK', $codbu);
         $this->Get_AIH_PRIARTWEB($Conn_wrk, $codcen);
         $name_file_csv = 'assets/files/countries/OBJNAT_MASSE_'.date('YmdHis').'.csv';
         $delay_file_name = 'assets/files/countries/DELAI_FIA_'.date('YmdHis').'.csv';
-        $this->validation_file = @fopen($name_file_csv, 'w+');
         $this->delay_file = @fopen($delay_file_name, 'w+');
         $line_delay = 'CODBU;provider;id_prod;delay';
         @fputcsv($this->delay_file, explode(',', $line_delay));
-        $line = "OA;material;TYPE;val;date_debut;heure_debut;date_fin;heure_fin;sup";
-        @fputcsv($this->validation_file, explode(',', $line));
 
         if ($query->num_rows()>0){
             foreach ($query->result() as $ligne)
@@ -118,12 +121,12 @@ class Generate_Files extends DB_Op{
             $CI->time_process->end_process($CI, $users, $all, 'error', 'db');
             return false;
         }
-        @fclose($this->validation_file);
-        @fclose($this->delay_file);+
+        @fclose($this->delay_file);
         $CI->lastdayacti_struct->Insert_Data($CI, 'lastdayacti', 'no');
+        $masque = $this->Generate_MASQUE($CI, $name_file_csv);
         $csv = $this->Generate_Alert($CI, $user_id, $user_name);
         log_message('error', 'Fin');
-        if ($csv){
+        if ($csv && $masque){
             $CI->time_process->end_process($CI, $users, $all, 'ok');
             return true;
         }else{
@@ -132,12 +135,133 @@ class Generate_Files extends DB_Op{
         }
     }
 
+    public function Compare_Dates($f_actual, $f_activo){
+        $datetime1 = new DateTime($f_activo);
+        $datetime2 = new DateTime($f_actual);
+        $interval = $datetime1->diff($datetime2);
+        $diff = $interval->format('%d');
+        if ($diff >= $this->days){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
     private function Process_Other_Provider($CI, $ligne, $user_id){
         if ($ligne->stockValue >= $this->stock_mini){
             $row['PRIVENLOC'] = '';
             $this->calcActi($CI, $ligne, 'good', $row, 'other_provider');
         }else{
             $this->calcActi($CI, $ligne, 'no_stock', '', 'other_provider');
+        }
+    }
+
+    private function Generate_MASQUE($CI, $name_file_csv){
+        log_message('error', 'Entra en Generate_MASQUE');
+        $processed = array();
+        $products = array();
+        $this->validation_file = @fopen($name_file_csv, 'w+');
+        $f_actual = date('Y-m-d');
+        $line = "OA;material;TYPE;val;date_debut;heure_debut;date_fin;heure_fin;sup";
+        @fputcsv($this->validation_file, explode(',', $line));
+
+        $query = $this->Get_Disabled_Lastdayacti($CI);
+        if ($query->num_rows() > 0){
+            foreach ($query->result() as $prod){
+                log_message('error', 'idProd '.$prod->idProd);
+                if (!$this->Is_New($prod->idProd)){
+                    $statut = $this->Get_Active_Value($prod->idProd, 'statut');
+                    $f_activo = $this->Get_Active_Value($prod->idProd, 'fecha');
+                    $update_SAP = $this->Compare_Dates($f_actual, $f_activo);
+
+                    if ($update_SAP){
+                        $last_registry = $this->Get_Last_Registry($CI, $prod->idProd, $statut);
+                        $new_statut = $last_registry->statut;
+                        log_message('error', 'old_statut '.$statut.' new_statut '.$new_statut);
+                        if ($new_statut != $statut && !isset($processed[$prod->idProd])){
+                            $processed[$prod->idProd] = 1;
+                            $this->Disable_Active($CI, $prod->idProd);
+                            $id = $last_registry->id;
+                        }else{
+                            $update_SAP = false;
+                        }
+                    }
+                }else{
+                    $new_statut = $prod->statut;
+                    $update_SAP = true;
+                    $id = $prod->id;
+                }
+
+                if ($update_SAP){
+                    log_message('error', 'Escribiendo en el fichero MASQUE '.$prod->idProd);
+                    $line = $this->codbu . ";" . $prod->idProd . ";MASQUE;".$new_statut.";".date('Y-m-d', strtotime($f_actual. ' + 1 days')).";00:00:00;31/12/9999;23:59:00;";
+                    @fputcsv($this->validation_file, explode(',', $line));
+                    $this->Update_Active($CI, $id, 1);
+                }
+            }
+        }
+
+        @fclose($this->validation_file);
+        return true;
+    }
+
+    private function Disable_Active($CI, $idProd){
+        $CI->db->where('idProd', $idProd);
+        $CI->db->where('user_id', $this->user_id);
+        $CI->db->update('lastdayacti', array('active' => 0));
+    }
+
+    private function Update_Active($CI, $id, $active){
+        $CI->db->where('id', $id);
+        $CI->db->update('lastdayacti', array('active' => $active)); 
+    }
+
+    public function Get_Last_Registry($CI, $idProd){
+        $CI->db->select('id, statut');
+        $CI->db->from('lastdayacti');
+        $CI->db->where('active', 0);
+        $CI->db->where('countries_id', $this->country_id);
+        $CI->db->where('user_id', $this->user_id);
+        $CI->db->order_by('fecha', 'DESC');
+        $CI->db->limit(1);
+        $query = $CI->db->get();
+        $row = $query->result();
+
+        return $row[0];
+    }
+
+    private function Get_Active_Value($idProd, $type){
+        $result = '';
+        $result = (!isset($this->lastdayacti_products[$idProd]['Y']) ? 'N' : 'Y');
+        if ($type == 'fecha'){
+            $result = $this->lastdayacti_products[$idProd][$result];
+        }
+
+        return $result;
+    }
+
+    private function Get_Disabled_Lastdayacti($CI){
+        $CI->db->select('*');
+        $CI->db->from('lastdayacti');
+        $CI->db->where('countries_id', $this->country_id);
+        $CI->db->where('user_id', $this->user_id);
+        $CI->db->where('active', 0);
+        return $CI->db->get();
+    }
+
+    public function Get_All_lastdayacti($CI){
+        $CI->db->select('idProd, statut, fecha');
+        $CI->db->from('lastdayacti');
+        $CI->db->where('countries_id', $this->country_id);
+        $CI->db->where('active', 1);
+        $CI->db->where('user_id', $this->user_id);
+        $query = $CI->db->get();
+
+        if ($query->num_rows() > 0){
+            foreach ($query->result() as $products){
+                $this->lastdayacti_products[$products->idProd][$products->statut] = $products->fecha;
+            }
         }
     }
 
@@ -159,7 +283,15 @@ class Generate_Files extends DB_Op{
             log_message('error', 'Delay de other_provider '.$ligne->other_prov);
             return $this->other_providers_delay[$ligne->other_prov];
         }else{
-            return $this->providers_delay[$ligne->supplierKey];
+            return (isset($this->providers_delay[$ligne->supplierKey]) ? $this->providers_delay[$ligne->supplierKey] : 99);
+        }
+    }
+
+    public function Is_New($idProd){
+         if (!isset($this->lastdayacti_products[$idProd]['Y']) && !isset($this->lastdayacti_products[$idProd]['N'])){
+            return true;
+        }else{
+            return false;
         }
     }
 
@@ -196,9 +328,9 @@ class Generate_Files extends DB_Op{
             }
         }
 
-        $CI->lastdayacti_struct->Load_Data($reg, $this->item);
-        $line = $this->codbu . ";" . $ligne->idProd . ";MASQUE;".$statut.";".date("d/m/Y").";".date("H:i:s").";31/12/9999;23:59:00;";
-        @fputcsv($this->validation_file, explode(',', $line));
+        if (!isset($this->lastdayacti_products[$ligne->idProd][$statut])){
+            $CI->lastdayacti_struct->Load_Data($reg, $this->item);
+        }
 
         return true;
     }
@@ -211,7 +343,10 @@ class Generate_Files extends DB_Op{
             'priceRec' => '',
             'reason' => 'no_price',
             'price_wrk' => '',
-            'user_id' => $user_id
+            'user_id' => $user_id,
+            'fecha' => date('Y-m-d'),
+            'active' => 0,
+            'country_id' => $this->country_id
         );
 
         return $reg;
@@ -225,7 +360,10 @@ class Generate_Files extends DB_Op{
             'priceRec' => $result,
             'reason' => 'good',
             'price_wrk' => $row['PRIVENLOC'],
-            'user_id' => $user_id
+            'user_id' => $user_id,
+            'fecha' => date('Y-m-d'),
+            'active' => 0,
+            'country_id' => $this->country_id
         );
 
         return $reg;
@@ -239,7 +377,10 @@ class Generate_Files extends DB_Op{
             'priceRec' => $result,
             'reason' => 'too_exp',
             'price_wrk' => $row['PRIVENLOC'],
-            'user_id' => $user_id
+            'user_id' => $user_id,
+            'fecha' => date('Y-m-d'),
+            'active' => 0,
+            'country_id' => $this->country_id
         );
 
         return $reg;
@@ -253,7 +394,10 @@ class Generate_Files extends DB_Op{
             'priceRec' => '',
             'reason' => 'no_stock',
             'price_wrk' => '',
-            'user_id' => $user_id
+            'user_id' => $user_id,
+            'fecha' => date('Y-m-d'),
+            'active' => 0,
+            'country_id' => $this->country_id
         );
 
         return $reg;

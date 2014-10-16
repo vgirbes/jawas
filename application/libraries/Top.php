@@ -55,6 +55,7 @@ class Top extends DB_Op{
         $CI->db->select('*');
         $CI->db->from('lastdayacti');
         $CI->db->where('user_id', $user_id);
+        $CI->db->where('active', 1);
         $CI->db->where('reason = "no_stock"');
         $query = $CI->db->get();
 

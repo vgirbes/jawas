@@ -85,11 +85,11 @@ class Ficheros extends CI_Model{
 
     public function generate_files($user_id = ''){
         $CI =& get_instance();
+        if ($user_id == '') $user_id = 'admin';
         $users = $this->db_op->Get_Usuarios($CI, $user_id);
-        $this->db_op->Truncate_Tables($CI, $users, 'lastdayacti');
-        $all = ($user_id != '' ? true : false);
+        $all = ($user_id != 'admin' ? true : false);
         foreach ($users as $user){
-            $res = $this->generate_files->do_it($user['id'], $user['username'], $user['codbu'], $user['codcen'], $all);
+            $res = $this->generate_files->do_it($user['id'], $user['username'], $user['codbu'], $user['codcen'], $user['countries_id'], $all);
             if (!$res) return false;
         }
         return $res;
