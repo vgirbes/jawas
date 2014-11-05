@@ -198,7 +198,8 @@ class MCH{
 					$diameter = (isset($this->diameter_list[$idProd]) ? $this->diameter_list[$idProd] : 0);
 					$type_pneu = (isset($this->typepneu_list[$idProd]) ? $this->typepneu_list[$idProd] : 0);
 					$transport = $this->Calc_transport($type_pneu, $diameter, $ligne_f->transport);
-					$result_price = (((double)$prod->supplierPrice + (double)$ligne_f->ecotaxe) - (double)$ligne_f->RFAfixe) * (1 - ((double)$ligne_f->RFA_p / 100)) + (double)$ligne_f->CDS + (double)$transport;
+					//$result_price = (((double)$prod->supplierPrice + (double)$ligne_f->ecotaxe) - (double)$ligne_f->RFAfixe) * (1 - ((double)$ligne_f->RFA_p / 100)) + (double)$ligne_f->CDS + (double)$transport;
+					$result_price = (double)$prod->supplierPrice + (double)$transport;
 							
 	                if ($result_price < $res_price && $res_price >= (int)$this->ligne_val_prix_min && (int)$prod->stockValue > $this->stock_mini)
 	                    $res_price = (double)$result_price;
