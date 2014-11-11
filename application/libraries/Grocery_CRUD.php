@@ -1080,7 +1080,6 @@ class grocery_CRUD_Model_Driver extends grocery_CRUD_Field_Types
 					$CI->db->where('id', $primary_key);
 					$CI->db->update('users_providers', $update_data);
 				}else{
-					log_message('error', 'jou');
 					if($this->basic_model->db_update($update_data, $primary_key) === false)
 					{
 						return false;
