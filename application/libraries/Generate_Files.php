@@ -13,6 +13,8 @@ class Generate_Files extends DB_Op{
     var $country_id = '';
     var $lastdayacti_products = array();
     var $days = 6;
+    var $tva = 0;
+    var $p_stock = 0;
 
     function __construct(){
         $CI =& get_instance();
@@ -33,12 +35,13 @@ class Generate_Files extends DB_Op{
         $Conn = $this->Connect_MCH();
         $Conn_wrk = $this->Connect_WRK();
         log_message('error', 'Entra files '.$user_id);
-        $this->stock_mini = $this->Get_Default_Value($CI, 'stock_mini');
-        $marge_e = $this->Get_Default_Value($CI, 'marge_e');
-        $marge_p = $this->Get_Default_Value($CI, 'marge_p');
-        $tva = $this->Get_Default_Value($CI, 'TVA');
-        $query = $this->Get_Data_To_File($CI, $user_id);
         $users = $this->Get_Usuarios($CI, $user_id);
+        $this->stock_mini = $this->Get_Default_Value($CI, 'stock_mini', $users[0]['countries_id']);
+        $marge_e = $this->Get_Default_Value($CI, 'marge_e', $users[0]['countries_id']);
+        $marge_p = $this->Get_Default_Value($CI, 'marge_p', $users[0]['countries_id']);
+        $this->tva = 1 + ($this->Get_Default_Value($CI, 'TVA', $users[0]['countries_id']) / 100);
+        $this->p_stock = 1 + ($this->Get_Default_Value($CI, 'p_stock', $users[0]['countries_id']) / 100);
+        $query = $this->Get_Data_To_File($CI, $user_id);
         $this->providers_reference = $this->Get_Providers_Reference($CI, $Conn, $codbu, $user_id);
         $this->codbu = $codbu;
         $this->providers_delay = $this->Get_Providers_Delay($CI, 'SupplierKey', 'delay', 'users_providers', $user_id);
@@ -88,7 +91,7 @@ class Generate_Files extends DB_Op{
                                 }
                                 else
                                 {
-                                    $result = (((double)$ligne->priceMin + (double)$marge_e) * (1 + ((double)$marge_p / 100))) * (1 + ((double)$tva / 100));
+                                    $result = (((double)$ligne->priceMin + (double)$marge_e) * (1 + ((double)$marge_p / 100))) * ((double)$this->tva);
 
                                     if ((double)$result <= (double)$row['PRIVENLOC'])
                                     {
@@ -425,7 +428,7 @@ class Generate_Files extends DB_Op{
                     foreach ($query_reg->result() as $ligne2)
                     {
                         if ($ligne2->supplierPrice == $ligne->priceMin)
-                            $line = $ligne2->supplierKey . ";" . str_replace(' ', '_', $ligne2->nom) . ";" . $ligne2->stockValueB . ";" . $ligne2->stockValue . ";;" . $ligne2->supplierPriceB . ";" . str_replace('.', ',', $ligne2->supplierPrice) . ";" . ($ligne2->supplierPrice * 1.21) . ";" . (($ligne2->supplierPrice + 0) * (1 + (8 / 100))) * (1 + (21 / 100));
+                            $line = $ligne2->supplierKey . ";" . str_replace(' ', '_', $ligne2->nom) . ";" . $ligne2->stockValueB . ";" . $ligne2->stockValue . ";;" . $ligne2->supplierPriceB . ";" . str_replace('.', ',', $ligne2->supplierPrice) . ";" . ($ligne2->supplierPrice * $this->tva) . ";" . ($ligne2->supplierPrice * $this->p_stock) * ($this->tva);
                         else
                             $line = $ligne2->supplierKey . ";" . str_replace(' ', '_', $ligne2->nom) . ";" . $ligne2->stockValueB . ";" . $ligne2->stockValue . ";;" . $ligne2->supplierPriceB . ";" . str_replace('.', ',', $ligne2->supplierPrice);
                             @fputcsv($f, explode(',', $line));

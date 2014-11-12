@@ -89,10 +89,11 @@ class DB_op{
         return $query;
     }
 
-    public function Get_Default_Value($CI, $field){
+    public function Get_Default_Value($CI, $field, $countries_id = ''){
         $CI->db->select('*');
         $CI->db->from('info_defaut');
         $CI->db->where('nom_champ = "'.$field.'"');
+        if ($countries_id != '') $CI->db->where('countries_id', $countries_id);
         $query = $CI->db->get();
 
         if ($query->num_rows > 0){

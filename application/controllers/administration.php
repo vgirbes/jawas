@@ -85,8 +85,8 @@ class Administration extends CI_Controller{
                 $crud = new grocery_CRUD();
                 $crud->set_theme('flexigrid');
                 $crud->set_table($table);
-                $crud->unset_columns('priorite', 'ecotaxe', 'TVA', 'statut', 'SupplierKeyAty');
-                if ($select == 'providers') $crud->edit_fields('SupplierKey', 'nom', 'commentaires');
+                $this->custom_crud($crud, $table);
+                
                 $output = $crud->render();
                 $this->__output($output);
             }else{
@@ -112,6 +112,15 @@ class Administration extends CI_Controller{
         }
 
         return $table;
+    }
+
+    private function custom_crud($crud, $select){
+        $crud->unset_columns('priorite', 'ecotaxe', 'TVA', 'statut', 'SupplierKeyAty');
+        if ($select == 'providers') $crud->edit_fields('SupplierKey', 'nom', 'commentaires');
+        if ($select == 'info_defaut'){
+            $crud->where('countries_id', $this->session->userdata['countries_id']);
+            $crud->unset_columns('countries_id');
+        }
     }
 
     public function gapps($auth_code){

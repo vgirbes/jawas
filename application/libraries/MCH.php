@@ -28,10 +28,10 @@ class MCH{
 	    $CI->time_process->flag = 'mch';
 	    $CI->time_process->user_id = $user_id;
 	    $users = $CI->db_op->Get_Usuarios($CI, $user_id);
-	    $this->stock_mini = $CI->db_op->Get_Default_Value($CI, 'stock_mini');
+	    $this->stock_mini = $CI->db_op->Get_Default_Value($CI, 'stock_mini', $users[0]['countries_id']);
 	    $CI->db_op->Truncate_Tables($CI, $users, 'data_mch');
 	    $all = ($user_id != '' ? true : false);
-	    $this->ligne_val_prix_min = $CI->db_op->Get_Default_Value($CI, 'Prix_min');
+	    $this->ligne_val_prix_min = $CI->db_op->Get_Default_Value($CI, 'Prix_min', $users[0]['countries_id']);
 	    $this->diameter_list = $CI->db_op->Get_Property_MCH_List($CI, 'diameter', $Conn_MCH);
 	    $this->typepneu_list = $CI->db_op->Get_Property_MCH_List($CI, 'type_pneu', $Conn_MCH);
 		$i = 0;
@@ -152,7 +152,7 @@ class MCH{
     }
 
     public function Calc_Stock_MCH($CI, $users, $Conn_MCH){
-    	$pourcent = $CI->db_op->Get_Default_Value($CI, 'p_stock');
+    	$pourcent = $CI->db_op->Get_Default_Value($CI, 'p_stock', $users[0]['countries_id']);
     	foreach ($users as $user){
     		log_message('error', 'User id: '.$user['id']);
 			$CI->db->select('idProd, valPro');

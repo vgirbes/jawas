@@ -28,6 +28,7 @@ class Users extends CI_Controller{
                     'lang' => $lang,
                     'rol' => $isValidLogin[0]['rol'],
                     'token' => $isValidLogin[0]['token'],
+                    'countries_id' => $isValidLogin[0]['countries_id'],
                     'id' => $isValidLogin[0]['id']
                 );
                 $this->session->set_userdata($sesion_data);
