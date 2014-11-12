@@ -425,7 +425,7 @@ class Generate_Files extends DB_Op{
                     foreach ($query_reg->result() as $ligne2)
                     {
                         if ($ligne2->supplierPrice == $ligne->priceMin)
-                            $line = $ligne2->supplierKey . ";" . str_replace(' ', '_', $ligne2->nom) . ";" . $ligne2->stockValueB . ";" . $ligne2->stockValue . ";;" . $ligne2->supplierPriceB . ";" . str_replace('.', ',', $ligne2->supplierPrice) . ";" . ($ligne2->supplierPrice * 1.20) . ";" . (($ligne2->supplierPrice + 0) * (1 + (8 / 100))) * (1 + (20 / 100));
+                            $line = $ligne2->supplierKey . ";" . str_replace(' ', '_', $ligne2->nom) . ";" . $ligne2->stockValueB . ";" . $ligne2->stockValue . ";;" . $ligne2->supplierPriceB . ";" . str_replace('.', ',', $ligne2->supplierPrice) . ";" . ($ligne2->supplierPrice * 1.21) . ";" . (($ligne2->supplierPrice + 0) * (1 + (8 / 100))) * (1 + (21 / 100));
                         else
                             $line = $ligne2->supplierKey . ";" . str_replace(' ', '_', $ligne2->nom) . ";" . $ligne2->stockValueB . ";" . $ligne2->stockValue . ";;" . $ligne2->supplierPriceB . ";" . str_replace('.', ',', $ligne2->supplierPrice);
                             @fputcsv($f, explode(',', $line));
