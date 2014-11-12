@@ -36,6 +36,8 @@ class Providers extends CI_Controller{
          
             $crud->set_relation('SupplierKey','providers','nom');
          
+            $crud->unset_columns('users_id');
+            $crud->edit_fields('SupplierKey', 'active', 'correctionstock', 'ecotaxe', 'CDS', 'transport', 'delay', 'RFAfixe', 'RFA_p', 'forceStock', 'stock', 'comments');
             $output = $crud->render();
             $this->__output($output);
         }else{

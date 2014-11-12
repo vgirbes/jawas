@@ -85,7 +85,8 @@ class Administration extends CI_Controller{
                 $crud = new grocery_CRUD();
                 $crud->set_theme('flexigrid');
                 $crud->set_table($table);
-             
+                $crud->unset_columns('priorite', 'ecotaxe', 'TVA', 'statut', 'SupplierKeyAty');
+                if ($select == 'providers') $crud->edit_fields('SupplierKey', 'nom', 'commentaires');
                 $output = $crud->render();
                 $this->__output($output);
             }else{
