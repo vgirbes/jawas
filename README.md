@@ -2,4 +2,4 @@ Jawas
 =====
 
 stock management application
-version 1
+[![Code Climate](https://codeclimate.com/github/vgirbes/jawas/badges/gpa.svg)](https://codeclimate.com/github/vgirbes/jawas)
