@@ -29,7 +29,8 @@ class Providers_Model extends CI_Model{
             'query' => $post[$edit.'query'],
             'delay' => $post[$edit.'delay'],
             'correctionstock' => $post[$edit.'correction_stock'],
-            'id_files_providers' => $post[$edit.'prov_files']
+            'id_files_providers' => $post[$edit.'prov_files'],
+            'provider_id' => $post[$edit.'atyse_prov']
         );
 
         if ($prov_id != ''){
@@ -140,5 +141,22 @@ class Providers_Model extends CI_Model{
         }
 
         return $res;
+    }
+
+    public function get_atyse_providers(){
+        $res = array();
+        $this->db->select('*');
+        $this->db->from('providers');
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0){
+            foreach ($query->result() as $provider){
+                $res[$provider->SupplierKey] = $provider->nom;
+            }
+
+            return $res;
+        }else{
+            return false;
+        }
     }
 }

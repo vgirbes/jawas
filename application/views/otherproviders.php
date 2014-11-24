@@ -58,15 +58,28 @@
 			<div class="control-group">
 			  <label class="control-label" for="textinput">Query</label>
 			  <div class="controls">
-			    <input id="textinput" name="query" placeholder="IDEPROD = 8" class="input-xlarge" type="text">
+			    <input id="textinput" name="query" min="0" placeholder="IDEPRD = 8" class="input-xlarge" required="" type="text">
 			  </div>
 			</div>
-
 
 			<div class="control-group">
 			  <label class="control-label" for="selectbasic">Delay</label>
 			  <div class="controls">
 			  	<input id="textinput" name="delay" min="0" pattern="\d*" placeholder="Delay" class="input-xlarge" required="" type="text">
+			  </div>
+			</div>
+
+			<div class="control-group">
+			  <label class="control-label" for="selectbasic">Asociar con proveedor Atyse</label>
+			  <div class="controls">
+			  	<select id="selectbasic" name="atyse_prov" class="input-xlarge">
+			    	<option value="0" selected="">Ninguno</option>
+			  		<?php
+			  		foreach ($atyse_providers as $key => $value){  
+			  			echo '<option value="'.$key.'">'.$key.' - '.$value.'</option>'."\n";
+			  		}
+			  		?>
+			  	</select>
 			  </div>
 			</div>
 
@@ -208,11 +221,24 @@
 					  </div>
 					</div>
 
-
 					<div class="control-group">
 					  <label class="control-label" for="selectbasic">Delay</label>
 					  <div class="controls">
 					  	<input id="textinput" name="delay" min="0" pattern="\d*" placeholder="Delay" class="input-xlarge prov_delay_<?= $prov_id;?>" required="" type="text" value="<?= $prov->delay;?>">
+					  </div>
+					</div>
+
+					<div class="control-group">
+					  <label class="control-label" for="selectbasic">Asociar con proveedor Atyse</label>
+					  <div class="controls">
+					  	<select id="selectbasic" name="atyse_prov" class="input-xlarge atyse_prov_<?= $prov_id;?>">
+					    	<option value="0">Ninguno</option>
+					  		<?php
+					  		foreach ($atyse_providers as $key => $value){  
+					  			echo '<option value="'.$key.'"'.($key == $prov->provider_id ? ' selected = ""' : '').'>'.$key.' - '.$value.'</option>'."\n";
+					  		}
+					  		?>
+					  	</select>
 					  </div>
 					</div>
 
@@ -267,7 +293,7 @@
 					    	<?php } ?> </div>
 					    <input type="hidden" id="prov_position_<?= $x;?>_id_<?= $prov_id;?>" value="<?= (isset($positions_saved[$prov_id][$x]['id']) ? 'field_'.$positions_saved[$prov_id][$x]['id'] : '');?>">
 					    <?php } ?>
-					    <input type="hidden" name="link_position" id="link_position_<?= $prov_id;?>" value="">
+					    <input type="hidden" name="link_position" id="link_position_<?= $prov_id;?>" value="<?= $prov->key_fields;?>">
 					    <input type="hidden" id="total_reg" name="total_reg" value="<?= $i;?>">
 					  </div>
 					</div>
@@ -313,6 +339,7 @@
 		<input type="hidden" id="edit_active_fstock" name="edit_active_fstock" value="">
 		<input type="hidden" id="edit_stock" name="edit_stock" value="">
 		<input type="hidden" id="edit_correction_stock" name="edit_correction_stock" value="">
+		<input type="hidden" id="edit_atyse_prov" name="edit_atyse_prov" value="">
 		<?php for ($x=1; $x<=$i; $x++){ ?>
 		<input type="hidden" id="edit_position_<?= $x;?>" name="edit_position_<?= $x;?>" value="">
 		<?php } ?>
