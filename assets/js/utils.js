@@ -60,6 +60,7 @@ function save_other_provider(){
 	$('#edit_delay').val($('.prov_delay_'+id).val());
 	$('#edit_mch_tables').val($('.prov_mch_'+id).val());
 	$('#edit_correction_stock').val($('.prov_correction_stock_'+id).val());
+	$('#edit_atyse_prov').val($('.atyse_prov_'+id).val());
 
 	if ($('.prov_afstock_'+id).is(':checked')){
 		$('#edit_active_fstock').val(1);

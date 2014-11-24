@@ -51,6 +51,7 @@ class Providers extends CI_Controller{
         $datos['fields'] = $this->providers_model->other_provider_fields();
         $datos['other_prov'] = $this->providers_model->get_all('other_providers');
         $datos['prov_files'] = $this->providers_model->get_all('files_providers');
+        $datos['atyse_providers'] = $this->providers_model->get_atyse_providers();
         if ($datos['other_prov'] != false) $datos['fields_saved'] = $this->providers_model->fields_saved($datos['other_prov'], 'id_other_prov_type');
         if ($datos['other_prov'] != false) $datos['positions_saved'] = $this->providers_model->fields_saved($datos['other_prov'], 'position');
 
