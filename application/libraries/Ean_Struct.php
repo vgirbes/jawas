@@ -1,4 +1,4 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 class Ean_Struct extends DB_op{
     var $ean = array(
         'codeRegroupement' => '',
